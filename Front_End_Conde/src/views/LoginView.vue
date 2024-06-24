@@ -26,7 +26,10 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+// import { useStore } from 'vuex';
+import { defineComponent } from 'vue'; 
+// import { useStore } from 'vuex'
+import axios from 'axios';
 
 import { ElForm, ElFormItem, ElInput, ElButton, ElMessage } from 'element-plus';
 
@@ -64,16 +67,25 @@ export default defineComponent({
   methods: {
     submitLogin() {
       this.$refs.loginFormRef.validate(valid => {
-        if (valid && this.loginForm.username === 'admin' && this.loginForm.password === 'ssssss' && this.loginForm.code === 'yhuv') {
-          console.log(this.loginForm);
-          ElMessage({
-            showClose: true,
-            message: '登录成功！',
-            type: 'success'
-          });
-          this.$router.push('/meeting');
-        } else {
-          ElMessage.error('登录出错请重新输入');
+        if (valid && this.loginForm.code === 'yhuv') {
+          let fd = new FormData()
+          fd.append('userName', this.loginForm.username);
+          fd.append('password', this.loginForm.password);
+          axios.post('http://localhost:8070/user/login', fd)
+            .then(response => {
+              if (response.data.isOk) {
+                this.$store.dispatch('setUserName', response.data.user.userName);
+                ElMessage({
+                  showClose: true,
+                  message: '登录成功！',
+                  type: 'success'
+                });
+                console.log("登录成功的数据+", response.data.user.userName, response.data.user.role)
+                this.$router.push({ path: '/userManage'});
+              } else {
+                ElMessage.error('登录出错请重新输入');
+              }
+            })
         }
       });
     },

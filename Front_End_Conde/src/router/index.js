@@ -1,13 +1,14 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
-import UserManage from '../views/UserManage.vue'
+// import UserManage from '../views/UserManage.vue'
+import LoginView from '../views/LoginView.vue'
 // import LoginView from '../views/LoginView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: UserManage
+    component: LoginView
   },
   {
     path: '/register',
@@ -15,9 +16,9 @@ const routes = [
     component: () => import('../views/RegisterView.vue')
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('../views/LoginView.vue')
+    path: '/userManage',
+    name: 'userManage',
+    component: () => import('../views/UserManage.vue')
   },
   {
     path: '/login',

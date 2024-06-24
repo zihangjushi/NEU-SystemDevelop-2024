@@ -12,5 +12,14 @@ public class UserBiz {
     @Autowired
     private UserMapper mapper;
 
+    public User checkLogin(User user){
+        User dbUser = mapper.seekUserByUserName(user.getUserName());
+        if(dbUser != null && user.getPassword().equals(dbUser.getPassword()))
+        {
+            dbUser.setPassword(null);
+            return dbUser;
+        }
+        else return null;
+    }
     public List<User> getUserList(){ return mapper.listUsers();}
 }

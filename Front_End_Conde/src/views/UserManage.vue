@@ -3,7 +3,7 @@
     <el-container style="height: 100vh; border: 1px solid #eee">
 
       <!-- /side容器，用来存放侧边菜单 -->
-      <el-aside class="menu-with-shadow" width="200px" style="color: rgb(255,255,255)">
+      <el-aside class="menu-with-shadow" width="240px" style="color: rgb(255,255,255)">
         <el-menu :default-openeds="['3']">
           <!-- //序号为1的侧边栏，用来显示测盟汇和图片组件 -->
           <el-menu-item index="1">
@@ -32,14 +32,18 @@
                   <UserFilled />
                 </el-icon>
                 <span>用户管理</span>
-              </template> <el-menu-item-group class="specialgroup">
-                <el-input v-model="searchQuery" style="width: 160px" placeholder="输入以搜索" clearable
-                  @input="searchMenu" />
-                <el-menu-item index="3-1-1">用户1</el-menu-item>
-                <el-menu-item index="3-1-2">用户2</el-menu-item>
-                <el-menu-item index="3-1-3">用户3</el-menu-item>
-                <el-menu-item index="3-1-4">用户4</el-menu-item>
-              </el-menu-item-group>
+              </template>
+              <el-input v-model="searchQuery" style="width: 160px" placeholder="输入以搜索" clearable @input="searchMenu" />
+              <el-sub-menu v-for="(company, index) in companyList" :key="company.companyId" class="left-align"
+                :index="'3-1-' + (index + 1)">
+                <template #title>
+                  {{ company.companyName }}
+                </template>
+                <el-menu-item v-for="department in getDepartmentsByCompany(company.companyId)"
+                  :key="department.departmentId" :index="'3-1-' + (index + 1) + '-' + department.departmentId">
+                  {{ department.departmentName }}
+                </el-menu-item>
+              </el-sub-menu>
             </el-sub-menu>
             <el-menu-item index="3-2"><el-icon>
                 <Management />
@@ -76,7 +80,7 @@
                 <el-avatar icon="UserFilled"
                   style="font-size: 20px; margin-right: 10px;position: relative; top: 8px;"></el-avatar>
                 <el-button type="text"
-                  style="font-size: 15px; color: rgb(0,0,0);position: relative; top: 8px;">徐洋</el-button>
+                  style="font-size: 15px; color: rgb(0,0,0);position: relative; top: 8px;">{{ userName }}</el-button>
               </div>
               <!-- template是下拉插槽，用来存放dropdown中的内容 -->
               <template #dropdown>
@@ -124,15 +128,19 @@
               @selection-change="handleSelectionChange">
               <!-- 表单列 -->
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column prop="name" label="用户名称" width="300" header-align="center"
+              <el-table-column prop="userId" label="用户编号" width="100" header-align="center"
                 align="center"></el-table-column>
-              <el-table-column prop="creator" label="创建人" width="100" header-align="center"
+              <el-table-column prop="realName" label="用户姓名" width="100" header-align="center"
                 align="center"></el-table-column>
-              <el-table-column prop="state" label="用户状态" width="100" header-align="center"
+              <el-table-column prop="userName" label="用户昵称" width="100" header-align="center"
                 align="center"></el-table-column>
-              <el-table-column prop="content" label="用户内容" width="300" header-align="center"
+              <el-table-column prop="departmentId" label="所属部门" width="100" header-align="center"
                 align="center"></el-table-column>
-              <el-table-column prop="date" label="开始时间" width="100" header-align="center"
+              <el-table-column prop="phoneNumber" label="手机号码" width="200" header-align="center"
+                align="center"></el-table-column>
+              <el-table-column prop="state" label="状态" width="100" header-align="center"
+                align="center"></el-table-column>
+              <el-table-column prop="createTime" label="创建时间" width="200" header-align="center"
                 align="center"></el-table-column>
               <el-table-column prop="operate" label="操作" header-align="center" align="center">
                 <!-- template插槽，用于向菜单的最后一列中插入两个操作按钮 -->
@@ -159,51 +167,16 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import {onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { Management, UserFilled } from "@element-plus/icons-vue";
+import { useStore } from 'vuex';
 export default {
   components: { Management, UserFilled },
   setup() {
     // 用来存放数据的表格
-    const tableData = ref([
-      {
-        date: '2023-06-10',
-        creator: '李四',
-        name: '团队建设用户',
-        state: '进行中',
-        content: '讨论团队建设与发展'
-      },
-      {
-        date: '2023-05-22',
-        creator: '王五',
-        name: '产品发布会',
-        state: '已结束',
-        content: '介绍新产品功能与特性'
-      },
-      {
-        date: '2023-04-18',
-        creator: '赵六',
-        name: '技术分享会',
-        state: '未开始',
-        content: '分享最新的技术趋势'
-      },
-      {
-        date: '2023-03-15',
-        creator: '张三',
-        name: '市场推广用户',
-        state: '已结束',
-        content: '讨论市场推广策略'
-      },
-      {
-        date: '2023-02-10',
-        creator: '钱七',
-        name: '季度总结会',
-        state: '已结束',
-        content: '总结季度工作成果与问题'
-      }
-    ]);
+    
 
 
     // 用来选择日期的组件
@@ -237,10 +210,18 @@ export default {
     const value1 = ref('');
     const input1 = ref('');
     const input2 = ref('');
+    const userName = ref('');
     const searchQuery = ref('')
+
+    const tableData = ref([]);
     const companyList = ref([]);
+    const departmentList = ref([]);
     const searchList = ref([]);
     const multipleTable = ref(null);
+
+    const getDepartmentsByCompany = (companyId) => {
+      return departmentList.value.filter(department => department.companyId === companyId);
+    }
 
     const toggleSelection = (rows) => {
       if (rows) {
@@ -262,12 +243,13 @@ export default {
     };
 
     // 删除按钮
-    const handleDelete = (index, row) => {
-      console.log(index, row);
+    const handleDelete = (userName) => {
+      console.log(userName);
     };
 
     // 导入路由
     const router = useRouter();
+    const store = useStore();
 
     // 路由到用户中心
     const personalCenter = () => {
@@ -283,17 +265,33 @@ export default {
     const initCompanyList = () => {
       axios.get("http://localhost:8070/company/list")
         .then(response => {
-          // this.companyList = response.companies;
-          // console.log("数据读取成功")
-          if(response.data.isOk )console.log("数据读取成功")
+          if (response.data.isOk) {
+            console.log("公司数据读取成功")
+            companyList.value = response.data.companies;
+            console.log(companyList)
+          }
         })
-        .catch(error => {
-          if(error) console.log("数据读取成功")
+    }
+
+    const initDepartmentList = () => {
+      axios.get("http://localhost:8070/department/list")
+        .then(response => {
+          if (response.data.isOk) {
+            console.log("部门数据读取成功")
+            departmentList.value = response.data.departments;
+            console.log(departmentList)
+          }
         })
+    }
+
+    const initUser = () => {
+      userName.value = store.state.userName
     }
 
     onMounted(async () => {
       initCompanyList();
+      initDepartmentList();
+      initUser();
     })
 
     // setup的返回值
@@ -305,8 +303,10 @@ export default {
       input2,
       searchQuery,
       companyList,
+      departmentList,
       searchList,
       multipleTable,
+      userName,
       toggleSelection,
       handleSelectionChange,
       handleEdit,
@@ -314,9 +314,8 @@ export default {
       personalCenter,
       back,
       initCompanyList,
+      getDepartmentsByCompany,
     }
-
-    
   }
 };
 </script>

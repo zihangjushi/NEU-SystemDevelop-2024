@@ -1,14 +1,24 @@
 import { createStore } from 'vuex'
 
-export default createStore({
+const store = createStore({
   state: {
+    userName: ''
   },
   getters: {
+    userName: state => state.userName
   },
   mutations: {
+    setUserName(state, userName) {
+      state.userName = userName;
+    }
   },
   actions: {
+    setUserName({ commit }, userName) {
+      commit('setUserName', userName);
+    }
   },
   modules: {
   }
-})
+});
+
+export default store;

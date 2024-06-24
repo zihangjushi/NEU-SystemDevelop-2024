@@ -21,7 +21,7 @@ public class DepartmentController {
         List<Department> list = departmentBiz.getDepartmentList();
         Map map = new HashMap();
         map.put("isOk",true);
-        map.put("students",list);
+        map.put("departments",list);
         map.put("msg","查询成功");
         return map;
     }

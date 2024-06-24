@@ -8,6 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface UserMapper {
+
+    @Select("select * from t_user where userName = #{userName}")
+    public User seekUserByUserName(String name);
     @Select("select * from t_user")
     List<User> listUsers();
 }

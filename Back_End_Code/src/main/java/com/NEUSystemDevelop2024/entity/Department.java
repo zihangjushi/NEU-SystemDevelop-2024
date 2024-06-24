@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 public class Department {
     int departmentId;
+    int serialId;
     int companyId;
     String departmentName;
     String adminName;
@@ -77,5 +78,11 @@ public class Department {
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+    public int getSerialId() {
+        return serialId;
+    }
+    public void setSerialId(int serialId) {
+        this.serialId = serialId;
     }
 }
