@@ -22,4 +22,9 @@ public class UserBiz {
         else return null;
     }
     public List<User> getUserList(){ return mapper.listUsers();}
+
+    public User seekUserByUserName(String userName){
+        User user = mapper.seekUserByUserName(userName);
+        return user;
+    }
 }

@@ -10,4 +10,11 @@ import java.util.List;
 public interface CompanyMapper {
     @Select("select * from t_company")
     List<Company> listCompany();
+
+    @Select("select * from t_company where companyId=#{companyId}")
+    Company searchByCompanyId(Integer companyId);
+
+    @Select("select * from t_company where companyName=#{companyName}")
+    Company searchByCompanyName(String companyName);
+
 }

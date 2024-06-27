@@ -2,19 +2,19 @@ import { createStore } from 'vuex'
 
 const store = createStore({
   state: {
-    userName: ''
+    user: null
   },
   getters: {
-    userName: state => state.userName
+    user: state => state.user
   },
   mutations: {
-    setUserName(state, userName) {
-      state.userName = userName;
+    setUser(state, user) {
+      state.user = user;
     }
   },
   actions: {
-    setUserName({ commit }, userName) {
-      commit('setUserName', userName);
+    setUser({ commit }, user) {
+      commit('setUser', user);
     }
   },
   modules: {

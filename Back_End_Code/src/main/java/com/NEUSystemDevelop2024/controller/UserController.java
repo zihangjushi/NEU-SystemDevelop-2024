@@ -2,12 +2,14 @@ package com.NEUSystemDevelop2024.controller;
 
 import com.NEUSystemDevelop2024.biz.UserBiz;
 import com.NEUSystemDevelop2024.entity.User;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,4 +51,51 @@ public class UserController {
         return map;
     }
 
+    @RequestMapping("/searchByUserName")
+    public Map searchByUserName(String userName)
+    {
+        User user = userBiz.seekUserByUserName(userName);
+        Map map = new HashMap();
+        map.put("isOk", true);
+        map.put("user", user);
+        map.put("msg","查询成功");
+        return map;
+    }
+
+    @RequestMapping("/searchByCompanyId")
+    public Map searchByCompanyId(Integer companyId)
+    {
+        List<User> userList = new ArrayList<>();
+        List<User> users = new ArrayList<>();
+        userList = userBiz.getUserList();
+
+        for(User user : userList)
+        {
+            if(user.getCompanyId() == companyId) users.add(user);
+        }
+        Map map = new HashMap();
+        map.put("isOk", true);
+        map.put("users", users);
+        map.put("msg","查询成功");
+        return map;
+    }
+
+    @RequestMapping("/searchByCompanyInformation")
+    public Map searchByCompanyInformation(Integer companyId, Integer departmentId)
+    {
+        List<User> userList = userBiz.getUserList();
+        List<User> users = new ArrayList<>();
+        for(User user1 : userList)
+        {
+            if(user1.getCompanyId() == companyId && user1.getDepartmentId() == departmentId)
+            {
+                users.add(user1);
+            }
+        }
+        Map map = new HashMap();
+        map.put("isOk", true);
+        map.put("users", users);
+        map.put("msg","查询成功");
+        return map;
+    }
 }
