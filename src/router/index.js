@@ -41,9 +41,15 @@ const routes = [
     component: () => import('../views/UserCenter.vue')
   },
   {
+<<<<<<< Updated upstream:src/router/index.js
     path: '/test',
     name: 'test',
     component: () => import('../views/TestView.vue')
+=======
+    path: '/homepage',
+    name: 'homepage',
+    component: () => import('../views/HomePage.vue')
+>>>>>>> Stashed changes:Front_End_Conde/src/router/index.js
   },
 ]
 
