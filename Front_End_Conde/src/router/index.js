@@ -21,14 +21,14 @@ const routes = [
     component: () => import('../views/UserManage.vue')
   },
   {
+    path: '/CompanyManage',
+    name: 'companyManage',
+    component: () => import('../views/CompanyManage.vue')
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('../views/LoginView.vue')
-  },
-  {
-    path: '/meeting',
-    name: 'meeting',
-    component: () => import('../views/MeetingManage.vue')
   },
   {
     path: '/userCenter',

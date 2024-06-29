@@ -98,4 +98,34 @@ public class UserController {
         map.put("msg","查询成功");
         return map;
     }
+
+    @RequestMapping("/add")
+    public Map add(User user)
+    {
+        boolean isOk = userBiz.addUser(user);
+        Map map = new HashMap();
+        if(isOk){
+            map.put("isOk",true);
+            map.put("msg","注册成功");
+        }else{
+            map.put("isOk",false);
+            map.put("msg","注册失败");
+        }
+        return map;
+    }
+
+    @RequestMapping("/deleteUserById")
+    public Map delete(Integer userId){
+        System.out.println(userId);
+        boolean isOk = userBiz.deleteUserById(userId);
+        Map map = new HashMap();
+        if(isOk){
+            map.put("isOk",true);
+            map.put("msg","删除成功");
+        }else{
+            map.put("isOk",false);
+            map.put("msg","删除失败");
+        }
+        return map;
+    }
 }

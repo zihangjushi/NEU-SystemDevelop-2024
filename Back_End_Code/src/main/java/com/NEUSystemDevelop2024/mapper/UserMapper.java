@@ -1,6 +1,8 @@
 package com.NEUSystemDevelop2024.mapper;
 
 import com.NEUSystemDevelop2024.entity.User;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -15,5 +17,11 @@ public interface UserMapper {
     @Select("select * from t_user where userName = #{userName}")
     public User seekUserByUserName(String name);
 
+    @Insert({
+            "INSERT INTO t_user VALUES (null, #{companyId}, #{departmentId},#{userName}, #{realName}, #{gender}, #{password}, #{role}, #{enabled}, #{career}, #{phoneNumber}, #{email}, #{createTime}  #{description})"
+    })
+    Integer insertUser(User user);
 
+    @Delete("delete from t_user where UserId=#{id}")
+    Integer deleteUserById(Integer id);
 }

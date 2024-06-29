@@ -27,4 +27,12 @@ public class UserBiz {
         User user = mapper.seekUserByUserName(userName);
         return user;
     }
+
+    public boolean addUser(User user)
+    {
+        return mapper.insertUser(user) >0;
+    }
+    public boolean deleteUserById(Integer userId){
+        return mapper.deleteUserById(userId) >0;
+    }
 }
