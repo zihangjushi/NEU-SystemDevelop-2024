@@ -15,6 +15,16 @@ public class Company {
     public Company() {
     }
 
+    public Company(String adminName, int state, String phoneNumber, String contactName, String companyName, String description, Timestamp createTime) {
+        this.adminName = adminName;
+        this.state = state;
+        this.phoneNumber = phoneNumber;
+        this.contactName = contactName;
+        this.companyName = companyName;
+        this.description = description;
+        this.createTime = createTime;
+    }
+
     public int getCompanyId() {
         return companyId;
     }

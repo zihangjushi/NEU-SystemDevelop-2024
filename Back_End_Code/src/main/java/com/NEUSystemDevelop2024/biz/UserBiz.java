@@ -27,4 +27,9 @@ public class UserBiz {
         User user = mapper.seekUserByUserName(userName);
         return user;
     }
+
+
+    public void addUser(User user) {
+        mapper.insertUser(user);
+    }
 }
