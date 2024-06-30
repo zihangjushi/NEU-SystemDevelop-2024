@@ -24,4 +24,8 @@ public class CompanyBiz {
     public Company searchByCompanyName(String companyName){
         return companyMapper.searchByCompanyName(companyName);
     }
+
+    public void addCompany(Company company) {
+        companyMapper.insertCompany(company);
+    }
 }

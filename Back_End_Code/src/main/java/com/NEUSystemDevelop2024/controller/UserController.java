@@ -1,14 +1,21 @@
 package com.NEUSystemDevelop2024.controller;
 
+import com.NEUSystemDevelop2024.biz.CompanyBiz;
 import com.NEUSystemDevelop2024.biz.UserBiz;
+import com.NEUSystemDevelop2024.entity.Company;
 import com.NEUSystemDevelop2024.entity.User;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +26,9 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserBiz userBiz;
+
+    @Autowired
+    private CompanyBiz companyBiz;
 
     @RequestMapping("/login")
     public Map login(User user, HttpServletRequest request)
@@ -40,6 +50,48 @@ public class UserController {
         }
 
     }
+
+    @RequestMapping("/register")
+    public Map register(@RequestBody Map<String, Object> request){
+        Map<String, Object> map = new HashMap<>();
+
+        try {
+            String name = (String) request.get("realname");
+            String usernum = (String) request.get("usernum");
+            String password = (String) request.get("password");
+            int gender = Integer.parseInt((String) request.get("gender"));
+            String description = (String) request.get("description");
+            String email = (String) request.get("email");
+                String companyName = (String) request.get("newCompanyName");
+                String contactName = (String) request.get("contactName");
+                String phoneNumber = (String) request.get("contactPhone");
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String formattedDateTime = now.format(formatter);
+
+            Timestamp createTime = Timestamp.from(Instant.now());
+
+                Company company = new Company(name,1,phoneNumber,contactName,companyName,description,createTime);
+
+
+                companyBiz.addCompany(company);
+
+
+                System.out.println(companyBiz.searchByCompanyName(companyName).getCompanyId());
+                User user = new User(companyBiz.searchByCompanyName(companyName).getCompanyId(),usernum,name,gender,password,"admin",1,"管理员",phoneNumber,email,createTime,null,0);
+                userBiz.addUser(user);
+
+
+            map.put("isOk", true);
+            map.put("msg", "注册成功！");
+        } catch (Exception e) {
+            map.put("isOk", false);
+            map.put("msg", "注册失败：" + e.getMessage());
+        }
+
+        return map;
+    }
+
     @RequestMapping("/list")
     public Map list()
     {
