@@ -19,7 +19,7 @@ public interface UserMapper {
 
     @Insert("INSERT INTO t_user (companyId,userName, realName, gender, password, enabled, career, role, phoneNumber, email, createTime, description) " +
             "VALUES (#{companyId},#{userName}, #{realName}, #{gender}, #{password}, #{enabled}, #{career}, #{role}, #{phoneNumber}, #{email}, #{createTime}, #{description})")
-    void insertUser(User user);
+    Integer insertUser(User user);
 
     @Delete("delete from t_user where UserId=#{id}")
     Integer deleteUserById(Integer id);

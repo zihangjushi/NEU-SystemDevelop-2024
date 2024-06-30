@@ -33,7 +33,7 @@ public class UserBiz {
     }
 
 
-    public void addUser(User user) {
-        mapper.insertUser(user);
+    public boolean addUser(User user) {
+        return mapper.insertUser(user) > 0;
     }
 }

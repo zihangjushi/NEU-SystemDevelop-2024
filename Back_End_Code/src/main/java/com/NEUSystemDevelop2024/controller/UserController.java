@@ -168,7 +168,6 @@ public class UserController {
 
     @RequestMapping("/deleteUserById")
     public Map delete(Integer userId){
-        System.out.println(userId);
         boolean isOk = userBiz.deleteUserById(userId);
         Map map = new HashMap();
         if(isOk){

@@ -31,7 +31,6 @@ public class SearchController {
         List<Company> companyList = companyBiz.getCompanyList();
         List<Department> departments = new ArrayList<>();
         List<Company> companies = new ArrayList<>();
-        System.out.println( query);
 
         if("部门".contains(query))
         {

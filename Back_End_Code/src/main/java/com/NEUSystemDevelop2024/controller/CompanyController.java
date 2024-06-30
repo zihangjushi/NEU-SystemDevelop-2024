@@ -29,7 +29,6 @@ public class CompanyController {
 
     @RequestMapping("/searchByCompanyId")
     public Map searchCompanyByCompanyId(Integer companyId){
-        System.out.println(companyId);
         Company company = companyBiz.searchByCompanyId(companyId);
         List<Company> list = new ArrayList<>();
         list.add(company);
