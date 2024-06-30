@@ -31,9 +31,30 @@ const routes = [
     component: () => import('../views/LoginView.vue')
   },
   {
+    path: '/meeting',
+    name: 'meeting',
+    component: () => import('../views/MeetingManage.vue')
+  },
+  {
+    path: '/meetingAdd',
+    name: 'meetingAdd',
+    component: () => import('../views/MeetingAdd.vue')
+  },
+  {
+    path: '/meetingEdit/:meetingId',
+    name: 'meetingEdit',
+    component: () => import('../views/MeetingEdit.vue'),
+    props: true
+  },
+  {
     path: '/userCenter',
     name: 'userCenter',
     component: () => import('../views/UserCenter.vue')
+  },
+  {
+    path: '/homepage',
+    name: 'homepage',
+    component: () => import('../views/HomePage.vue')
   },
 ]
 
