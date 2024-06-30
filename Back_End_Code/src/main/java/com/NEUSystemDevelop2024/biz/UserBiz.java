@@ -28,11 +28,12 @@ public class UserBiz {
         return user;
     }
 
-    public boolean addUser(User user)
-    {
-        return mapper.insertUser(user) >0;
-    }
     public boolean deleteUserById(Integer userId){
         return mapper.deleteUserById(userId) >0;
+    }
+
+
+    public void addUser(User user) {
+        mapper.insertUser(user);
     }
 }
