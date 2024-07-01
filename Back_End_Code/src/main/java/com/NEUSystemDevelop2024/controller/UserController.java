@@ -95,6 +95,7 @@ public class UserController {
     @RequestMapping("/list")
     public Map list()
     {
+        System.out.println("nihao");
         List<User> userList = userBiz.getUserList();
         Map map = new HashMap();
         map.put("isOk", true);
