@@ -25,7 +25,9 @@
             <template #title><el-icon>
                 <Menu />
               </el-icon>管理</template>
-
+            <el-menu-item @click="routeToCompanyManage"><el-icon>
+                <OfficeBuilding />
+              </el-icon>租户管理</el-menu-item>
             <el-sub-menu>
               <template #title>
                 <el-icon>
@@ -33,12 +35,11 @@
                 </el-icon>
                 <span>用户管理</span>
               </template>
-              <el-menu-item @click="routeToCompanyManage">
-                租户管理
-              </el-menu-item>
+
               <el-input v-model="searchQuery" style="width: 160px" placeholder="输入以搜索" clearable @input="searchMenu" />
               <el-sub-menu v-for="(company, index) in filteredCompanyList" :key="company.companyId" class="left-align"
                 :index="'3-1-' + (index + 1)">
+
                 <template #title>
                   {{ company.companyName }}
                 </template>
@@ -170,89 +171,89 @@
         </div>
 
         <!-- //用户添加的表单 -->
-        <el-dialog v-model="dialogVisible" title="添加用户" :close-on-click-modal="true" style="height: 650px">
-          <el-form ref="form" :model="addForm" :rules="rules" label-width="150px">
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
-                <el-form-item label="用户昵称" prop="userName" size="large" style="height: 60px">
+        <el-dialog v-model="dialogVisible" title="添加用户" :close-on-click-modal="true" style="height: 700px">
+          <el-form ref="form" :model="addForm" :rules="rules" label-width="150px" label-position="top">
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
+                <el-form-item label="用户昵称" prop="userName" size="large" style="height: 60px" required="true">
                   <el-input id="userName" type="text" v-model="addForm.userName" placeholder="请输入用户昵称"
-                    style="width: 300px;height: 40px" />
+                    style="width: 270px;height: 40px" />
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
-                <el-form-item label="归属部门" prop="department" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.department" :options="departmentOptions" placeholder="请选择部门"
-                    clearable />
+              <el-col :span="10" class="form-col">
+                <el-form-item label="用户性别" prop="gender" size="large" style="height: 60px">
+                  <el-cascader v-model="addForm.gender" :options="genderOptions" placeholder="请选择用户性别" clearable style="width: 270px"/>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
+                <el-form-item label="用户名称" prop="realName" size="large" style="height: 60px" required="true">
+                  <el-input id="realName" type="text" v-model="addForm.realName" placeholder="请输入用户名称"
+                    style="width: 270px;height: 40px" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="10" class="form-col">
+                <el-form-item label="用户密码" prop="password" size="large" style="height: 60px" required="true">
+                  <el-input id="password" type="text" v-model="addForm.password" placeholder="请输入密码"
+                    style="width: 270px;height: 40px" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
                 <el-form-item label="手机号码" prop="phoneNumber" size="large" style="height: 60px">
                   <el-input id="phoneNumber" type="text" v-model="addForm.phoneNumber" placeholder="请输入手机号码"
-                    style="width: 200px;height: 40px" />
+                    style="width: 270px;height: 40px" />
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="10" class="form-col">
                 <el-form-item label="邮箱" prop="email" size="large" style="height: 60px">
                   <el-input id="email" type="text" v-model="addForm.email" placeholder="请输入邮箱"
-                    style="width: 200px;height: 40px" />
+                    style="width: 270px;height: 40px" />
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
-                <el-form-item label="用户名称" prop="realName" size="large" style="height: 60px">
-                  <el-input id="realName" type="text" v-model="addForm.realName" placeholder="请输入用户名称"
-                    style="width: 200px;height: 40px" />
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
+                <el-form-item label="公司名称" prop="company" size="large" style="height: 60px">
+                  <el-cascader v-model="addForm.companyId" :options="transformedCompanyOptions" placeholder="请选择公司"
+                  clearable style="width:270px" />
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
-                <el-form-item label="用户密码" prop="password" size="large" style="height: 60px">
-                  <el-input id="password" type="text" v-model="addForm.password" placeholder="请输入密码"
-                    style="width: 200px;height: 40px" />
+              <el-col :span="10" class="form-col">
+                <el-form-item label="归属部门" prop="department" size="large" style="height: 60px">
+                  <el-cascader v-model="addForm.department" :options="transformedDepartmentOptions" placeholder="请选择部门"
+                    clearable style="width:270px" />
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
-                <el-form-item label="用户性别" prop="gender" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.gender" :options="genderOptions" placeholder="请选择用户性别" clearable />
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
+                <el-form-item label="岗位" prop="career" size="large" style="height: 60px">
+                  <el-cascader v-model="addForm.career" :options="careerOptions" placeholder="请选择岗位" clearable style="width:270px" />
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="10" class="form-col">
+                <el-form-item label="角色" prop="role" size="large" style="height: 60px">
+                  <el-cascader v-model="addForm.role" :options="roleOptions" placeholder="请选择权限" clearable style="width:270px" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
                 <el-form-item label="状态" prop="enabled" size="large" style="height: 60px">
                   <div class="mb-2 flex items-center text-sm">
                     <el-radio-group v-model="addForm.enabled" class="ml-4">
-                      <el-radio value="1" size="large">Option 1</el-radio>
-                      <el-radio value="2" size="large">Option 2</el-radio>
+                      <el-radio value="1" size="large">在岗</el-radio>
+                      <el-radio value="2" size="large">休假</el-radio>
                     </el-radio-group>
                   </div>
                 </el-form-item>
               </el-col>
-            </el-row>
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
-                <el-form-item label="岗位" prop="career" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.career" :options="careerOptions" placeholder="请选择岗位" clearable />
-                </el-form-item>
-              </el-col>
-              <el-col :span="10">
-                <el-form-item label="角色" prop="role" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.role" :options="roleOptions" placeholder="请选择权限" clearable />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
-                <el-form-item label="公司名称" prop="company" size="large" style="height: 60px">
-                  <el-input id="company" type="text" v-model="addForm.companyId" placeholder="请输入公司"
-                    style="width: 200px;height: 40px" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="10">
+              <el-col :span="10" class="form-col">
                 <el-form-item label="描述" prop="description" size="large" style="height: 60px">
-                  <el-input v-model="addForm.description" style="width: 200px; height: 60px" :rows="2" type="textarea"
+                  <el-input v-model="addForm.description" style="width: 300px; height: 50px" :rows="2" type="textarea"
                     placeholder="Please input" />
                 </el-form-item>
               </el-col>
@@ -352,7 +353,7 @@
 </template>
 
 <script>
-import { onMounted, ref, watch, reactive, computed } from 'vue';
+import { onMounted, ref, watch,computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { Management, UserFilled } from "@element-plus/icons-vue";
@@ -438,7 +439,7 @@ export default {
     //对话框相关属性
     const dialogVisible = ref(false);
     const updateDialogVisible = ref(false);
-    const addForm = reactive({
+    const addForm = ref({
       companyId: '',
       userName: '',
       department: '',
@@ -452,6 +453,24 @@ export default {
       role: '',
       description: ''
     })
+
+    // 公司格式转换属性
+    const transformedCompanyOptions = computed(() => {
+      return companyList.value.map(company => ({
+        value: company.companyId,
+        label: company.companyName
+      }));
+    });
+
+    const departmentOptions = ref([])
+
+    const transformedDepartmentOptions = computed(() => {
+      return JSON.parse(JSON.stringify(departmentOptions.value)).map(department => ({
+        value: department.departmentId,
+        label: department.departmentName
+      }));
+    });
+
     const genderOptions = [{
       value: 0,
       label: "男"
@@ -481,28 +500,15 @@ export default {
     }, {
       value: 'user',
       label: '普通用户'
-      }]
-    const departmentOptions = [{
-      value: '1',
-      label:'研发部门'
-    },{
-      value: '2',
-      label:'市场部门'
-    },{
-      value: '3',
-      label:'测试部门'
-    },{
-      value: '4',
-      label:'财务部门'
-    },{
-      value: '5',
-      label:'运维部门'
-    },]
+    }]
+    
     // const addRules = reactive({
     //   name: [{ required: true, message: 'Please input name', trigger: 'blur' }],
     //   age: [{ required: true, message: 'Please input age', trigger: 'blur' }],
     //   sex: [{ required: true, message: 'Please select sex', trigger: 'change' }]
     // });
+
+    
 
     //勾选框相关方法
     const toggleSelection = (rows) => {
@@ -525,7 +531,7 @@ export default {
     }
 
     const clearForm = () => {
-      console.log("role", addForm.role)
+      console.log("addForm", addForm.value)
     }
 
     // const addUser = () => {
@@ -541,12 +547,12 @@ export default {
     // }
 
     const confirmDelete = () => {
-      
+
     }
 
     //重置按钮
     const handle = () => {
-      console.log(totalPages.value)
+      console.log(addForm.value)
     }
 
     // 修改按钮
@@ -603,6 +609,7 @@ export default {
 
     //分页选择显示方法
     const searchUserDataByPage = page => {
+      console.log(filteredUserTable.value.slice((page - 1) * 10, (10 * page)))
       pagedUserTable.value = filteredUserTable.value.slice((page - 1) * 10, (10 * page));
     }
 
@@ -612,6 +619,7 @@ export default {
       if (!inputUserName.value && !inputPhoneNumber.value && !inputCreateDate.value && !enabled.value) {
         // 如果都为空，则重置 filteredUserTable 为 userTable 的值
         filteredUserTable.value = userTable.value;
+        searchUserDataByPage(currentPage.value)
       } else {
         // 否则，根据输入的条件进行过滤
         filteredUserTable.value = userTable.value.filter(user => {
@@ -622,6 +630,7 @@ export default {
             (!enabled.value || (user.enabled && user.enabled === enabled.value))
           );
         });
+        searchUserDataByPage(currentPage.value)
       }
     }
 
@@ -729,6 +738,7 @@ export default {
               console.log("表格用户数据读取成功")
               userTable.value = response.data.users;
               filteredUserTable.value = userTable.value;
+              searchUserDataByPage(currentPage.value)
             } else {
               console.error('表格用户数据读取失败', response);
             }
@@ -748,6 +758,7 @@ export default {
               console.log("表格用户数据读取成功")
               userTable.value = response.data.users;
               filteredUserTable.value = userTable.value;
+              searchUserDataByPage(currentPage.value)
             } else {
               console.error('表格用户数据读取失败', response);
             }
@@ -760,6 +771,15 @@ export default {
       searchUserDataByPage(newPage)
     });
 
+    watch(addForm.value, (newVal) => {
+      let i = JSON.parse(JSON.stringify(newVal.companyId))[0]
+      console.log("i", i)
+      departmentOptions.value = getDepartmentsByCompany(i) 
+      console.log("departmentOptions", JSON.parse(JSON.stringify(departmentOptions.value)))
+      console.log("transformedDepartmentOptions", transformedDepartmentOptions)
+      console.log("companyList",companyList.value)
+    })
+
     //钩子函数，在浏览器渲染页面时执行
     onMounted(async () => {
       await Promise.all([
@@ -767,8 +787,7 @@ export default {
         initCompanyList(),
         initDepartmentList(),
         initUserTable(),
-      ]),
-        setTimeout(searchUserDataByPage(currentPage.value), 1000)
+      ])
     });
 
     // setup的返回值
@@ -801,10 +820,13 @@ export default {
       dialogVisible,
       updateDialogVisible,
       addForm,
+      transformedCompanyOptions,
+      departmentOptions,
+      transformedDepartmentOptions,
       genderOptions,
       roleOptions,
       careerOptions,
-      departmentOptions,
+      
 
       handle,
       menuControlVisable,
@@ -875,6 +897,17 @@ export default {
   /* 更改文字颜色 */
   text-align: center;
   /* 居中对齐 */
+}
+
+.form-row {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center;   /* 垂直居中 */
+}
+
+.form-col {
+  display: flex;
+  justify-content: center; /* 水平居中 */
 }
 
 html,
