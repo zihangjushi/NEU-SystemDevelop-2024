@@ -57,20 +57,21 @@ public class CourseController {
     @PostMapping("/search")
     public Map search(@RequestBody Course course, HttpSession session) {
 //        User user = (User) session.getAttribute("user");
-        if(course.getCourseName() == null) {
+        if(course.getCourseName() == null || course.getCourseName().equals("null") || course.getCourseName().equals("")) {
             course.setCourseName("");
         }
-        if(course.getCourseOrder() == null) {
+        if(course.getCourseOrder() == null || course.getCourseOrder().equals("null") || course.getCourseOrder().equals("")) {
             course.setCourseOrder("");
         }
-        if(course.getAuthor() == null) {
+        if(course.getAuthor() == null || course.getAuthor().equals("null") || course.getAuthor().equals("")) {
             course.setAuthor("");
         }
-        if(course.getCreateTime() == null) {
+        if(course.getCreateTime() == null || course.getCreateTime().equals("null") || course.getCreateTime().equals("")) {
             course.setCreateTime(new Timestamp(0));
         }
         if(course.getModifyTime() == null) {
-            course.setModifyTime(new Timestamp(Long.MAX_VALUE));
+            long val = course.getCreateTime().getTime();
+            course.setModifyTime(new Timestamp(val));
         }
         System.out.println(course);
         List<Course> courseList = courseBiz.getCourseListBySearch(course);

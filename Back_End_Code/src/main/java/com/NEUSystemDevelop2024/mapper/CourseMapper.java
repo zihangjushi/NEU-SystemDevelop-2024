@@ -15,6 +15,6 @@ public interface CourseMapper {
     @Insert("insert into t_course values(DEFAULT, #{courseName}, #{companyName}, #{description}, #{courseOrder}, #{author}, DEFAULT, DEFAULT, #{imageUrl}, #{videoUrl})")
     int insertCourse(Course course);
 
-    @Select("select * from t_course where courseName LIKE CONCAT('%', #{courseName}, '%') OR courseOrder LIKE CONCAT('%', #{courseOrder}, '%') OR author LIKE CONCAT('%', #{author}, '%') OR (createTime BETWEEN #{createTime} AND #{modifyTime})")
+    @Select("select * from t_course where (courseName LIKE CONCAT('%', #{courseName}, '%') OR #{courseName} = '') AND (courseOrder LIKE CONCAT('%', #{courseOrder}, '%') OR #{courseOrder} = '') AND (author LIKE CONCAT('%', #{author}, '%') OR #{author} = '') AND (createTime BETWEEN #{createTime} AND #{modifyTime})")
     List<Course> listCourseBySearch(Course course);
 }
