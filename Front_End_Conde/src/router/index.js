@@ -56,6 +56,17 @@ const routes = [
     name: 'homepage',
     component: () => import('../views/HomePage.vue')
   },
+  {
+    path: '/news',
+    name: 'news',
+    component: () => import('../views/NewsManage.vue')
+  },
+  
+  {
+    path: '/mynews',
+    name: 'mynews',
+    component: () => import('../views/AdminNewsManage.vue')
+  },
 ]
 
 const router = createRouter({
