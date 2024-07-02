@@ -1,173 +1,201 @@
 <template>
-  <div class="register-background">
-    <div class="register-container" style="margin-top: 40px">
-      <h3 style="font-size: 30px;">用户注册</h3>
-      <!-- 注册表单 -->
-
-      <el-form :model="registerForm" :rules="rules" ref="registerFormRef" class="register-form">
-        <el-form-item label="企业名称" prop="username">
-          <el-input v-model="registerForm.username" placeholder="请输入企业名称"></el-input>
-        </el-form-item>
-
-        <el-form-item label="联系方式" prop="tel">
-          <el-input v-model="registerForm.tel" placeholder="请输入企业联系方式"></el-input>
-        </el-form-item>
-
-        <el-form-item label="设置密码" prop="password">
-          <el-input type="password" v-model="registerForm.password" placeholder="请输入密码"></el-input>
-        </el-form-item>
-
-        <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input type="password" v-model="registerForm.confirmPassword" placeholder="请确认密码"></el-input>
-        </el-form-item>
-
-        <el-form-item label="验证码" prop="code">
-
-        </el-form-item>
-        <div class="code-input-container" style="margin-top: 30px;">
-          <el-input v-model="registerForm.code" placeholder="请输入验证码" class="captcha-input" style="margin-top: -30px;"></el-input>
-          <img :src="captchaUrl" class="captcha-img"  @click="refreshCaptcha" />
+  <div class="register-container">
+    <div class="register">
+      <h1>欢迎注册测盟汇系统</h1>
+      <div class="form-row">
+        <div class="form-column">
+          <label for="newCompanyName">公司名</label>
+          <input id="newCompanyName" v-model="newCompanyName" type="text" />
+          <span v-if="errors.newCompanyName">{{ errors.newCompanyName }}</span>
         </div>
-
-        <el-form-item>
-          <el-button type="primary" @click="submitForm" style="margin-top: 20px; margin-left: 110px;">注册</el-button>
-          <el-button @click="back" style="margin-top: 20px;">返回</el-button>
-        </el-form-item>
-      </el-form>
+        <div class="form-column">
+          <label for="contactName">联系人姓名</label>
+          <input id="contactName" v-model="contactName" type="text" />
+          <span v-if="errors.contactName">{{ errors.contactName }}</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-column">
+          <label for="contactPhone">联系电话</label>
+          <input id="contactPhone" v-model="contactPhone" type="text" pattern="\d*" />
+          <span v-if="errors.contactPhone">{{ errors.contactPhone }}</span>
+        </div>
+        <div class="form-column">
+          <label for="description">公司简介</label>
+          <input id="description" v-model="description" type="text" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-column">
+          <label for="realname">用户姓名</label>
+          <input id="realname" v-model="realname" type="text" />
+          <span v-if="errors.realname">{{ errors.realname }}</span>
+        </div>
+        <div class="form-column">
+          <label for="usernum">用户账号</label>
+          <input id="usernum" v-model="usernum" type="text" pattern="\d*" />
+          <span v-if="errors.usernum">{{ errors.usernum }}</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-column">
+          <label for="password">用户密码</label>
+          <input id="password" v-model="password" type="password" />
+          <span v-if="errors.password">{{ errors.password }}</span>
+        </div>
+        <div class="form-column">
+          <label for="email">用户邮箱</label>
+          <input id="email" v-model="email" type="text" />
+          <span v-if="errors.email">{{ errors.email }}</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-column">
+          <label for="gender">性别</label>
+          <select id="gender" v-model="gender">
+            <option value="0">男</option>
+            <option value="1">女</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <button @click="register">注册</button>
+        <button @click="redirectToLogin">返回登录页面</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
-import { ElForm, ElFormItem, ElInput, ElButton, ElMessage } from 'element-plus';
+import axios from 'axios';
 
 export default defineComponent({
-  components: {
-    ElForm,
-    ElFormItem,
-    ElInput,
-    ElButton
-  },
+  name: 'UserRegister',
   data() {
     return {
-      registerForm: {
-        username: '',
-        tel: '',
-        password: '',
-        confirmPassword: '',
-        code: ''
-      },
-      rules: {
-        username: [
-          { required: true, message: '请输入企业名称', trigger: 'blur' },
-          { min: 5, max: 14, message: '长度在 5 到 14 个字符', trigger: 'blur' }
-        ],
-        tel: [
-          { required: true, message: '请输入企业联系方式', trigger: 'blur' },
-          { min: 5, max: 14, message: '长度在 5 到 14 个字符', trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, message: '密码长度要大于6', trigger: 'blur' }
-        ],
-        confirmPassword: [
-          { required: true, message: '请再次输入密码', trigger: 'blur' },
-          {
-            validator: (rule, value, callback) => {
-              if (value !== this.registerForm.password) {
-                callback(new Error('两次输入的密码不一致'));
-              } else {
-                callback();
-              }
-            },
-            trigger: 'blur'
-          }
-        ],
-        code: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
-      },
-      captchaUrl: require('@/assets/captcha.png') // 初始化验证码图片
+      description: '',
+      companies: [],
+      companyName: '',
+      newCompanyName: '',
+      contactName: '',
+      contactPhone: '',
+      realname: '',
+      usernum: '',
+      password: '',
+      email: '',
+	gender:'0',
+      errors: {}
     };
   },
   methods: {
-    refreshCaptcha() {
-      // 刷新验证码图片的逻辑
-      // 示例：假设重新生成一个随机数作为验证码
-      this.captchaUrl = require('@/assets/captcha.png'); // 替换成新的验证码地址或重新生成验证码的方法
+
+    validateForm() {
+      this.errors = {};
+      if (this.companyOption === 'new') {
+        if (!this.newCompanyName) this.errors.newCompanyName = '公司名不能为空';
+        if (!this.contactName) this.errors.contactName = '联系人姓名不能为空';
+        if (!this.contactPhone) {
+          this.errors.contactPhone = '联系电话不能为空';
+        } else if (!/^\d+$/.test(this.contactPhone)) {
+          this.errors.contactPhone = '联系电话只能包含数字';
+        }
+      }
+      if (!this.realname) this.errors.realname = '用户名不能为空';
+      if (!this.usernum) {
+        this.errors.usernum = '用户账号不能为空';
+      } else if (!/^\d+$/.test(this.usernum)) {
+        this.errors.usernum = '用户账号只能包含数字';
+      }
+      if (!this.password) this.errors.password = '用户密码不能为空';
+
+      return Object.keys(this.errors).length === 0;
     },
-    submitForm() {
-      // Verify if $refs.registerFormRef is defined before accessing it
-      if (this.$refs.registerFormRef) {
-        this.$refs.registerFormRef.validate((valid) => {
-          if (valid && this.registerForm.code === 'yhuv') {
-            this.handleSuccess();
-          } else {
-            this.handleError();
-          }
-        });
-      } else {
-        console.error('Form reference is undefined.');
+    register() {
+      if (this.validateForm()) {
+        const userData = {
+          realname: this.realname,
+          usernum: this.usernum,
+          password: this.password,
+          description: this.description,
+          gender: this.gender,
+          newCompanyName: this.newCompanyName,
+          contactName: this.contactName,
+          contactPhone: this.contactPhone,
+          email: this.email,
+        };
+
+        axios.post('http://localhost:8070/user/register', userData, { withCredentials: true })
+          .then(response => {
+            if (response.data.isOk) {
+              alert('注册成功');
+              this.$router.push('/');
+            } else {
+              alert('注册失败');
+            }
+          })
+          .catch(error => {
+            console.error('注册失败', error);
+            alert('注册失败');
+          });
       }
     },
-    handleSuccess() {
-      console.log('注册表单提交成功:', this.registerForm);
-      // 注册成功后跳转到登录页面
-      this.$router.push('/login');
-      ElMessage({
-        showClose: true,
-        message: '注册成功！',
-        type: 'success'
-      });
-    },
-    handleError() {
-      console.error('注册信息有误，请检查并重新填写！');
-      ElMessage.error('注册信息有误，请检查并重新填写！');
-    },
-    back() {
-      // 返回到登录页面
-      this.$router.push('/login');
+    redirectToLogin() {
+      this.$router.push('/');
     }
+  },
+  mounted() {
+
   }
 });
 </script>
 
 <style scoped>
 .register-container {
-  width: 350px;
-  margin: auto;
-  margin-top: 180px;
-  padding: 15px 35px;
-  background-color: aliceblue;
-  border: 1px solid blue;
-  border-radius: 15px;
-  box-shadow: 0 0 25px #000000;
-}
-
-.code-input-container {
   display: flex;
+  justify-content: center;
   align-items: center;
-}
-
-.register-background {
-  width: 100vw;
   height: 100vh;
-  background-image: url("../assets/background.png");
-  background-size: 100%;
-  overflow: hidden;
+  background-image: url('@/image/background2.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.captcha-img {
-  width: 80px;
-  height: 30px;
-  cursor: pointer;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  margin-left: 10px;
-  margin-top: -30px;
+.register {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 50px;
+  border-radius: 10px;
+  text-align: center;
+  width: 600px; /* 扩大宽度以适应两列布局 */
 }
 
-.captcha-input {
-  flex-grow: 1; /* 让输入框充满剩余空间 */
-  margin-right: 10px; /* 调整输入框与验证码图片的间距 */
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-column {
+  flex: 0 0 48%; /* 确保每列占据48%的宽度，留出空间间隔 */
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+input, select, button {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+span {
+  color: red;
+  font-size: 12px;
 }
 </style>
