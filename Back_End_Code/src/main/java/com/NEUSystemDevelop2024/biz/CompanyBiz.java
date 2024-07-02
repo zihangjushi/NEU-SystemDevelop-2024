@@ -28,4 +28,8 @@ public class CompanyBiz {
     public void addCompany(Company company) {
         companyMapper.insertCompany(company);
     }
+
+    public List<String> getCompanynameList(){
+        return companyMapper.selectAllCompanyname();
+    }
 }

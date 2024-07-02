@@ -298,11 +298,13 @@
 
 
 
+			const companylist = ref([]);
 			const companies = ref([]);
 
 			const fetchCompanies = async () => {
 				try {
-					const response = await axios.get('http://localhost:8070/company/list');
+					const response = await axios.get('http://localhost:8070/company/getcompanynames');
+					companylist.value = response.data.companies;
 					companies.value = response.data.companies;
 					console.log(companies.value);
 				} catch (error) {

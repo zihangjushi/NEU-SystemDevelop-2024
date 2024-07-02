@@ -39,4 +39,15 @@ public class CompanyController {
         map.put("msg","查询成功");
         return map;
     }
+
+    @RequestMapping("/getcompanynames")
+    public Map<String, Object> getCompanyNames() {
+        List<String> companies = companyBiz.getCompanynameList();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("isOk", true);
+        map.put("companies", companies);
+
+        return map;
+    }
 }

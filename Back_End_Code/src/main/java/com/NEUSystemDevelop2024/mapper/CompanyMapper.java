@@ -22,4 +22,9 @@ public interface CompanyMapper {
     @Insert("INSERT INTO t_company (contactName, companyName, phoneNumber, adminName, state, createTime, description) " +
             "VALUES (#{contactName}, #{companyName}, #{phoneNumber}, #{adminName}, #{state}, #{createTime}, #{description})")
     void insertCompany(Company company);
+
+
+    @Select("SELECT companyName FROM t_company")
+    List<String> selectAllCompanyname();
+
 }
