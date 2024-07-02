@@ -10,7 +10,7 @@
             </template>
           </el-menu-item>
 
-          <el-menu-item index="2">
+          <el-menu-item index="2" >
             <template #title>
               <el-icon>
                 <HomeFilled/>
@@ -209,9 +209,9 @@ export default {
     });
 
     const routeToNewsManage = () => {
-					if (loginUser.value === 'admin') {
+					if (loginUser.value.role === 'admin') {
 						router.push('/mynews');
-					} else if (loginUser.value === 'root') {
+					} else if (loginUser.value.role === 'root') {
 						router.push('/news');
 					} else {
 						alert('无权访问该页面');

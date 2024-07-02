@@ -103,7 +103,7 @@
 
 		<el-container style="height: 100vh; border: 1px solid #eee">
 			<el-aside class="menu-with-shadow" width="200px" style="color: rgb(255,255,255)">
-				<el-menu :default-openeds="['3']" :default-active="'3-3'">
+				<el-menu :default-openeds="['3']" :default-active="'3-4'">
 					<el-menu-item index="1">
 						<template #title>
 							<img src="@/assets/logo1.png" style="width: 40px; height: 40px; margin-right: 5px;">
@@ -111,7 +111,7 @@
 						</template>
 					</el-menu-item>
 
-					<el-menu-item index="2">
+					<el-menu-item index="2" @click="navigateTo('/')">
 						<template #title>
 							<el-icon>
 								<HomeFilled />

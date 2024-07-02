@@ -13,7 +13,7 @@
                     </template>
                 </el-menu-item>
                 <!-- //序号为2的菜单栏，用来显示标题（首页） -->
-                <el-menu-item index="2">
+                <el-menu-item index="2" @click="navigateTo('/')">
                     <template #title>
                         <el-icon>
                             <HomeFilled />
@@ -593,12 +593,12 @@ setup() {
 
 
     const routeToNewsManage = () => {
-					if (loginUser.value === 'admin') {
+					if (loginUser.value.role === 'admin') {
 						router.push('/mynews');
-					} else if (loginUser.value === 'root') {
+					} else if (loginUser.value.role === 'root') {
 						router.push('/news');
 					} else {
-						ElMessage.error('无权访问该页面');
+						alert('无权访问该页面');
 					}
     };
 

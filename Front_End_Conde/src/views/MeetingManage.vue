@@ -10,7 +10,7 @@
             </template>
           </el-menu-item>
 
-          <el-menu-item index="2">
+          <el-menu-item index="2" @click="navigateTo('/')">
             <template #title>
               <el-icon>
                 <HomeFilled/>
@@ -39,7 +39,7 @@
                 </el-icon>
                 部门管理
               </el-menu-item>
-              <el-menu-item index="3-3">
+              <el-menu-item index="3-3" @click="routeToNewsManage">
                 <el-icon>
                   <Orange/>
                 </el-icon>
@@ -515,6 +515,16 @@ export default {
       return `default.jpg`; // 默认图片路径
     };
 
+    const routeToNewsManage = () => {
+					if (loginUser.value.role === 'admin') {
+						router.push('/mynews');
+					} else if (loginUser.value.role === 'root') {
+						router.push('/news');
+					} else {
+						alert('无权访问该页面');
+					}
+    };
+
     const exportMeetings = () => {
       // 获取要导出的数据
       const exportData = tableData.value.map(meeting => ({
@@ -685,6 +695,7 @@ export default {
       userInfo,
       store,
       loginUser,
+	routeToNewsManage,
     };
   },
 };
