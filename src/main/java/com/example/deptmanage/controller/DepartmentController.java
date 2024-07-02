@@ -14,14 +14,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/dept")
-@CrossOrigin(originPatterns = "http://localhost:8081")
+//@CrossOrigin(originPatterns = "http://localhost:8081")
 
 public class DepartmentController {
     @Autowired
     private DepartmentBiz departmentBiz;
+    @Autowired
     private CompanyBiz companyBiz;
     @RequestMapping("/deptlist")
     public Map listDepartment(){
+        System.out.println("进来了");
         List<Department> list = departmentBiz.getDepartmentList();
         Map map = new HashMap();
         map.put("isOk",true);
@@ -38,10 +40,14 @@ public class DepartmentController {
         return map;
     }
     @RequestMapping("/searchByCompanyId")
-    public Map searchByCompanyId(int id){
-        System.out.println(id);
-        List<Department> deptlist = departmentBiz.searchByCompanyId(id);
+    public Map searchByCompanyId(Integer companyId){
+        System.out.println(companyId);
         Map map = new HashMap();
+        if(companyId == null){
+            map.put("isOk", false);
+            return map;
+        }
+        List<Department> deptlist = departmentBiz.searchByCompanyId(companyId);
         if(deptlist.size() == 0){
             map.put("isOk", false);
         }
