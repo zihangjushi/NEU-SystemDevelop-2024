@@ -11,7 +11,7 @@
 				<!-- 点击按钮上传图片 -->
 				<el-form-item label="上传图片" prop="imageUrl">
 					<input type="file" @change="handleFileChange" ref="fileInput" />
-					<!-- <button type="button" @click="handleSubmit">上传</button> -->
+					<button type="button" @click="handleSubmit">上传</button>
 					<img v-if="previewImageUrl" :src="previewImageUrl" class="avatar"
 						style="width: 100px; height: 100px; margin-top: 10px;">
 					<i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -65,11 +65,8 @@
 					<el-input id="summary" type="text" v-model="summary" placeholder="请输入新闻简介"
 						style="width: 500px;height: 31px" />
 				</el-form-item>
-				<el-form-item label="选择租户" prop="tenant">
-					<el-select id="tenant" v-model="tenant" placeholder="请选择租户">
-						<el-option v-for="company in companies" :key="company"
-							:value="company">{{ company }}</el-option>
-					</el-select>
+				<el-form-item label="当前租户" prop="tenant">
+					<span>{{ tenant }}</span>
 				</el-form-item>
 
 			</el-form>
@@ -103,7 +100,7 @@
 
 		<el-container style="height: 100vh; border: 1px solid #eee">
 			<el-aside class="menu-with-shadow" width="200px" style="color: rgb(255,255,255)">
-				<el-menu :default-openeds="['3']" :default-active="'3-4'">
+				<el-menu :default-openeds="['3']" :default-active="'3-3'">
 					<el-menu-item index="1">
 						<template #title>
 							<img src="@/assets/logo1.png" style="width: 40px; height: 40px; margin-right: 5px;">
@@ -125,18 +122,18 @@
 							</el-icon>管理</template>
 						<el-menu-item-group>
 							<el-menu-item index="3-1" @click="gotoCompanyManage"><el-icon>
-									<OfficeBuilding />
-								</el-icon>租户管理</el-menu-item>
+							<OfficeBuilding />
+							</el-icon>租户管理</el-menu-item>
 							<el-menu-item index="3-2" @click="gotoUserManage"><el-icon>
 									<UserFilled />
 								</el-icon>用户管理</el-menu-item>
 							<el-menu-item index="3-3"><el-icon>
 									<Management />
 								</el-icon>部门管理</el-menu-item>
-							<el-menu-item index="3-4"><el-icon>
+							<el-menu-item index="3-4" ><el-icon>
 									<Orange />
 								</el-icon>行业动态管理</el-menu-item>
-							<el-menu-item index="3-5"><el-icon>
+							<el-menu-item index="3-5" ><el-icon>
 									<List />
 								</el-icon>课程管理</el-menu-item>
 							<el-menu-item index="3-6" @click="gotoMeeting"><el-icon>
@@ -230,7 +227,7 @@
 				</el-main>
 				<div class="container" style="grid-template-rows: auto 1fr auto;margin-left: 500px">
 					<el-pagination background layout="prev, pager, next" :total="total" :page-size="10"
-						v-model:current-page="currentPage" class="pagination"
+						@current-change="handleCurrentChange" class="pagination"
 						style="grid-row: 3;margin-bottom: 10px"></el-pagination>
 				</div>
 			</el-container>
@@ -242,8 +239,7 @@
 	import Editor from 'primevue/editor';
 	import {
 		ref,
-		onMounted,
-		watch
+		onMounted
 	} from 'vue';
 	import {
 		useRouter
@@ -255,17 +251,13 @@
 	import axios from 'axios';
 	import dayjs from 'dayjs';
 	import {
-		ElMessage,
-		ElMessageBox
+		ElMessage,ElMessageBox
 	} from 'element-plus';
 	import {
 		saveAs
 	} from 'file-saver';
 	import * as XLSX from 'xlsx';
-	import {
-		useStore
-	} from 'vuex';
-
+    import { useStore } from 'vuex';
 	export default {
 		components: {
 			Management,
@@ -273,7 +265,7 @@
 			Editor
 		},
 		setup() {
-			const store = useStore();
+						const store = useStore();
 			const router = useRouter();
 			const isChange = ref(0);
 			// 响应式数据
@@ -291,20 +283,18 @@
 			const content = ref('');
 			const author = ref('');
 			const summary = ref('');
-			const tenant = ref('');
+			const tenant = ref('default');
 
 			const editId = ref('');
 
 
 
 
-			const companylist = ref([]);
 			const companies = ref([]);
 
 			const fetchCompanies = async () => {
 				try {
-					const response = await axios.get('http://localhost:8070/company/getcompanynames');
-					companylist.value = response.data.companies;
+					const response = await axios.get('http://localhost:8070/user/companies');
 					companies.value = response.data.companies;
 					console.log(companies.value);
 				} catch (error) {
@@ -330,6 +320,25 @@
 				reader.readAsDataURL(selectedFile.value);
 			};
 
+			const handleSubmit = () => {
+				if (selectedFile.value) {
+					const formData = new FormData();
+					formData.append('file', selectedFile.value);
+
+					axios.post('http://localhost:8070/upload', formData, {
+							headers: {
+								'Content-Type': 'multipart/form-data'
+							}
+						})
+						.then(response => {
+							imageUrl.value = response.data;
+						})
+						.catch(() => {
+							errorMessage.value = '图片上传失败';
+							errorDialogVisible.value = true;
+						});
+				}
+			};
 
 			// 表单验证规则
 			const rules = {
@@ -394,7 +403,6 @@
 				// 打开对话框
 				dialogVisible.value = true;
 
-				fetchCompanies();
 			};
 
 			const closeDialog = () => {
@@ -407,28 +415,40 @@
 			]);
 			const total = ref(1);
 			const isLoggedIn = ref(false);
-			const loginUser = ref('')
+			const loginUser = ref('');
 			onMounted(async () => {
 
-				loginUser.value = store.state.user
+loginUser.value = store.state.user;
 
 				try {
 
 
-					if (loginUser.value.role==='root') {
-
+					if (loginUser.value.role==='admin') {
+						
+								const response = await axios.get('http://localhost:8070/searchByCompanyId', {
+									params: {
+										companyId: loginUser.value.companyId
+									}
+								});
+								const companyList = response.data.company;
+						tenant.value = companyList[0].companyName;
 						isLoggedIn.value = true;
+						
 						try {
-							const response = await axios.get('http://localhost:8070/news/getnews', {
-								withCredentials: true
+							const response = await axios.get('http://localhost:8070/news/mynews', {
+								withCredentials: true,
+								params: {
+									companyName: tenant.value
+								}
 							});
-
+						
 							if (!response.data || !response.data.news) {
 								ElMessage.warning('用户未登录或未获取到数据');
 								return;
 							}
-
-							tableData.value = response.data.news;
+						
+							tableData.value = response.data.news; // 假设后端返回的数据是一个包含新闻信息的数组
+							//total.value=tableData.value.length;
 							updatePagedData(tableData.value);
 						} catch (error) {
 							console.error('获取新闻列表失败', error);
@@ -449,7 +469,12 @@
 			});
 
 			function refreshNewsList() {
-				axios.get('http://localhost:8070/news/getnews')
+				axios.get('http://localhost:8070/news/mynews', {
+						withCredentials: true,
+						params: {
+							companyName: tenant.value
+						}
+					})
 					.then(response => {
 						tableData.value = response.data.news; // 假设后端返回的数据是一个包含新闻信息的数组
 						updatePagedData(tableData.value); // 更新分页数据的函数，假设已定义
@@ -484,6 +509,7 @@
 			};
 
 
+const newsData = ref([]);
 
 			const handleEdit = async (row) => {
 				isChange.value = 1;
@@ -493,28 +519,28 @@
 						newsId: row.newsId
 					}
 				});
-				const newsData = response.data.editNew;
+
+				newsData.value= response.data.editNew;
+
+				title.value = newsData.value.title;
+				content.value = newsData.value.content;
+				author.value = newsData.value.author;
+				summary.value = newsData.value.introduction;
+				tenant.value = newsData.value.companyName;
 
 
-				title.value = newsData.title;
-				content.value = newsData.content;
-				author.value = newsData.author;
-				summary.value = newsData.introduction;
-				tenant.value = newsData.companyName;
+				if (newsData.value.image && newsData.value.image !== '') {
 
 
-				if (newsData.image && newsData.image !== '') {
-
-
-					previewImageUrl.value = newsData.image;
-					imageUrl.value = newsData.image;
+					previewImageUrl.value = newsData.value.image;
+					imageUrl.value = newsData.value.image;
 				}
 
 				openDialog();
 			};
 
 			const deleteNews = async () => {
-				// 批量删除
+				// 显示确认删除对话框
 				ElMessageBox.confirm(
 					'此操作将永久删除所选新闻，是否继续？',
 					'提示', {
@@ -545,7 +571,7 @@
 
 
 			const handleDelete = async (row) => {
-				// 单一删除
+				// 显示确认删除对话框
 				ElMessageBox.confirm(
 					'此操作将永久删除该新闻，是否继续？',
 					'提示', {
@@ -570,6 +596,12 @@
 					ElMessage.info('已取消删除');
 				});
 			};
+
+			const handleCurrentChange = (val) => {
+				console.log('Current page:', val);
+				currentPage.value = val;
+				updatePagedData(tableData.value);
+			};
 			const pagedTableData = ref([]);
 			const pageSize = 10;
 			const currentPage = ref(1); // 当前页码
@@ -579,17 +611,6 @@
 				total.value = data.length;
 			};
 
-			watch(currentPage => {
-				console.log(currentPage);
-				updatePagedData(tableData.value);
-			});
-
-			// const handleCurrentChange = (val) => {
-			// 	console.log('Current page:', val);
-			// 	currentPage.value = val;
-			// 	updatePagedData(tableData.value);
-			// };
-
 			const formatDate = (date) => {
 				return dayjs(date).format('YYYY-MM-DD');
 			};
@@ -597,31 +618,29 @@
 
 
 			const searchNews = () => {
-				if (!input1.value && !input2.value && !input3.value && !value1.value) {
-					ElMessage({
-						message: '请至少输入一个搜索条件',
-						type: 'warning'
-					});
-					return;
-				}
 
 				const filteredData = tableData.value.filter(item => {
-					const matchesTitle = input1.value ? item.title.toLowerCase().includes(input1.value
+					const matchesTitle = input1.value ? item.title.toLowerCase().includes(
+						input1.value
 						.toLowerCase()) : true;
-					const matchesAuthor = input2.value ? item.author.toLowerCase().includes(input2.value
+					const matchesAuthor = input2.value ? item.author.toLowerCase().includes(
+						input2.value
 						.toLowerCase()) : true;
-					const matchesIntroduction = input3.value ? item.introduction.toLowerCase().includes(input3
-						.value.toLowerCase()) : true;
+					const matchesIntroduction = input3.value ? item.introduction.toLowerCase()
+						.includes(input3
+							.value.toLowerCase()) : true;
+
 
 					const itemDate = item.createTime.split(' ')[0];
-					const matchesDate = value1.value ? formatDate(value1.value) === itemDate : true;
+					const matchesDate = value1.value ? formatDate(value1.value) === itemDate :
+						true;
+
+					console.log(value1.value);
 
 					return matchesTitle && matchesAuthor && matchesIntroduction && matchesDate;
 				});
 
 
-
-				// 更新分页数据
 				updatePagedData(filteredData);
 
 			};
@@ -682,18 +701,25 @@
 
 							refreshNewsList();
 
+
+							// 假设后端返回的新闻数据包含在 response.data 中
+							// 将新闻数据添加到 tableData 中
+							// tableData.value.push(response.data);
+
+							// 关闭对话框等其他操作可以在这里处理
 							dialogVisible.value = false;
-							// 显示成功提示框
+							// 显示成功提示框等
 							successMessage.value = '新增新闻成功';
 							successDialogVisible.value = true;
 						})
 						.catch(error => {
 							console.error('新增新闻失败', error);
 
-							// 显示错误提示框
+							// 显示错误提示框等
 							errorMessage.value = '新增新闻失败，请重试';
 							errorDialogVisible.value = true;
 						});
+
 
 				} else {
 					const requestData = {
@@ -710,15 +736,20 @@
 						.then(response => {
 							console.log('新增新闻成功', response.data);
 							refreshNewsList();
+							// 假设后端返回的新闻数据包含在 response.data 中
+							// 将新闻数据添加到 tableData 中
+							// tableData.value.push(response.data);
 
+							// 关闭对话框等其他操作可以在这里处理
 							dialogVisible.value = false;
-							// 显示成功提示框
+							// 显示成功提示框等
 							successMessage.value = '新增新闻成功';
 							successDialogVisible.value = true;
 						})
 						.catch(error => {
 							console.error('新增新闻失败', error);
-							// 显示错误提示框
+
+							// 显示错误提示框等
 							errorMessage.value = '新增新闻失败，请重试';
 							errorDialogVisible.value = true;
 						});
@@ -756,8 +787,14 @@
 
 							refreshNewsList();
 
+
+							// 假设后端返回的新闻数据包含在 response.data 中
+							// 将新闻数据添加到 tableData 中
+							// tableData.value.push(response.data);
+
+							// 关闭对话框等其他操作可以在这里处理
 							dialogVisible.value = false;
-							// 显示成功提示框
+							// 显示成功提示框等
 							successMessage.value = '修改新闻成功';
 							successDialogVisible.value = true;
 						})
@@ -853,20 +890,15 @@
 			const gotoCompanyManage = () => {
 				router.push('/CompanyManage');
 			};
-
-
+			
 			const gotoUserManage = () => {
 				router.push('/userManage');
 			};
-
+			
 			const gotoMeeting = () => {
 				router.push('/meeting');
 			};
-
-			const gotoAdminNewsManage = () => {
-				router.push('/mynews');
-			};
-
+			
 			const cancelUpload = () => {
 				selectedFile.value = null; // 清空已选择的文件
 				previewImageUrl.value = ''; // 清空预览图片 URL
@@ -893,6 +925,7 @@
 				handleSelectionChange,
 				handleEdit,
 				handleDelete,
+				handleCurrentChange,
 				searchNews,
 				resetSearch,
 				addNews,
@@ -906,6 +939,7 @@
 				closeDialog,
 				handleUploadClick,
 				handleFileChange,
+				handleSubmit,
 				previewImageUrl,
 				cancelUpload,
 				fetchCompanies,
@@ -925,11 +959,10 @@
 				total,
 				isChange,
 				handleAdd,
-				gotoAdminNewsManage,
+				isLoggedIn,
 				gotoCompanyManage,
 				gotoUserManage,
 				gotoMeeting,
-				loginUser,
 				store,
 			};
 		},

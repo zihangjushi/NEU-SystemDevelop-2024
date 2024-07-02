@@ -22,4 +22,28 @@ public class UserBiz {
         else return null;
     }
     public List<User> getUserList(){ return mapper.listUsers();}
+
+    public User seekUserByUserName(String userName){
+        User user = mapper.seekUserByUserName(userName);
+        return user;
+    }
+
+    public boolean deleteUserById(Integer userId){
+        return mapper.deleteUserById(userId) >0;
+    }
+
+
+    public boolean addUser(User user) {
+        return mapper.insertUser(user) > 0;
+    }
+
+    public boolean addUserByPage(User user){
+        System.out.println("添加成功");
+        return  mapper.insertUserByPage(user) > 0;
+    }
+
+    public boolean updateUserByPage(User user){
+        System.out.println("修改成功");
+        return mapper.updateUserByPage(user) > 0;
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,29 @@ public class CompanyController {
         map.put("isOk",true);
         map.put("companies",companyList);
         map.put("msg","查询成功");
+        return map;
+    }
+
+    @RequestMapping("/searchByCompanyId")
+    public Map searchCompanyByCompanyId(Integer companyId){
+        Company company = companyBiz.searchByCompanyId(companyId);
+        List<Company> list = new ArrayList<>();
+        list.add(company);
+        Map map = new HashMap();
+        map.put("isOk",true);
+        map.put("company",list);
+        map.put("msg","查询成功");
+        return map;
+    }
+
+    @RequestMapping("/getcompanynames")
+    public Map<String, Object> getCompanyNames() {
+        List<String> companies = companyBiz.getCompanynameList();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("isOk", true);
+        map.put("companies", companies);
+
         return map;
     }
 }

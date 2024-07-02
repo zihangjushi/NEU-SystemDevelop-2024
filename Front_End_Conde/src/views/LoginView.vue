@@ -55,7 +55,7 @@ export default defineComponent({
       rules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 5, max: 14, message: '长度在 5 到 14 个字符', trigger: 'blur' }
+          { min: 2, max: 14, message: '长度在 2 到 14 个字符', trigger: 'blur' }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
@@ -77,14 +77,14 @@ export default defineComponent({
           axios.post('http://localhost:8070/user/login', fd)
             .then(response => {
               if (response.data.isOk) {
-                this.$store.dispatch('setUserName', response.data.user.userName);
+                this.$store.dispatch('setUser', response.data.user);
                 ElMessage({
                   showClose: true,
                   message: '登录成功！',
                   type: 'success'
                 });
                 console.log("登录成功的数据+", response.data.user.userName, response.data.user.role)
-                this.$router.push({ path: '/userManage'});
+                this.$router.push({ path: '/homepage'});
               } else {
                 ElMessage.error('登录出错请重新输入');
               }
@@ -93,7 +93,7 @@ export default defineComponent({
       });
     },
     register() {
-      this.$router.push('/meeting');
+      this.$router.push('/news');
     },
     course_test() {
       this.$router.push('/course');

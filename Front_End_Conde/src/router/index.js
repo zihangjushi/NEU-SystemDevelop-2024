@@ -21,6 +21,11 @@ const routes = [
     component: () => import('../views/UserManage.vue')
   },
   {
+    path: '/CompanyManage',
+    name: 'companyManage',
+    component: () => import('../views/CompanyManage.vue')
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('../views/LoginView.vue')
@@ -29,6 +34,17 @@ const routes = [
     path: '/meeting',
     name: 'meeting',
     component: () => import('../views/MeetingManage.vue')
+  },
+  {
+    path: '/meetingAdd',
+    name: 'meetingAdd',
+    component: () => import('../views/MeetingAdd.vue')
+  },
+  {
+    path: '/meetingEdit/:meetingId',
+    name: 'meetingEdit',
+    component: () => import('../views/MeetingEdit.vue'),
+    props: true
   },
   {
     path: '/userCenter',
@@ -41,9 +57,21 @@ const routes = [
     component: () => import('../views/CourseManage.vue')
   },
   {
+    path: '/homepage',
+    name: 'homepage',
+    component: () => import('../views/HomePage.vue')
+
+  },
+  {
     path: '/news',
     name: 'news',
     component: () => import('../views/NewsManage.vue')
+  },
+  
+  {
+    path: '/mynews',
+    name: 'mynews',
+    component: () => import('../views/AdminNewsManage.vue')
   },
 ]
 

@@ -10,4 +10,5 @@ import java.util.List;
 public interface DepartmentMapper {
     @Select("select * from t_department")
     List<Department> listDepartment();
+
 }

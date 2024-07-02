@@ -16,4 +16,20 @@ public class CompanyBiz {
     {
         return companyMapper.listCompany();
     }
+
+    public Company searchByCompanyId(Integer companyId){
+        return companyMapper.searchByCompanyId(companyId);
+    }
+
+    public Company searchByCompanyName(String companyName){
+        return companyMapper.searchByCompanyName(companyName);
+    }
+
+    public void addCompany(Company company) {
+        companyMapper.insertCompany(company);
+    }
+
+    public List<String> getCompanynameList(){
+        return companyMapper.selectAllCompanyname();
+    }
 }
