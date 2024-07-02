@@ -52,9 +52,15 @@ const routes = [
     component: () => import('../views/UserCenter.vue')
   },
   {
+    path: '/course',
+    name: 'course',
+    component: () => import('../views/CourseManage.vue')
+  },
+  {
     path: '/homepage',
     name: 'homepage',
     component: () => import('../views/HomePage.vue')
+
   },
   {
     path: '/news',

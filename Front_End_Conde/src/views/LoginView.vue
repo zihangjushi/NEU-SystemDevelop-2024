@@ -12,7 +12,8 @@
         <el-input type="password" v-model="loginForm.password" placeholder="请输入密码" />
       </el-form-item>
       <el-form-item prop="code">
-        <el-input type="text" auto-complete="off" v-model="loginForm.code" placeholder="请输入验证码" style="width: 250px; margin-right: 5px" />
+        <el-input type="text" auto-complete="off" v-model="loginForm.code" placeholder="请输入验证码"
+          style="width: 250px; margin-right: 5px" />
         <img :src="captchaUrl" class="captcha-img" @click="refreshCaptcha" />
       </el-form-item>
       <el-checkbox v-model="checked" class="loginRemember">记住我</el-checkbox>
@@ -90,7 +91,7 @@ export default defineComponent({
       });
     },
     register() {
-      this.$router.push('/news');
+      this.$router.push('/register');
     },
     refreshCaptcha() {
       // Replace with actual logic to refresh captcha
