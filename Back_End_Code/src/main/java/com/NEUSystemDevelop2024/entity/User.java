@@ -16,12 +16,12 @@ public class User {
     private String phoneNumber;
     private String email;
     private String description;
-    private Timestamp createTime;
+    private String createTime;
 
     public User() {
     }
 
-    public User(int companyId, String userName, String realName, int gender, String password, String role, int enabled, String career, String phoneNumber, String email, Timestamp createTime, String description, int departmentId) {
+    public User(int companyId, String userName, String realName, int gender, String password, String role, int enabled, String career, String phoneNumber, String email, String createTime, String description, int departmentId) {
         this.companyId = companyId;
         this.userName = userName;
         this.realName = realName;
@@ -141,11 +141,11 @@ public class User {
         this.description = description;
     }
 
-    public Timestamp getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Timestamp createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 }

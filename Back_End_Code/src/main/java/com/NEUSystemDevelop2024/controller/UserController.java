@@ -1,9 +1,13 @@
 package com.NEUSystemDevelop2024.controller;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.NEUSystemDevelop2024.biz.CompanyBiz;
 import com.NEUSystemDevelop2024.biz.UserBiz;
 import com.NEUSystemDevelop2024.entity.Company;
 import com.NEUSystemDevelop2024.entity.User;
+import io.swagger.models.auth.In;
+import nonapi.io.github.classgraph.json.JSONUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -67,9 +71,7 @@ public class UserController {
                 String phoneNumber = (String) request.get("contactPhone");
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedDateTime = now.format(formatter);
-
-            Timestamp createTime = Timestamp.from(Instant.now());
+            String createTime = now.format(formatter);
 
                 Company company = new Company(name,1,phoneNumber,contactName,companyName,description,createTime);
 
@@ -95,7 +97,6 @@ public class UserController {
     @RequestMapping("/list")
     public Map list()
     {
-        System.out.println("nihao");
         List<User> userList = userBiz.getUserList();
         Map map = new HashMap();
         map.put("isOk", true);
@@ -153,16 +154,47 @@ public class UserController {
     }
 
     @RequestMapping("/add")
-    public Map add(User user)
+    public Map add(@RequestBody Map<String, Object> request)
     {
-        boolean isOk = userBiz.addUser(user);
-        Map map = new HashMap();
-        if(isOk){
+        Map<String, Object> map = new HashMap<>();
+        try{
+
+            String userName = (String) request.get("userName");
+            String realName = (String) request.get("realName");
+
+            List<Integer> genderList = (List<Integer>) request.get("gender");
+            int gender = genderList.get(0);
+
+            String password = (String) request.get("password");
+            String phoneNumber = (String) request.get("phoneNumber");
+            String email = (String) request.get("email");
+
+            List<Integer> companyList = (List<Integer>) request.get("companyId");
+            List<Integer> departmentList = (List<Integer>) request.get("departmentId");
+            List<String> careerList = (List<String>) request.get("career");
+            int companyId = companyList.get(0);
+            int departmentId = departmentList.get(0);
+            String career = careerList.get(0);
+
+            String role = (String) request.get("role");
+
+            int enabled = Integer.parseInt((String) request.get("enabled"));
+            if(enabled == 2) enabled = 0;
+
+            String description = (String) request.get("description");
+
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String createTime = now.format(formatter);
+
+            User user = new User(companyId,userName,realName, gender,password, role, enabled, career, phoneNumber,email, createTime, description, departmentId);
+            userBiz.addUserByPage(user);
+
             map.put("isOk",true);
-            map.put("msg","注册成功");
-        }else{
-            map.put("isOk",false);
-            map.put("msg","注册失败");
+            map.put("msg", "添加成功");
+        }catch (Exception e) {
+            map.put("isOk", false);
+            map.put("msg", "注册失败：" + e.getMessage());
         }
         return map;
     }

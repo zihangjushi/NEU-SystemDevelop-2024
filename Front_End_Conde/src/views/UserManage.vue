@@ -217,13 +217,13 @@
             <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
               <el-col :span="10" class="form-col">
                 <el-form-item label="公司名称" prop="company" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.companyId" :options="transformedCompanyOptions" placeholder="请选择公司"
+                  <el-cascader v-model="addForm.companyId" :options="companyOptions" placeholder="请选择公司"
                   clearable style="width:270px" />
                 </el-form-item>
               </el-col>
               <el-col :span="10" class="form-col">
                 <el-form-item label="归属部门" prop="department" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.department" :options="transformedDepartmentOptions" placeholder="请选择部门"
+                  <el-cascader v-model="addForm.departmentId" :options="transformedDepartmentOptions" placeholder="请选择部门"
                     clearable style="width:270px" />
                 </el-form-item>
               </el-col>
@@ -236,7 +236,7 @@
               </el-col>
               <el-col :span="10" class="form-col">
                 <el-form-item label="角色" prop="role" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.role" :options="roleOptions" placeholder="请选择权限" clearable style="width:270px" />
+                  <el-text class="mx-1" type="primary">普通用户</el-text>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -359,6 +359,7 @@ import { useRouter } from 'vue-router';
 import { Management, UserFilled } from "@element-plus/icons-vue";
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useStore } from 'vuex';
+import dayjs from 'dayjs';
 export default {
   components: { Management, UserFilled },
   setup() {
@@ -402,6 +403,11 @@ export default {
       multipleSelection: []
     });
 
+    const formatDate = (date) => {
+				return dayjs(date).format('YYYY-MM-DD');
+			};
+
+
     // 导入路由和vuex存储
     const router = useRouter();
     const store = useStore();
@@ -442,7 +448,7 @@ export default {
     const addForm = ref({
       companyId: '',
       userName: '',
-      department: '',
+      departmentId: '',
       phoneNumber: '',
       email: '',
       realName: '',
@@ -450,10 +456,12 @@ export default {
       gender: '',
       enabled: '1',
       career: '',
-      role: '',
+      role: 'user',
       description: ''
     })
 
+
+    const companyOptions = ref([])
     // 公司格式转换属性
     const transformedCompanyOptions = computed(() => {
       return companyList.value.map(company => ({
@@ -527,24 +535,69 @@ export default {
     };
 
     const addButton = () => {
-      if (dialogVisible.value == false) dialogVisible.value = true;
+      if (loginUser.value.role == "root") {
+        if (dialogVisible.value == false) dialogVisible.value = true;
+        companyOptions.value = transformedCompanyOptions.value
+      } else if (loginUser.value.role == "admin") {
+        if (dialogVisible.value == false) dialogVisible.value = true;
+        companyOptions.value = [{
+          value: loginUser.value.companyId,
+          label: companyList.value[0].companyName
+        }]
+      }
+      
     }
 
     const clearForm = () => {
-      console.log("addForm", addForm.value)
+      addForm.value.career = ''
+      addForm.value.companyId = ''
+      addForm.value.companyName = ''
+      addForm.value.departmentId = ''
+      addForm.value.phoneNumber = ''
+      addForm.value.email = ''
+      addForm.value.password = ''
+      addForm.value.userName = ''
+      addForm.value.realName = ''
+      addForm.value.enabled = '1'
+      addForm.value.description = ''
     }
 
-    // const addUser = () => {
-    //   if (loginUser.data.role == root) {
+    const closeDialog = () => {
+      dialogVisible.value = false
+    }
 
-    //   } else if (loginUser.data.role == admin) {
-    //     let fd = new FormData()
-    //     fd.append("addForm", addForm)
-    //     fd.append("companyId")
-    //     axios()
-    //   }
-
-    // }
+    const addUser = () => {
+      if (loginUser.value.role == "root") {
+        ElMessageBox.confirm(
+          '是否确定添加用户',
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+        ).then(() => {
+          axios.post("http://localhost:8070/user/add", addForm.value)
+            .then(response => {
+              console.log("isOk")
+              if (response.data.isOk) {
+                console.log("isOk", response.data.isOk)
+                dialogVisible.value = false;
+                ElMessage({
+                  showClose: true,
+                  message: '添加成功！',
+                  type: 'success'
+                });
+              }
+            })
+            .catch(error => {
+              console.log(error)
+            })
+        }).catch(() => {
+          console.log("添加取消")
+        })
+      }
+    }
 
     const confirmDelete = () => {
 
@@ -552,7 +605,7 @@ export default {
 
     //重置按钮
     const handle = () => {
-      console.log(addForm.value)
+      console.log(pickerOptions.value.multipleSelection)
     }
 
     // 修改按钮
@@ -623,10 +676,12 @@ export default {
       } else {
         // 否则，根据输入的条件进行过滤
         filteredUserTable.value = userTable.value.filter(user => {
+          const itemDate = user.createTime.split(' ')[0];
+          console.log(formatDate(inputCreateDate.value))
           return (
             (!inputUserName.value || (user.userName && user.userName.includes(inputUserName.value))) &&
             (!inputPhoneNumber.value || (user.phoneNumber && user.phoneNumber.includes(inputPhoneNumber.value))) &&
-            (!inputCreateDate.value || (user.createTime && user.createTime.includes(inputCreateDate.value))) &&
+            (!inputCreateDate.value || (formatDate(inputCreateDate.value) === itemDate)) &&
             (!enabled.value || (user.enabled && user.enabled === enabled.value))
           );
         });
@@ -643,7 +698,7 @@ export default {
         .then(response => {
           if (response.data.isOk) filteredUserTable.value = response.data.users;
           console.log(companyId, serialId)
-          searchUserDataByPage(currentPage.value)
+          initUserTable()
         })
     }
 
@@ -768,16 +823,14 @@ export default {
 
     //监测当前页变化，并进行分页内容显示
     watch(currentPage, (newPage) => {
+      initUserTable()
       searchUserDataByPage(newPage)
     });
 
     watch(addForm.value, (newVal) => {
       let i = JSON.parse(JSON.stringify(newVal.companyId))[0]
-      console.log("i", i)
       departmentOptions.value = getDepartmentsByCompany(i) 
-      console.log("departmentOptions", JSON.parse(JSON.stringify(departmentOptions.value)))
-      console.log("transformedDepartmentOptions", transformedDepartmentOptions)
-      console.log("companyList",companyList.value)
+      // console.log("departmentOptions", JSON.parse(JSON.stringify(departmentOptions.value)))
     })
 
     //钩子函数，在浏览器渲染页面时执行
@@ -820,6 +873,8 @@ export default {
       dialogVisible,
       updateDialogVisible,
       addForm,
+
+      companyOptions,
       transformedCompanyOptions,
       departmentOptions,
       transformedDepartmentOptions,
@@ -836,6 +891,8 @@ export default {
 
       addButton,
       clearForm,
+      closeDialog,
+      addUser,
 
       handleEdit,
       handleDelete,

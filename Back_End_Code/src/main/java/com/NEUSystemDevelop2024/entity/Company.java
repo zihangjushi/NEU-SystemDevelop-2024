@@ -10,12 +10,12 @@ public class Company {
     String adminName;
     int state;
     String description;
-    Timestamp createTime;
+    String createTime;
 
     public Company() {
     }
 
-    public Company(String adminName, int state, String phoneNumber, String contactName, String companyName, String description, Timestamp createTime) {
+    public Company(String adminName, int state, String phoneNumber, String contactName, String companyName, String description, String createTime) {
         this.adminName = adminName;
         this.state = state;
         this.phoneNumber = phoneNumber;
@@ -81,11 +81,11 @@ public class Company {
         this.description = description;
     }
 
-    public Timestamp getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Timestamp createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 }
