@@ -2,50 +2,50 @@
   <div class="about">
     <el-container style="height: 100vh; border: 1px solid #eee">
 
-      <!-- /side容器，用来存放侧边菜单 -->
-      <el-aside class="menu-with-shadow" width="240px" style="color: rgb(255,255,255)">
-        <el-menu :default-openeds="['3']">
-          <!-- //序号为1的侧边栏，用来显示测盟汇和图片组件 -->
-          <el-menu-item index="1">
-            <template #title>
-              <img src="@/assets/logo1.png" style="width: 40px; height: 40px; margin-right: 5px;">
-              <span style="font-size: 20px;"><strong>测盟汇</strong></span>
-            </template>
-          </el-menu-item>
-          <!-- //序号为2的菜单栏，用来显示标题（首页） -->
-          <el-menu-item index="2">
-            <template #title>
-              <el-icon>
-                <HomeFilled />
-              </el-icon>首页
-            </template>
-          </el-menu-item>
-          <!-- //序号为3的菜单栏，用来显示各个菜单项和图标 -->
-          <el-sub-menu index="3">
-            <template #title><el-icon>
-                <Menu />
-              </el-icon>管理</template>
-            <el-menu-item index="3-1" @click="routeToCompanyManage"><el-icon>
-                <OfficeBuilding />
-              </el-icon>租户管理</el-menu-item>
-            <el-menu-item index="3-2" @click="routeToUserManage"><el-icon>
-                <UserFilled />
-              </el-icon>用户管理</el-menu-item>
-            <el-menu-item index="3-3" @click="routeToDepartmentManage"><el-icon>
-                <Management />
-              </el-icon>部门管理</el-menu-item>
-            <el-menu-item index="3-4" @click="routeToNewsManage"><el-icon>
-                <Orange />
-              </el-icon>行业动态管理</el-menu-item>
-            <el-menu-item index="3-5" @click="routeToCourseManage"><el-icon>
-                <List />
-              </el-icon>课程管理</el-menu-item>
-            <el-menu-item index="3-6" @click="routeToMeetingManage"><el-icon>
-                <TrendCharts />
-              </el-icon>会议管理</el-menu-item>
-          </el-sub-menu>
-        </el-menu>
-      </el-aside>
+        <!-- /side容器，用来存放侧边菜单 -->
+        <el-aside class="menu-with-shadow" width="240px" style="color: rgb(255,255,255)">
+            <el-menu :default-openeds="['3']">
+                <!-- //序号为1的侧边栏，用来显示测盟汇和图片组件 -->
+                <el-menu-item index="1">
+                    <template #title>
+                        <img src="@/assets/logo1.png" style="width: 40px; height: 40px; margin-right: 5px;">
+                        <span style="font-size: 20px;"><strong>测盟汇</strong></span>
+                    </template>
+                </el-menu-item>
+                <!-- //序号为2的菜单栏，用来显示标题（首页） -->
+                <el-menu-item index="2" @click="navigateTo('/')">
+                    <template #title>
+                        <el-icon>
+                            <HomeFilled />
+                        </el-icon>首页
+                    </template>
+                </el-menu-item>
+                <!-- //序号为3的菜单栏，用来显示各个菜单项和图标 -->
+                <el-sub-menu index="3">
+                    <template #title><el-icon>
+                            <Menu />
+                        </el-icon>管理</template>
+                    <el-menu-item index="3-1" @click="routeToCompanyManage"><el-icon>
+                            <OfficeBuilding />
+                        </el-icon>租户管理</el-menu-item>
+                    <el-menu-item index="3-2" @click="routeToUserManage"><el-icon>
+                            <UserFilled />
+                        </el-icon>用户管理</el-menu-item>
+                    <el-menu-item index="3-3" @click="routeToDepartmentManage"><el-icon>
+                            <Management />
+                        </el-icon>部门管理</el-menu-item>
+                    <el-menu-item index="3-4" @click="routeToNewsManage"><el-icon>
+                            <Orange />
+                        </el-icon>行业动态管理</el-menu-item>
+                    <el-menu-item index="3-5" @click="routeToCourseManage" ><el-icon>
+                            <List />
+                        </el-icon>课程管理</el-menu-item>
+                    <el-menu-item index="3-6" @click="routeToMeetingManage"><el-icon>
+                            <TrendCharts />
+                        </el-icon>会议管理</el-menu-item>
+                </el-sub-menu>
+            </el-menu>
+        </el-aside>
 
       <!-- //head容器，用来存放路径信息 -->
       <el-container>
@@ -451,13 +451,13 @@ export default {
     };
 
     const routeToNewsManage = () => {
-      if (loginUser.value === 'admin') {
-        router.push('/mynews');
-      } else if (loginUser.value === 'root') {
-        router.push('/news');
-      } else {
-        ElMessage.error('无权访问该页面');
-      }
+					if (loginUser.value.role === 'admin') {
+						router.push('/mynews');
+					} else if (loginUser.value.role === 'root') {
+						router.push('/news');
+					} else {
+						alert('无权访问该页面');
+					}
     };
 
     // 返回登录界面

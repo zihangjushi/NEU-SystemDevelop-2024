@@ -10,7 +10,7 @@
             </template>
           </el-menu-item>
 
-          <el-menu-item index="2">
+          <el-menu-item index="2" >
             <template #title>
               <el-icon>
                 <HomeFilled/>

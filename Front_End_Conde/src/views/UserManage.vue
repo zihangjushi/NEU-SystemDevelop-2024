@@ -13,7 +13,7 @@
             </template>
           </el-menu-item>
           <!-- //序号为2的菜单栏，用来显示标题（首页） -->
-          <el-menu-item index="2">
+          <el-menu-item index="2" @click="navigateTo('/')">
             <template #title>
               <el-icon>
                 <HomeFilled />
