@@ -197,14 +197,13 @@ public class UserController {
         System.out.println("123456");
         Map<String, Object> map = new HashMap<>();
         try{
-            int userId = Integer.parseInt((String) request.get("userId"));
-            System.out.println(userId);
+            int userId = (int)request.get("userId");
             String userName = (String) request.get("userName");
-            System.out.println(userName);
             String realName = (String) request.get("realName");
-            System.out.println(realName);
-            int companyId = Integer.parseInt((String) request.get("companyId"));
-            int gender = Integer.parseInt((String) request.get("gender"));
+            int companyId = (int) request.get("companyId");
+            int gender = (int) request.get("gender");
+            System.out.println(companyId);
+            System.out.println(gender);
 
             String career = (String) request.get("career");
             String password = (String) request.get("password");

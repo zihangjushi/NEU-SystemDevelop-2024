@@ -238,9 +238,9 @@ export default {
 
     const loginUser = ref('')
     const routeToNewsManage = () => {
-					if (loginUser.value.role === 'admin') {
+					if (loginUser.value.role == "admin") {
 						router.push('/mynews');
-					} else if (loginUser.value.role === 'root') {
+					} else if (loginUser.value.role == "root") {
 						router.push('/news');
 					} else {
 						alert('无权访问该页面');
