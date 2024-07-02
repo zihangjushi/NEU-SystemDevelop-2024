@@ -49,4 +49,19 @@ public class CompanyController {
 
         return map;
     }
+
+    @RequestMapping("/deleteCompanyById")
+    public Map delete(Integer companyId){
+        System.out.println(companyId);
+        boolean isOk = companyBiz.deleteCompanyById(companyId);
+        Map map = new HashMap();
+        if(isOk){
+            map.put("isOk",true);
+            map.put("msg","删除成功");
+        }else{
+            map.put("isOk",false);
+            map.put("msg","删除失败");
+        }
+        return map;
+    }
 }

@@ -1,6 +1,7 @@
 package com.NEUSystemDevelop2024.mapper;
 
 import com.NEUSystemDevelop2024.entity.Company;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -27,4 +28,6 @@ public interface CompanyMapper {
     @Select("SELECT companyName FROM t_company")
     List<String> selectAllCompanyname();
 
+    @Delete("delete from t_company where companyId=#{companyId}")
+    Integer deleteCompanyById(Integer companyId);
 }

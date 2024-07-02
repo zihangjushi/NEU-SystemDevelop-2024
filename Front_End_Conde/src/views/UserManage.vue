@@ -683,7 +683,11 @@ export default {
 
     //重置按钮
     const handle = () => {
-      console.log(pickerOptions.value.multipleSelection)
+      inputUserName.value = ''
+      inputPhoneNumber.value = ''
+      inputCreateDate.value = ''
+      enabled.value = ''
+      initUserTable()
     }
 
     // 修改按钮
