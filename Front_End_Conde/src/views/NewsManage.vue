@@ -125,18 +125,18 @@
 							</el-icon>管理</template>
 						<el-menu-item-group>
 							<el-menu-item index="3-1" @click="gotoCompanyManage"><el-icon>
-							        <OfficeBuilding />
-							    </el-icon>租户管理</el-menu-item>
+									<OfficeBuilding />
+								</el-icon>租户管理</el-menu-item>
 							<el-menu-item index="3-2" @click="gotoUserManage"><el-icon>
 									<UserFilled />
 								</el-icon>用户管理</el-menu-item>
 							<el-menu-item index="3-3"><el-icon>
 									<Management />
 								</el-icon>部门管理</el-menu-item>
-							<el-menu-item index="3-4" @click="gotoNewsManage"><el-icon>
+							<el-menu-item index="3-4"><el-icon>
 									<Orange />
 								</el-icon>行业动态管理</el-menu-item>
-							<el-menu-item index="3-5" ><el-icon>
+							<el-menu-item index="3-5"><el-icon>
 									<List />
 								</el-icon>课程管理</el-menu-item>
 							<el-menu-item index="3-6" @click="gotoMeeting"><el-icon>
@@ -262,6 +262,9 @@
 		saveAs
 	} from 'file-saver';
 	import * as XLSX from 'xlsx';
+	import {
+		useStore
+	} from 'vuex';
 
 	export default {
 		components: {
@@ -270,6 +273,7 @@
 			Editor
 		},
 		setup() {
+			const store = useStore();
 			const router = useRouter();
 			const isChange = ref(0);
 			// 响应式数据
@@ -298,7 +302,7 @@
 
 			const fetchCompanies = async () => {
 				try {
-					const response = await axios.get('http://localhost:9000/user/companies');
+					const response = await axios.get('http://localhost:8070/user/companies');
 					companies.value = response.data.companies;
 					console.log(companies.value);
 				} catch (error) {
@@ -329,7 +333,7 @@
 					const formData = new FormData();
 					formData.append('file', selectedFile.value);
 
-					axios.post('http://localhost:9000/upload', formData, {
+					axios.post('http://localhost:8070/upload', formData, {
 							headers: {
 								'Content-Type': 'multipart/form-data'
 							}
@@ -420,18 +424,25 @@
 			]);
 			const total = ref(1);
 			const isLoggedIn = ref(false);
+			const loginUser = ref('')
 			onMounted(async () => {
 
-				try {
-					const userResponse = await axios.get('http://localhost:9000/user/info', {
-						withCredentials: true
-					});
+				loginUser.value = store.state.user
 
-					if (userResponse.data.isLogin) {
-						tenant.value = userResponse.data.companyname;
+				try {
+
+
+					if (loginUser.value.role==='root') {
+						const response = await axios.get('http://localhost:8070/searchByCompanyId', {
+							params: {
+								companyId: loginUser.value.companyId
+							}
+						});
+						const companyList = response.data.company;
+						tenant.value = companyList[0].companyName;
 						isLoggedIn.value = true;
 						try {
-							const response = await axios.get('http://localhost:9000/news/getnews', {
+							const response = await axios.get('http://localhost:8070/news/getnews', {
 								withCredentials: true
 							});
 
@@ -461,7 +472,7 @@
 			});
 
 			function refreshNewsList() {
-				axios.get('http://localhost:9000/news/getnews')
+				axios.get('http://localhost:8070/news/getnews')
 					.then(response => {
 						tableData.value = response.data.news; // 假设后端返回的数据是一个包含新闻信息的数组
 						updatePagedData(tableData.value); // 更新分页数据的函数，假设已定义
@@ -500,7 +511,7 @@
 			const handleEdit = async (row) => {
 				isChange.value = 1;
 				editId.value = row.newsId;
-				const response = await axios.get('http://localhost:9000/news/getEditNew', {
+				const response = await axios.get('http://localhost:8070/news/getEditNew', {
 					params: {
 						newsId: row.newsId
 					}
@@ -538,7 +549,7 @@
 					// 用户点击确定
 					const idsToDelete = selectedRows.value.map(row => row.newsId);
 					try {
-						await axios.post('http://localhost:9000/news/delete', {
+						await axios.post('http://localhost:8070/news/delete', {
 							ids: idsToDelete
 						});
 						tableData.value = tableData.value.filter(item => !idsToDelete.includes(item
@@ -568,7 +579,7 @@
 				).then(async () => {
 					// 用户点击确定
 					try {
-						await axios.post('http://localhost:9000/news/delete', {
+						await axios.post('http://localhost:8070/news/delete', {
 							ids: [row.newsId]
 						});
 						refreshNewsList();
@@ -632,7 +643,7 @@
 				});
 
 
-				axios.get('http://localhost:9000/news/search');
+				axios.get('http://localhost:8070/news/search');
 
 				// 更新分页数据
 				updatePagedData(filteredData);
@@ -689,7 +700,7 @@
 					};
 
 					// 发送 POST 请求
-					axios.post('http://localhost:9000/news/add', requestData)
+					axios.post('http://localhost:8070/news/add', requestData)
 						.then(response => {
 							console.log('新增新闻成功', response.data);
 
@@ -719,7 +730,7 @@
 					};
 
 					// 发送 POST 请求
-					axios.post('http://localhost:9000/news/add', requestData)
+					axios.post('http://localhost:8070/news/add', requestData)
 						.then(response => {
 							console.log('新增新闻成功', response.data);
 							refreshNewsList();
@@ -763,7 +774,7 @@
 					};
 
 					// 发送 POST 请求
-					axios.post('http://localhost:9000/news/edit', requestData)
+					axios.post('http://localhost:8070/news/edit', requestData)
 						.then(response => {
 							console.log('修改新闻成功', response.data);
 
@@ -795,7 +806,7 @@
 					};
 
 					// 发送 POST 请求
-					axios.post('http://localhost:9000/news/edit', requestData)
+					axios.post('http://localhost:8070/news/edit', requestData)
 						.then(response => {
 							console.log('修改新闻成功', response.data);
 							refreshNewsList();
@@ -854,7 +865,13 @@
 			};
 
 			const gotoNewsManage = () => {
-				router.push('/news');
+				if (loginUser.value.role === 'admin') {
+					router.push('/mynews');
+				} else if (loginUser.value.role === 'root') {
+					router.push('/news');
+				} else {
+					ElMessage.error('无权访问该页面');
+				}
 			};
 
 			const gotoCompanyManage = () => {
@@ -935,6 +952,10 @@
 				handleAdd,
 				gotoAdminNewsManage,
 				gotoCompanyManage,
+				gotoUserManage,
+				gotoMeeting,
+				loginUser,
+				store,
 			};
 		},
 

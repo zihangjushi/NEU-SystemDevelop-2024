@@ -591,6 +591,18 @@ setup() {
         router.push('/userCenter');
     };
 
+
+    const routeToNewsManage = () => {
+					if (loginUser.value === 'admin') {
+						router.push('/mynews');
+					} else if (loginUser.value === 'root') {
+						router.push('/news');
+					} else {
+						ElMessage.error('无权访问该页面');
+					}
+    };
+
+
     // 返回登录界面
     const back = () => {
         router.push('/login');
@@ -699,6 +711,7 @@ setup() {
         // 路由控制相关方法
         routeToUserManage,
         routeToMeetingManage,
+		routeToNewsManage,
 
         addButton,
         clearForm,

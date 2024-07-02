@@ -27,31 +27,34 @@
               管理
             </template>
             <el-menu-item-group>
-              <el-menu-item index="3-1" @click="navigateTo('/userManage')">
+				<el-menu-item index="3-1" @click="routeToCompanyManage"><el-icon>
+				<OfficeBuilding />
+				</el-icon>租户管理</el-menu-item>
+              <el-menu-item index="3-2" @click="navigateTo('/userManage')">
                 <el-icon>
                   <UserFilled/>
                 </el-icon>
                 用户管理
               </el-menu-item>
-              <el-menu-item index="3-2" @click="navigateTo('/')">
+              <el-menu-item index="3-3" @click="navigateTo('/')">
                 <el-icon>
                   <Management/>
                 </el-icon>
                 部门管理
               </el-menu-item>
-              <el-menu-item index="3-3" @click="navigateTo('/')">
+              <el-menu-item index="3-4" @click="routeToNewsManage">
                 <el-icon>
                   <Orange/>
                 </el-icon>
                 行业动态管理
               </el-menu-item>
-              <el-menu-item index="3-4" @click="navigateTo('/')">
+              <el-menu-item index="3-5" @click="navigateTo('/')">
                 <el-icon>
                   <List/>
                 </el-icon>
                 课程管理
               </el-menu-item>
-              <el-menu-item index="3-5" @click="navigateTo('/meeting')">
+              <el-menu-item index="3-6" @click="navigateTo('/meeting')">
                 <el-icon>
                   <TrendCharts/>
                 </el-icon>
@@ -205,6 +208,16 @@ export default {
       gender: '',
     });
 
+    const routeToNewsManage = () => {
+					if (loginUser.value === 'admin') {
+						router.push('/mynews');
+					} else if (loginUser.value === 'root') {
+						router.push('/news');
+					} else {
+						alert('无权访问该页面');
+					}
+    };
+
     const passwordForm = ref({
       oldPassword: '',
       newPassword: '',
@@ -245,6 +258,7 @@ export default {
       back,
       navigateTo,
       loginUser,
+	routeToNewsManage,
     };
   }
 };

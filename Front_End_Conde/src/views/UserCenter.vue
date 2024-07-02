@@ -19,11 +19,14 @@
           <el-sub-menu index="3">
             <template #title><el-icon><Menu /></el-icon>管理</template>
             <el-menu-item-group>
-              <el-menu-item index="3-1"><el-icon><UserFilled /></el-icon>用户管理</el-menu-item>
-              <el-menu-item index="3-2"><el-icon><Management /></el-icon>部门管理</el-menu-item>
-              <el-menu-item index="3-3"><el-icon><Orange /></el-icon>行业动态管理</el-menu-item>
-              <el-menu-item index="3-4"><el-icon><List /></el-icon>课程管理</el-menu-item>
-              <el-menu-item index="3-5"><el-icon><TrendCharts /></el-icon>会议管理</el-menu-item>
+				<el-menu-item index="3-1" @click="navigateTo('/CompanyManage')"><el-icon>
+				<OfficeBuilding />
+				</el-icon>租户管理</el-menu-item>
+              <el-menu-item index="3-2" @click="navigateTo('/userManage')"><el-icon><UserFilled /></el-icon>用户管理</el-menu-item>
+              <el-menu-item index="3-3" ><el-icon><Management /></el-icon>部门管理</el-menu-item>
+              <el-menu-item index="3-4" @click="routeToNewsManage"><el-icon><Orange /></el-icon>行业动态管理</el-menu-item>
+              <el-menu-item index="3-5" ><el-icon><List /></el-icon>课程管理</el-menu-item>
+              <el-menu-item index="3-6" @click="navigateTo('/meeting')"><el-icon><TrendCharts /></el-icon>会议管理</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
         </el-menu>
@@ -233,6 +236,17 @@ export default {
       router.push('/meeting');
     };
 
+    const loginUser = ref('')
+    const routeToNewsManage = () => {
+					if (loginUser.value.role === 'admin') {
+						router.push('/mynews');
+					} else if (loginUser.value.role === 'root') {
+						router.push('/news');
+					} else {
+						alert('无权访问该页面');
+					}
+    };
+	
     const submitBasicInfo = () => {
       // 提交基本资料修改逻辑
       console.log('基本资料表单提交', basicInfoForm.value);
@@ -251,7 +265,8 @@ export default {
       personalCenter,
       back,
       submitBasicInfo,
-      submitPasswordChange
+submitPasswordChange,
+	routeToNewsManage,
     };
   }
 };

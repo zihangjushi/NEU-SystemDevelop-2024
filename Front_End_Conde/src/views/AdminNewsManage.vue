@@ -121,19 +121,22 @@
 								<Menu />
 							</el-icon>管理</template>
 						<el-menu-item-group>
-							<el-menu-item index="3-1"><el-icon>
+							<el-menu-item index="3-1" @click="gotoCompanyManage"><el-icon>
+							<OfficeBuilding />
+							</el-icon>租户管理</el-menu-item>
+							<el-menu-item index="3-2" @click="gotoUserManage"><el-icon>
 									<UserFilled />
 								</el-icon>用户管理</el-menu-item>
-							<el-menu-item index="3-2"><el-icon>
+							<el-menu-item index="3-3"><el-icon>
 									<Management />
 								</el-icon>部门管理</el-menu-item>
-							<el-menu-item index="3-3" @click="gotoNewsManage"><el-icon>
+							<el-menu-item index="3-4" ><el-icon>
 									<Orange />
 								</el-icon>行业动态管理</el-menu-item>
-							<el-menu-item index="3-4"><el-icon>
+							<el-menu-item index="3-5" ><el-icon>
 									<List />
 								</el-icon>课程管理</el-menu-item>
-							<el-menu-item index="3-5"><el-icon>
+							<el-menu-item index="3-6" @click="gotoMeeting"><el-icon>
 									<TrendCharts />
 								</el-icon>会议管理</el-menu-item>
 						</el-menu-item-group>
@@ -254,7 +257,7 @@
 		saveAs
 	} from 'file-saver';
 	import * as XLSX from 'xlsx';
-
+    import { useStore } from 'vuex';
 	export default {
 		components: {
 			Management,
@@ -262,6 +265,7 @@
 			Editor
 		},
 		setup() {
+						const store = useStore();
 			const router = useRouter();
 			const isChange = ref(0);
 			// 响应式数据
@@ -411,10 +415,10 @@
 			]);
 			const total = ref(1);
 			const isLoggedIn = ref(false);
-
+			const loginUser = ref('');
 			onMounted(async () => {
 
-
+loginUser.value = store.state.user;
 
 				try {
 					const userResponse = await axios.get('http://localhost:9000/user/info', {
@@ -870,10 +874,27 @@ const newsData = ref([]);
 			};
 
 			const gotoNewsManage = () => {
-				router.push('/news');
+				if (loginUser.value === 'admin') {
+					router.push('/mynews');
+				} else if (loginUser.value === 'root') {
+					router.push('/news');
+				} else {
+					ElMessage.error('无权访问该页面');
+				}
 			};
 
-
+			const gotoCompanyManage = () => {
+				router.push('/CompanyManage');
+			};
+			
+			const gotoUserManage = () => {
+				router.push('/userManage');
+			};
+			
+			const gotoMeeting = () => {
+				router.push('/meeting');
+			};
+			
 			const cancelUpload = () => {
 				selectedFile.value = null; // 清空已选择的文件
 				previewImageUrl.value = ''; // 清空预览图片 URL
@@ -935,6 +956,10 @@ const newsData = ref([]);
 				isChange,
 				handleAdd,
 				isLoggedIn,
+				gotoCompanyManage,
+				gotoUserManage,
+				gotoMeeting,
+				store,
 			};
 		},
 

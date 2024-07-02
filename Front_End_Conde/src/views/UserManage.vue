@@ -54,10 +54,10 @@
             <el-menu-item index="3-2"><el-icon>
                 <Management />
               </el-icon>部门管理</el-menu-item>
-            <el-menu-item index="3-3"><el-icon>
+            <el-menu-item index="3-3" @click="gotoNewsManage"><el-icon>
                 <Orange />
               </el-icon>行业动态管理</el-menu-item>
-            <el-menu-item index="3-4"><el-icon>
+            <el-menu-item index="3-4" ><el-icon>
                 <List />
               </el-icon>课程管理</el-menu-item>
             <el-menu-item index="3-5"><el-icon>
@@ -936,6 +936,16 @@ export default {
       
     })
 
+			const gotoNewsManage = () => {
+					if (loginUser.value.role === 'admin') {
+						router.push('/mynews');
+					} else if (loginUser.value.role === 'root') {
+						router.push('/news');
+					} else {
+						ElMessage.error('无权访问该页面');
+					}
+			};
+
     //钩子函数，在浏览器渲染页面时执行
     onMounted(async () => {
       await Promise.all([
@@ -1005,6 +1015,7 @@ export default {
       personalCenter,
       back,
       routeToCompanyManage,
+	gotoNewsManage,
       searchUser,
       isDepartmentMatch,
       getDepartmentsByCompany,
