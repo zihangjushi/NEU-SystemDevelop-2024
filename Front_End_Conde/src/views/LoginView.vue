@@ -90,7 +90,7 @@ export default defineComponent({
       });
     },
     register() {
-      this.$router.push('/meeting');
+      this.$router.push('/news');
     },
     refreshCaptcha() {
       // Replace with actual logic to refresh captcha
