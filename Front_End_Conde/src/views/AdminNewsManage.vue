@@ -294,7 +294,7 @@
 
 			const fetchCompanies = async () => {
 				try {
-					const response = await axios.get('http://localhost:9000/user/companies');
+					const response = await axios.get('http://localhost:8070/user/companies');
 					companies.value = response.data.companies;
 					console.log(companies.value);
 				} catch (error) {
@@ -325,7 +325,7 @@
 					const formData = new FormData();
 					formData.append('file', selectedFile.value);
 
-					axios.post('http://localhost:9000/upload', formData, {
+					axios.post('http://localhost:8070/upload', formData, {
 							headers: {
 								'Content-Type': 'multipart/form-data'
 							}
@@ -421,16 +421,21 @@
 loginUser.value = store.state.user;
 
 				try {
-					const userResponse = await axios.get('http://localhost:9000/user/info', {
-						withCredentials: true
-					});
 
-					if (userResponse.data.isLogin) {
-						tenant.value = userResponse.data.companyname;
+
+					if (loginUser.value.role==='admin') {
+						
+								const response = await axios.get('http://localhost:8070/searchByCompanyId', {
+									params: {
+										companyId: loginUser.value.companyId
+									}
+								});
+								const companyList = response.data.company;
+						tenant.value = companyList[0].companyName;
 						isLoggedIn.value = true;
 						
 						try {
-							const response = await axios.get('http://localhost:9000/news/mynews', {
+							const response = await axios.get('http://localhost:8070/news/mynews', {
 								withCredentials: true,
 								params: {
 									companyName: tenant.value
@@ -464,7 +469,7 @@ loginUser.value = store.state.user;
 			});
 
 			function refreshNewsList() {
-				axios.get('http://localhost:9000/news/mynews', {
+				axios.get('http://localhost:8070/news/mynews', {
 						withCredentials: true,
 						params: {
 							companyName: tenant.value
@@ -509,7 +514,7 @@ const newsData = ref([]);
 			const handleEdit = async (row) => {
 				isChange.value = 1;
 				editId.value = row.newsId;
-				const response = await axios.get('http://localhost:9000/news/getEditNew', {
+				const response = await axios.get('http://localhost:8070/news/getEditNew', {
 					params: {
 						newsId: row.newsId
 					}
@@ -547,7 +552,7 @@ const newsData = ref([]);
 					// 用户点击确定
 					const idsToDelete = selectedRows.value.map(row => row.newsId);
 					try {
-						await axios.post('http://localhost:9000/news/delete', {
+						await axios.post('http://localhost:8070/news/delete', {
 							ids: idsToDelete
 						});
 						tableData.value = tableData.value.filter(item => !idsToDelete.includes(item
@@ -577,7 +582,7 @@ const newsData = ref([]);
 				).then(async () => {
 					// 用户点击确定
 					try {
-						await axios.post('http://localhost:9000/news/delete', {
+						await axios.post('http://localhost:8070/news/delete', {
 							ids: [row.newsId]
 						});
 						refreshNewsList();
@@ -635,8 +640,7 @@ const newsData = ref([]);
 					return matchesTitle && matchesAuthor && matchesIntroduction && matchesDate;
 				});
 
-				// 更新分页数据
-				//total.value=filteredData.length;
+
 				updatePagedData(filteredData);
 
 			};
@@ -691,7 +695,7 @@ const newsData = ref([]);
 					};
 
 					// 发送 POST 请求
-					axios.post('http://localhost:9000/news/add', requestData)
+					axios.post('http://localhost:8070/news/add', requestData)
 						.then(response => {
 							console.log('新增新闻成功', response.data);
 
@@ -728,7 +732,7 @@ const newsData = ref([]);
 					};
 
 					// 发送 POST 请求
-					axios.post('http://localhost:9000/news/add', requestData)
+					axios.post('http://localhost:8070/news/add', requestData)
 						.then(response => {
 							console.log('新增新闻成功', response.data);
 							refreshNewsList();
@@ -777,7 +781,7 @@ const newsData = ref([]);
 					};
 
 					// 发送 POST 请求
-					axios.post('http://localhost:9000/news/edit', requestData)
+					axios.post('http://localhost:8070/news/edit', requestData)
 						.then(response => {
 							console.log('修改新闻成功', response.data);
 
@@ -815,7 +819,7 @@ const newsData = ref([]);
 					};
 
 					// 发送 POST 请求
-					axios.post('http://localhost:9000/news/edit', requestData)
+					axios.post('http://localhost:8070/news/edit', requestData)
 						.then(response => {
 							console.log('修改新闻成功', response.data);
 							refreshNewsList();
@@ -874,9 +878,9 @@ const newsData = ref([]);
 			};
 
 			const gotoNewsManage = () => {
-				if (loginUser.value === 'admin') {
+				if (loginUser.value.role === 'admin') {
 					router.push('/mynews');
-				} else if (loginUser.value === 'root') {
+				} else if (loginUser.value.role === 'root') {
 					router.push('/news');
 				} else {
 					ElMessage.error('无权访问该页面');

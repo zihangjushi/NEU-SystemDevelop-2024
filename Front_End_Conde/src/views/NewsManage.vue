@@ -302,7 +302,7 @@
 
 			const fetchCompanies = async () => {
 				try {
-					const response = await axios.get('http://localhost:8070/user/companies');
+					const response = await axios.get('http://localhost:8070/company/list');
 					companies.value = response.data.companies;
 					console.log(companies.value);
 				} catch (error) {
@@ -328,25 +328,7 @@
 				reader.readAsDataURL(selectedFile.value);
 			};
 
-			const handleSubmit = () => {
-				if (selectedFile.value) {
-					const formData = new FormData();
-					formData.append('file', selectedFile.value);
 
-					axios.post('http://localhost:8070/upload', formData, {
-							headers: {
-								'Content-Type': 'multipart/form-data'
-							}
-						})
-						.then(response => {
-							imageUrl.value = response.data;
-						})
-						.catch(() => {
-							errorMessage.value = '图片上传失败';
-							errorDialogVisible.value = true;
-						});
-				}
-			};
 
 			// 表单验证规则
 			const rules = {
@@ -433,13 +415,7 @@
 
 
 					if (loginUser.value.role==='root') {
-						const response = await axios.get('http://localhost:8070/searchByCompanyId', {
-							params: {
-								companyId: loginUser.value.companyId
-							}
-						});
-						const companyList = response.data.company;
-						tenant.value = companyList[0].companyName;
+
 						isLoggedIn.value = true;
 						try {
 							const response = await axios.get('http://localhost:8070/news/getnews', {
@@ -643,7 +619,6 @@
 				});
 
 
-				axios.get('http://localhost:8070/news/search');
 
 				// 更新分页数据
 				updatePagedData(filteredData);
@@ -930,7 +905,6 @@
 				closeDialog,
 				handleUploadClick,
 				handleFileChange,
-				handleSubmit,
 				previewImageUrl,
 				cancelUpload,
 				fetchCompanies,
