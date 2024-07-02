@@ -3,6 +3,7 @@ package com.example.deptmanage.controller;
 import com.example.deptmanage.biz.*;
 import com.example.deptmanage.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/dept")
+@CrossOrigin(originPatterns = "http://localhost:8081")
 
 public class DepartmentController {
     @Autowired
