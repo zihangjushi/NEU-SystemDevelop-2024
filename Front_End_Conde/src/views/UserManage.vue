@@ -516,13 +516,7 @@ export default {
       value: '开发',
       label: '开发'
     }]
-    const roleOptions = [{
-      value: 'admin',
-      label: '租户管理员'
-    }, {
-      value: 'user',
-      label: '普通用户'
-    }]
+    const roleOptions = ref([])
     
     // const addRules = reactive({
     //   name: [{ required: true, message: 'Please input name', trigger: 'blur' }],
@@ -575,9 +569,16 @@ export default {
       addForm.value.enabled = '1'
       addForm.value.description = ''
     }
-
     const clearUpdateForm = () => {
-      console.log(updateForm.value)
+      updateForm.value.gender = ''
+      updateForm.value.role = ''
+      updateForm.value.career = ''
+      updateForm.value.departmentId = ''
+      updateForm.value.phoneNumber = ''
+      updateForm.value.email = ''
+      updateForm.value.userName = ''
+      updateForm.value.enabled = '1'
+      updateForm.value.description = ''
     }
 
     const closeDialog = () => {
@@ -687,10 +688,23 @@ export default {
 
     // 修改按钮
     const handleEdit = (index, row) => {
+      if (loginUser.value.role == "root") {
+        roleOptions.value = [{
+          value: 'admin',
+          label: '租户管理员'
+        }, {
+          value: 'user',
+          label: '普通用户'
+        }]
+      } else if (loginUser.value.role == "admin") {
+        roleOptions.value = [{
+          value: 'user',
+          label: '普通用户'
+        }]
+      }
       if (updateDialogVisible.value == false) updateDialogVisible.value = true;
       updateForm.value.userId = row.userId
       updateForm.value.password = row.password
-      console.log(row.departmentId)
       updateForm.value.companyId = loginUser.value.companyId
       updateForm.value.realName = row.realName
       updateForm.value.userName = row.userName
@@ -701,7 +715,6 @@ export default {
       updateForm.value.role = row.role
       updateForm.value.description = row.description
       updateForm.value.departmentId = row.departmentId
-
       if (row.enabled == "在岗") updateForm.value.enabled = '1'
       else updateForm.value.enabled = '2'
     };
@@ -783,14 +796,15 @@ export default {
 
     //用户管理菜单选择方法
     const menuControlVisable = (companyId, serialId) => {
+      console.log(companyId,serialId)
       let fd = new FormData;
       fd.append("companyId", companyId)
       fd.append("departmentId", serialId)
       axios.post("http://localhost:8070/user/searchByCompanyInformation", fd)
         .then(response => {
+          console.log(response.data.users)
           if (response.data.isOk) filteredUserTable.value = response.data.users;
-          console.log(companyId, serialId)
-          initUserTable()
+          searchUserDataByPage(currentPage.value)
         })
     }
 
@@ -876,12 +890,15 @@ export default {
         axios.get("http://localhost:8070/user/list")
           .then(response => {
             if (response.data.isOk) {
+              
               response.data.users.forEach(user => {
                 if (user.enabled == 1) {
                   user.enabled = "在岗"
                 }
                 else user.enabled = "休假"
+                user.departmentId = transformNumToDept(user.departmentId)
               })
+              
               console.log("表格用户数据读取成功")
               userTable.value = response.data.users;
               filteredUserTable.value = userTable.value;
@@ -911,6 +928,15 @@ export default {
             }
           })
       }
+    }
+
+    const transformNumToDept = num => {
+      if(num == 0) return "无"
+      else if (num == 1) return "研发部门"
+      else if (num == 2) return "市场部门"
+      else if (num == 3) return "测试部门"
+      else if (num == 4) return "财务部门"
+      else if( num == 5) return "运维部门"
     }
 
     //监测当前页变化，并进行分页内容显示

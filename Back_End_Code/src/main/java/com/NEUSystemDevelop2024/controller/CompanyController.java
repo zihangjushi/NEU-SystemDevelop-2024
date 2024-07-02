@@ -32,7 +32,6 @@ public class CompanyController {
         Company company = companyBiz.searchByCompanyId(companyId);
         List<Company> list = new ArrayList<>();
         list.add(company);
-        System.out.println(company.getCompanyName());
         Map map = new HashMap();
         map.put("isOk",true);
         map.put("company",list);
