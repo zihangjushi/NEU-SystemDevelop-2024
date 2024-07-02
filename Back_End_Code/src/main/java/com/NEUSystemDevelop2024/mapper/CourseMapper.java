@@ -12,9 +12,9 @@ public interface CourseMapper {
     @Select("select * from t_course")
     List<Course> listCourse();
 
-    @Select("select * from t_course where companyName=#{companyName}")
-    List<Course> listCourseByCompanyName(String companyName);
-
-    @Insert("insert into t_course values(null, #{courseName}, #{companyName}, #{description}, #{courseOrder}, #{author}, null, null, #{imageUrl}, #{videoUrl})")
+    @Insert("insert into t_course values(DEFAULT, #{courseName}, #{companyName}, #{description}, #{courseOrder}, #{author}, DEFAULT, DEFAULT, #{imageUrl}, #{videoUrl})")
     int insertCourse(Course course);
+
+    @Select("select * from t_course where courseName LIKE CONCAT('%', #{courseName}, '%') OR courseOrder LIKE CONCAT('%', #{courseOrder}, '%') OR author LIKE CONCAT('%', #{author}, '%') OR (createTime BETWEEN #{createTime} AND #{modifyTime})")
+    List<Course> listCourseBySearch(Course course);
 }

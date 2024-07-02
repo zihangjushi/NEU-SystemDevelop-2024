@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
@@ -40,7 +41,7 @@ public class CourseController {
 
     @PostMapping("/add")
     public Map add(@RequestBody Course course, HttpSession session) {
-        course.setCompanyName(getCourseName(session));
+        course.setCompanyName(getCourseCompanyName(session));
         boolean ret = courseBiz.insertCourse(course);
         Map map = new HashMap();
         if(ret) {
@@ -53,7 +54,39 @@ public class CourseController {
         return map;
     }
 
-    private String getCourseName(HttpSession session) {
+    @PostMapping("/search")
+    public Map search(@RequestBody Course course, HttpSession session) {
+//        User user = (User) session.getAttribute("user");
+        if(course.getCourseName() == null) {
+            course.setCourseName("");
+        }
+        if(course.getCourseOrder() == null) {
+            course.setCourseOrder("");
+        }
+        if(course.getAuthor() == null) {
+            course.setAuthor("");
+        }
+        if(course.getCreateTime() == null) {
+            course.setCreateTime(new Timestamp(0));
+        }
+        if(course.getModifyTime() == null) {
+            course.setModifyTime(new Timestamp(Long.MAX_VALUE));
+        }
+        System.out.println(course);
+        List<Course> courseList = courseBiz.getCourseListBySearch(course);
+        Map map = new HashMap();
+        if(courseList == null || courseList.size() == 0) {
+            map.put("isOk", false);
+            map.put("courses", "");
+        } else {
+            map.put("isOk", true);
+            map.put("courses", courseList);
+        }
+
+        return map;
+    }
+
+    private String getCourseCompanyName(HttpSession session) {
 //        User user = (User) session.getAttribute("user");
 //        if(user.getRole().equals("超级管理员")) {
 //            return "超级管理员所属";

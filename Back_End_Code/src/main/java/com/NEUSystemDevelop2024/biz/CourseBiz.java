@@ -15,8 +15,8 @@ public class CourseBiz {
 
     public List<Course> getCourseList(){ return mapper.listCourse();}
 
-    public List<Course> getCourseListByCompanyName(String companyName) { return mapper.listCourseByCompanyName(companyName); }
-
     public boolean insertCourse(Course course) { return mapper.insertCourse(course) > 0; }
+
+    public List<Course> getCourseListBySearch(Course course) { return mapper.listCourseBySearch(course); }
 }
 

@@ -83,19 +83,29 @@
                 <el-main>
 
                     <div style="text-align: left;">
-                        <!-- 两个文本框及其输入提示信息，分别于input1和input2双向绑定 -->
+                        <!-- 两个文本框及其输入提示信息，分别于searchCourseName和searchAuthor双向绑定 -->
                         <span style="color: rgb(150,150,150)"><strong>课程名称</strong></span>
-                        <el-input v-model="input1" placeholder="请输入内容"
+                        <el-input v-model="searchCourseName" placeholder="请输入内容"
                             style="margin-left: 5px;width: 200px;height: 30px;"></el-input>
-                        <span style="color: rgb(150,150,150);margin-left: 15px;"><strong>创建人</strong></span>
-                        <el-input v-model="input2" placeholder="请输入内容"
+                        <span style="color: rgb(150,150,150)"><strong>课程排序</strong></span>
+                        <el-input v-model="searchCourseOrder" placeholder="请输入内容"
                             style="margin-left: 5px;width: 200px;height: 30px;"></el-input>
-                        <!-- 开始时间和结束时间的选择，双向绑定到了value1属性（目前只有开始时间 -->
+                        <span style="color: rgb(150,150,150);margin-left: 15px;"><strong>作者</strong></span>
+                        <el-input v-model="searchAuthor" placeholder="请输入内容"
+                            style="margin-left: 5px;width: 200px;height: 30px;"></el-input>
+                        <br>
+                        <!-- 开始时间和结束时间的选择 -->
                         <span style="color: rgb(150,150,150);margin-left: 15px;"><strong>开始时间</strong></span>
-                        <el-date-picker v-model="value1" type="date" placeholder="选择日期" style="margin-left: 5px;">
+                        <el-date-picker v-model="searchBeginTime" type="date" placeholder="选择日期"
+                            style="margin-left: 5px;">
+                        </el-date-picker>
+                        <span style="color: rgb(150,150,150);margin-left: 15px;"><strong>结束时间</strong></span>
+                        <el-date-picker v-model="searchEndTime" type="date" placeholder="选择日期"
+                            style="margin-left: 5px;">
                         </el-date-picker>
                         <!-- 查询和重置按钮 -->
-                        <el-button type="primary" style="margin-left: 15px;" icon="Search">搜索</el-button>
+                        <el-button type="primary" style="margin-left: 15px;" icon="Search"
+                            @click="searchCourse">搜索</el-button>
                         <el-button plain style="margin-left: 15px;" icon="Refresh"
                             @click="refreshCoursesList">重置</el-button>
                     </div>
@@ -168,7 +178,7 @@
                                 align="center"></el-table-column>
                             <el-table-column prop="author" label="作者" width="100" header-align="center"
                                 align="center"></el-table-column>
-                            <el-table-column prop="createTime" label="开始时间" width="100" header-align="center"
+                            <el-table-column prop="createTime" label="开始时间" width="300" header-align="center"
                                 align="center"></el-table-column>
                             <el-table-column prop="operate" label="操作" header-align="center" align="center">
                                 <!-- template插槽，用于向菜单的最后一列中插入两个操作按钮 -->
@@ -302,9 +312,44 @@ export default {
             courseForm.author = '';
         };
 
+        const formatDateTime = (isoString) => {
+            const date = new Date(isoString);
+
+            // 数据库存的是本地时间, 所以不用偏移量
+            // // UTC+8 时区偏移量（8 小时 = 8 * 60 分钟 = 480 分钟）
+            // const offset = 8 * 60 * 60 * 1000;
+            const offset = 0;
+
+            // 将时间转换为 UTC+8
+            const localDate = new Date(date.getTime() + offset);
+
+            const year = localDate.getUTCFullYear();
+            const month = String(localDate.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(localDate.getUTCDate()).padStart(2, '0');
+            const hours = String(localDate.getUTCHours()).padStart(2, '0');
+            const minutes = String(localDate.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(localDate.getUTCSeconds()).padStart(2, '0');
+
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            // return isoString;
+        };
+
+        const formatTableData = () => {
+            tableData.value = tableData.value.map(item => ({
+                courseId: item.courseId,
+                courseName: item.courseName,
+                companyName: item.companyName,
+                description: item.description,
+                courseOrder: item.courseOrder,
+                author: item.author,
+                createTime: formatDateTime(item.createTime),
+                modifyTime: formatDateTime(item.modifyTime),
+                imageUrl: item.imageUrl,
+                videoUrl: item.videoUrl,
+            }));
+        };
+
         const addCourse = () => {
-            previewImageUrl.value;
-            previewVideoUrl.value;
             if (!courseForm.courseName || !courseForm.description || !courseForm.courseOrder || !courseForm.author || !previewImageUrl.value || !previewVideoUrl.value) {
                 // alert(courseForm.courseName);
                 // alert(courseForm.companyName);
@@ -329,29 +374,13 @@ export default {
             // alert(previewVideoUrl.value);
 
             const requestData = {
-                courseId: 1,
                 courseName: courseForm.courseName,
-                companyName: '',
                 description: courseForm.description,
                 courseOrder: courseForm.courseOrder,
                 author: courseForm.author,
-                createTime: '',
-                modifyTime: '',
                 imageUrl: previewImageUrl.value,
                 videoUrl: previewVideoUrl.value,
             };
-
-            // let fd = new FormData;
-            // fd.append('courseId', '1');
-            // fd.append('courseName', courseForm.courseName);
-            // fd.append('companyName', '');
-            // fd.append('description', courseForm.description);
-            // fd.append('courseOrder', courseForm.courseOrder);
-            // fd.append('author', courseForm.author);
-            // fd.append('createTime', '');
-            // fd.append('modifyTime', '');
-            // fd.append('imageUrl', previewImageUrl.value);
-            // fd.append('videoUrl', previewImageUrl.value);
 
             axios.post('http://localhost:8070/course/add', requestData)
                 .then(response => {
@@ -388,7 +417,9 @@ export default {
             axios.get('http://localhost:8070/course/list')
                 .then(response => {
                     // alert('refresh success');
-                    tableData.value = response.data.courses; // 假设后端返回的数据是一个包含新闻信息的数组
+                    tableData.value = response.data.courses;
+                    formatTableData();
+                    
                     // updatePagedData(tableData.value); // 更新分页数据的函数，假设已定义
                 })
                 .catch(error => {
@@ -396,6 +427,45 @@ export default {
                     console.error('获取课程列表失败', error);
                     // 可以在这里处理获取新闻列表失败的情况，比如显示错误信息给用户
                 });
+        };
+
+
+        const searchCourse = () => {
+            const requestData = {
+                courseName: searchCourseName.value,
+                courseOrder: searchCourseOrder.value,
+                author: searchAuthor.value,
+                // 这里复用course, 将开始时间作为createTime, 结束时间作为modifyTime
+                createTime: searchBeginTime.value,
+                modifyTime: searchEndTime.value,
+            };
+
+            axios.post('http://localhost:8070/course/search', requestData)
+                .then(response => {
+                    console.log('查询课程成功', response.data);
+                    // alert('查询课程成功');
+
+                    loadCoursesList(response);
+
+
+                    dialogAddCourseVisible.value = false;
+                    // 显示成功提示框等
+                    // successMessage.value = '新增课程成功';
+                    // successDialogVisible.value = true;
+                })
+                .catch(error => {
+                    console.error('新增课程失败', error);
+                    // alert('新增课程失败');
+
+                    // 显示错误提示框等
+                    // errorMessage.value = '新增课程失败，请稍后重试';
+                    // errorDialogVisible.value = true;
+                });
+        }
+
+        const loadCoursesList = (response) => {
+            tableData.value = response.data.courses;
+            formatTableData();
         };
 
         const pickerOptions = ref({
@@ -425,9 +495,11 @@ export default {
             multipleSelection: []
         });
 
-        const value1 = ref('');
-        const input1 = ref('');
-        const input2 = ref('');
+        const searchBeginTime = ref('');
+        const searchEndTime = ref('');
+        const searchCourseName = ref('');
+        const searchAuthor = ref('');
+        const searchCourseOrder = ref('');
         const multipleTable = ref(null);
 
         const toggleSelection = (rows) => {
@@ -529,9 +601,11 @@ export default {
         return {
             tableData,
             pickerOptions,
-            value1,
-            input1,
-            input2,
+            searchBeginTime,
+            searchEndTime,
+            searchCourseName,
+            searchAuthor,
+            searchCourseOrder,
             multipleTable,
             toggleSelection,
             handleSelectionChange,
@@ -560,6 +634,10 @@ export default {
             handleVideoChange,
             cancelVideoUpload,
             refreshCoursesList,
+            loadCoursesList,
+            formatDateTime,
+            formatTableData,
+            searchCourse,
         };
     }
 };
