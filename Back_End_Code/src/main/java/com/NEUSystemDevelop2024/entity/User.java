@@ -36,6 +36,22 @@ public class User {
         this.description = description;
         this.departmentId = departmentId;
     }
+    public User(int userId, int companyId, String userName, String realName, int gender, String password, String role, int enabled, String career, String phoneNumber, String email, String createTime, String description, int departmentId) {
+        this.userId = userId;
+        this.companyId = companyId;
+        this.userName = userName;
+        this.realName = realName;
+        this.gender = gender;
+        this.password = password;
+        this.role = role;
+        this.enabled = enabled;
+        this.career = career;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.createTime = createTime;
+        this.description = description;
+        this.departmentId = departmentId;
+    }
 
     public int getUserId() {
         return userId;

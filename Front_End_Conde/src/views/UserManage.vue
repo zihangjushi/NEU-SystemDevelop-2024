@@ -129,7 +129,7 @@
           <!-- 一行中四个按钮，用来新增、删除修改、导出（暂时没有绑定方法） -->
           <el-row style="text-align: left;">
             <el-button type="primary" @click="addButton" plain icon="Plus" style="margin-top: 5px">新增</el-button>
-            <el-button type="danger" @click="handleDelete()" plain icon="Delete" style="margin-top: 5px">删除</el-button>
+            <el-button type="danger" @click="confirmDelete" plain icon="Delete" style="margin-top: 5px">删除</el-button>
             <el-button type="warning" plain icon="Download" style="margin-top: 5px">导出</el-button>
           </el-row>
 
@@ -182,7 +182,8 @@
               </el-col>
               <el-col :span="10" class="form-col">
                 <el-form-item label="用户性别" prop="gender" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.gender" :options="genderOptions" placeholder="请选择用户性别" clearable style="width: 270px"/>
+                  <el-cascader v-model="addForm.gender" :options="genderOptions" placeholder="请选择用户性别" clearable
+                    style="width: 270px" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -217,21 +218,22 @@
             <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
               <el-col :span="10" class="form-col">
                 <el-form-item label="公司名称" prop="company" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.companyId" :options="companyOptions" placeholder="请选择公司"
-                  clearable style="width:270px" />
+                  <el-cascader v-model="addForm.companyId" :options="companyOptions" placeholder="请选择公司" clearable
+                    style="width:270px" />
                 </el-form-item>
               </el-col>
               <el-col :span="10" class="form-col">
                 <el-form-item label="归属部门" prop="department" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.departmentId" :options="transformedDepartmentOptions" placeholder="请选择部门"
-                    clearable style="width:270px" />
+                  <el-cascader v-model="addForm.departmentId" :options="transformedDepartmentOptions"
+                    placeholder="请选择部门" clearable style="width:270px" />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
               <el-col :span="10" class="form-col">
                 <el-form-item label="岗位" prop="career" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.career" :options="careerOptions" placeholder="请选择岗位" clearable style="width:270px" />
+                  <el-cascader v-model="addForm.career" :options="careerOptions" placeholder="请选择岗位" clearable
+                    style="width:270px" />
                 </el-form-item>
               </el-col>
               <el-col :span="10" class="form-col">
@@ -262,7 +264,7 @@
           <!-- 对话框底部按钮 -->
           <template #footer>
             <div class="dialog-footer">
-              <el-button @click="clearForm()">清除</el-button>
+              <el-button @click="clearAddForm()">清除</el-button>
               <el-button @click="closeDialog()">取消</el-button>
               <el-button type="primary" @click="addUser">确认添加</el-button>
             </div>
@@ -270,82 +272,83 @@
         </el-dialog>
 
 
-
         <!-- 用户修改的表单 -->
         <el-dialog v-model="updateDialogVisible" title="修改用户" :close-on-click-modal="true" style="height: 650px">
-
-          <el-form ref="form" :model="addForm" :rules="rules" label-width="150px">
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
+          <el-form ref="form" :model="updateForm" :rules="rules" label-width="150px" label-position="top">
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
                 <el-form-item label="用户昵称" prop="userName" size="large" style="height: 60px">
-                  <el-input id="userName" type="text" v-model="addForm.userName" placeholder="请输入用户昵称"
-                    style="width: 200px;height: 40px" />
+                  <el-input id="userName" type="text" v-model="updateForm.userName" placeholder="请输入用户昵称"
+                    style="width: 270px;height: 40px" />
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="10" class="form-col">
                 <el-form-item label="归属部门" prop="department" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.department" :options="excludedDepartments" placeholder="请选择部门"
-                    clearable />
+                  <el-cascader v-model="updateForm.departmentId" :options="transformedDepartmentOptions" placeholder="请选择部门"
+                    clearable style="width:270px" />
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
                 <el-form-item label="手机号码" prop="phoneNumber" size="large" style="height: 60px">
-                  <el-input id="phoneNumber" type="text" v-model="addForm.phoneNumber" placeholder="请输入手机号码"
-                    style="width: 200px;height: 40px" />
+                  <el-input id="phoneNumber" type="text" v-model="updateForm.phoneNumber" placeholder="请输入手机号码"
+                    style="width: 270px;height: 40px" />
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="10" class="form-col">
                 <el-form-item label="邮箱" prop="email" size="large" style="height: 60px">
-                  <el-input id="email" type="text" v-model="addForm.email" placeholder="请输入邮箱"
-                    style="width: 200px;height: 40px" />
+                  <el-input id="email" type="text" v-model="updateForm.email" placeholder="请输入邮箱"
+                    style="width: 270px;height: 40px" />
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
-                <el-form-item label="用户性别" prop="gender" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.gender" :options="genderOptions" placeholder="请选择用户性别" clearable />
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
+                <el-form-item label="用户性别" prop="gender" size="large" style="  height: 60px">
+                  <el-cascader v-model="updateForm.gender" :options="genderOptions" placeholder="请选择用户性别" style="width:270px" clearable />
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
-                <el-form-item label="状态" prop="enabled" size="large" style="height: 60px">
+              <el-col :span="10" class="form-col">
+                <el-form-item label="状态" prop="enabled" size="large" style=" height: 60px">
                   <div class="mb-2 flex items-center text-sm">
-                    <el-radio-group v-model="addForm.enabled" class="ml-4">
-                      <el-radio value="1" size="large">Option 1</el-radio>
-                      <el-radio value="2" size="large">Option 2</el-radio>
+                    <el-radio-group v-model="updateForm.enabled" class="ml-4" style="width:270px">
+                      <el-radio value="1" size="large">在岗</el-radio>
+                      <el-radio value="2" size="large">休假</el-radio>
                     </el-radio-group>
                   </div>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row :gutter="3"> <!-- 这里的 gutter 控制列之间的间距 -->
-              <el-col :span="10">
+            <el-row :gutter="3" class="form-row"> <!-- 这里的 gutter 控制列之间的间距 -->
+              <el-col :span="10" class="form-col">
                 <el-form-item label="岗位" prop="career" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.career" :options="careerOptions" placeholder="请选择岗位" clearable />
+                  <el-cascader v-model="updateForm.career" :options="careerOptions" placeholder="请选择岗位" style="width:270px" clearable />
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="10" class="form-col">
                 <el-form-item label="角色" prop="role" size="large" style="height: 60px">
-                  <el-cascader v-model="addForm.role" :options="roleOptions" placeholder="请选择权限" clearable />
+                  <el-cascader v-model="updateForm.role" :options="roleOptions" placeholder="请选择权限" style="width:270px" clearable />
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item label="描述" prop="description" size="large" style="height: 60px">
-              <el-input v-model="addForm.description" style="width: 400px; height: 60px" :rows="2" type="textarea"
-                placeholder="Please input" />
-            </el-form-item>
+              <el-form-item label="描述" prop="description" size="large" style="height: 80px; width: 800px; justify-content: center; margin-left: 17%">
+                <el-input v-model="updateForm.description" style="width: 600px; height: 80px" :rows="2" type="textarea"
+                  placeholder="Please input" />
+              </el-form-item>
           </el-form>
+          
+
           <!-- 对话框底部按钮 -->
           <template #footer>
             <div class="dialog-footer">
-              <el-button @click="clearForm()">清除</el-button>
+              <el-button @click="clearUpdateForm()">清除</el-button>
               <el-button @click="closeDialog()">取消</el-button>
-              <el-button type="primary" @click="editNews">确认修改</el-button>
+              <el-button type="primary" @click="updateUser()">确认修改</el-button>
             </div>
           </template>
         </el-dialog>
+
 
       </el-container>
     </el-container>
@@ -459,7 +462,21 @@ export default {
       role: 'user',
       description: ''
     })
-
+    const updateForm = ref({
+      userId:'',
+      companyId:'',
+      userName: '',
+      departmentId: '',
+      phoneNumber: '',
+      email: '',
+      realName: '',
+      password: '',
+      gender: '',
+      enabled: '1',
+      career: '',
+      role: 'user',
+      description: ''
+    })
 
     const companyOptions = ref([])
     // 公司格式转换属性
@@ -500,9 +517,6 @@ export default {
       label: '开发'
     }]
     const roleOptions = [{
-      value: 'root',
-      label: '超级管理员'
-    }, {
       value: 'admin',
       label: '租户管理员'
     }, {
@@ -548,7 +562,7 @@ export default {
       
     }
 
-    const clearForm = () => {
+    const clearAddForm = () => {
       addForm.value.career = ''
       addForm.value.companyId = ''
       addForm.value.companyName = ''
@@ -562,8 +576,45 @@ export default {
       addForm.value.description = ''
     }
 
+    const clearUpdateForm = () => {
+      console.log(updateForm.value)
+    }
+
     const closeDialog = () => {
       dialogVisible.value = false
+      updateDialogVisible.value = false
+    }
+
+    const updateUser = () => {
+      if (loginUser.value.role == "admin") {
+        ElMessageBox.confirm(
+          '是否确定修改用户',
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+        ).then(() => {
+          axios.post("http://localhost:8070/user/update", updateForm.value)
+            .then(response => {
+              if (response.data.isOk) {
+                console.log("isOk", response.data.isOk)
+                dialogVisible.value = false;
+                ElMessage({
+                  showClose: true,
+                  message: '修改成功！',
+                  type: 'success'
+                });
+              }
+            })
+            .catch(error => {
+              console.log(error)
+            })
+        }).catch(() => {
+          console.log("添加取消")
+        })
+      }
     }
 
     const addUser = () => {
@@ -599,9 +650,35 @@ export default {
       }
     }
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
+      //通过勾选删除
+      const idsToDelete = pickerOptions.value.multipleSelection.map(row => row.userId);
+      ElMessageBox.confirm(
+        '此操作将永久删除该条记录, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).then(() => {
+        idsToDelete.forEach(row => {
+          let fd = new FormData()
+          fd.append("userId", row)
+          axios.post('http://localhost:8070/user/deleteUserById', fd)
+            .then(response => {
+              console.log("删除成功",response)
+              initUserTable()
+          })
+        })
+        ElMessage.success('删除成功');
+        
+      }).catch(() => {
+        console.log("删除取消")
+      })
+      
+    };
 
-    }
 
     //重置按钮
     const handle = () => {
@@ -609,8 +686,24 @@ export default {
     }
 
     // 修改按钮
-    const handleEdit = () => {
+    const handleEdit = (index, row) => {
       if (updateDialogVisible.value == false) updateDialogVisible.value = true;
+      updateForm.value.userId = row.userId
+      updateForm.value.password = row.password
+      console.log(row.departmentId)
+      updateForm.value.companyId = loginUser.value.companyId
+      updateForm.value.realName = row.realName
+      updateForm.value.userName = row.userName
+      updateForm.value.phoneNumber = row.phoneNumber
+      updateForm.value.email = row.email
+      updateForm.value.gender = row.gender
+      updateForm.value.career = row.career
+      updateForm.value.role = row.role
+      updateForm.value.description = row.description
+      updateForm.value.departmentId = row.departmentId
+
+      if (row.enabled == "在岗") updateForm.value.enabled = '1'
+      else updateForm.value.enabled = '2'
     };
 
     // 删除按钮
@@ -624,7 +717,6 @@ export default {
           type: 'warning',
         }
       ).then(() => {
-        console.log("删除行", row.userName)
         let fd = new FormData()
         fd.append("userId", row.userId)
         axios.post("http://localhost:8070/user/deleteUserById", fd)
@@ -833,6 +925,17 @@ export default {
       // console.log("departmentOptions", JSON.parse(JSON.stringify(departmentOptions.value)))
     })
 
+    watch(updateForm.value, (newVal) => {
+      if (loginUser.value.role == "root"){
+        console.log(newVal.departmentId)
+      } else {
+        console.log(newVal.departmentId)
+        let i = loginUser.value.companyId
+        departmentOptions.value = getDepartmentsByCompany(i)
+      }
+      
+    })
+
     //钩子函数，在浏览器渲染页面时执行
     onMounted(async () => {
       await Promise.all([
@@ -873,6 +976,7 @@ export default {
       dialogVisible,
       updateDialogVisible,
       addForm,
+      updateForm,
 
       companyOptions,
       transformedCompanyOptions,
@@ -890,9 +994,11 @@ export default {
       confirmDelete,
 
       addButton,
-      clearForm,
+      clearAddForm,
+      clearUpdateForm,
       closeDialog,
       addUser,
+      updateUser,
 
       handleEdit,
       handleDelete,

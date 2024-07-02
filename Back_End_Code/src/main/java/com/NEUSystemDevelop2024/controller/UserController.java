@@ -30,10 +30,8 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserBiz userBiz;
-
     @Autowired
     private CompanyBiz companyBiz;
-
     @RequestMapping("/login")
     public Map login(User user, HttpServletRequest request)
     {
@@ -52,7 +50,6 @@ public class UserController {
             map.put("msg","登录失败");
             return map;
         }
-
     }
 
     @RequestMapping("/register")
@@ -75,14 +72,10 @@ public class UserController {
 
                 Company company = new Company(name,1,phoneNumber,contactName,companyName,description,createTime);
 
-
                 companyBiz.addCompany(company);
 
-
-                System.out.println(companyBiz.searchByCompanyName(companyName).getCompanyId());
                 User user = new User(companyBiz.searchByCompanyName(companyName).getCompanyId(),usernum,name,gender,password,"admin",1,"管理员",phoneNumber,email,createTime,null,0);
                 userBiz.addUser(user);
-
 
             map.put("isOk", true);
             map.put("msg", "注册成功！");
@@ -90,7 +83,6 @@ public class UserController {
             map.put("isOk", false);
             map.put("msg", "注册失败：" + e.getMessage());
         }
-
         return map;
     }
 
@@ -199,6 +191,51 @@ public class UserController {
         return map;
     }
 
+    @RequestMapping("/update")
+    public Map update(@RequestBody Map<String, Object> request)
+    {
+        System.out.println("123456");
+        Map<String, Object> map = new HashMap<>();
+        try{
+            int userId = Integer.parseInt((String) request.get("userId"));
+            System.out.println(userId);
+            String userName = (String) request.get("userName");
+            System.out.println(userName);
+            String realName = (String) request.get("realName");
+            System.out.println(realName);
+            int companyId = Integer.parseInt((String) request.get("companyId"));
+            int gender = Integer.parseInt((String) request.get("gender"));
+
+            String career = (String) request.get("career");
+            String password = (String) request.get("password");
+            String phoneNumber = (String) request.get("phoneNumber");
+            String email = (String) request.get("email");
+
+            List<Integer> departmentList = (List<Integer>) request.get("departmentId");
+            int departmentId = departmentList.get(0);
+
+            String role = (String) request.get("role");
+
+            int enabled = Integer.parseInt((String) request.get("enabled"));
+            if(enabled == 2) enabled = 0;
+
+            String description = (String) request.get("description");
+
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String createTime = now.format(formatter);
+
+            User user = new User(userId, companyId,userName,realName, gender,password, role, enabled, career, phoneNumber,email, createTime, description, departmentId);
+            userBiz.updateUserByPage(user);
+            map.put("isOk",true);
+            map.put("msg", "修改成功");
+        }catch (Exception e) {
+            map.put("isOk", false);
+            map.put("msg", "修改失败：" + e.getMessage());
+        }
+        return map;
+    }
+
     @RequestMapping("/deleteUserById")
     public Map delete(Integer userId){
         boolean isOk = userBiz.deleteUserById(userId);
@@ -212,4 +249,6 @@ public class UserController {
         }
         return map;
     }
+
+
 }

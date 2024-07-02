@@ -40,6 +40,10 @@ public class UserBiz {
     public boolean addUserByPage(User user){
         System.out.println("添加成功");
         return  mapper.insertUserByPage(user) > 0;
+    }
 
+    public boolean updateUserByPage(User user){
+        System.out.println("修改成功");
+        return mapper.updateUserByPage(user) > 0;
     }
 }

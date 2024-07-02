@@ -1,10 +1,7 @@
 package com.NEUSystemDevelop2024.mapper;
 
 import com.NEUSystemDevelop2024.entity.User;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -27,4 +24,17 @@ public interface UserMapper {
 
     @Delete("delete from t_user where UserId=#{id}")
     Integer deleteUserById(Integer id);
+
+    @Update("UPDATE t_user SET " +
+            "departmentId = #{departmentId}, " +
+            "userName = #{userName}, " +
+            "gender = #{gender}, " +
+            "enabled = #{enabled}, " +
+            "career = #{career}, " +
+            "role = #{role}, " +
+            "phoneNumber = #{phoneNumber}, " +
+            "email = #{email}, " +
+            "description = #{description} " +
+            "WHERE userId = #{userId}")
+    Integer updateUserByPage(User user);
 }
