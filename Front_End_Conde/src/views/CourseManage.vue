@@ -154,8 +154,45 @@
                                 <el-button @click="clearForm()">清除</el-button>
                                 <el-button @click="closeDialog()">取消</el-button>
                                 <el-button type="primary" @click="addCourse">确认添加</el-button>
-                                <!-- <el-button type="primary" v-if="isChange === 0" @click="addCourse">确认添加</el-button> -->
-                                <!-- <el-button type="primary" v-else @click="editCourse">确认修改</el-button> -->
+                            </div>
+                        </template>
+                    </el-dialog>
+
+                    <!-- 修改dialog -->
+                    <el-dialog v-model="dialogEditCourseVisible" title="修改课程" width="700">
+                        <el-form :ref="form" :model="form" :rules="rules">
+                            <el-form-item label="课程名称" prop="courseName" :label-width="formLabelWidth">
+                                <el-input v-model="courseForm.courseName" autocomplete="off" />
+                            </el-form-item>
+                            <el-form-item label="课程封面" prop="imageUrl">
+                                <input type="file" @change="handleImageChange" ref="imageInput" />
+                                <img v-if="previewImageUrl" :src="previewImageUrl" class="avatar"
+                                    style="width: 100px; height: 100px; margin-top: 10px;">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                <button type="button" @click="cancelImageUpload">取消上传</button>
+                            </el-form-item>
+                            <el-form-item label="课程简介" prop="description" :label-width="formLabelWidth">
+                                <el-input v-model="courseForm.description" autocomplete="off" type="textarea" />
+                            </el-form-item>
+                            <el-form-item label="课程排序" prop="courseOrder" :label-width="formLabelWidth">
+                                <el-input v-model="courseForm.courseOrder" autocomplete="off" type="textarea" />
+                            </el-form-item>
+                            <el-form-item label="课程视频" prop="videoUrl">
+                                <input type="file" @change="handleVideoChange" ref="videoInput" />
+                                <img v-if="previewVideoUrl" :src="previewVideoUrl" class="avatar"
+                                    style="width: 100px; height: 100px; margin-top: 10px;">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                <button type="button" @click="cancelVideoUpload">取消上传</button>
+                            </el-form-item>
+                            <el-form-item label="课程作者" prop="author" :label-width="formLabelWidth">
+                                <el-input v-model="courseForm.author" autocomplete="off" />
+                            </el-form-item>
+                        </el-form>
+                        <template #footer>
+                            <div class="dialog-footer">
+                                <el-button @click="clearForm()">清除</el-button>
+                                <el-button @click="closeDialog()">取消</el-button>
+                                <el-button type="primary" @click="editCourse">确认修改</el-button>
                             </div>
                         </template>
                     </el-dialog>
@@ -208,6 +245,10 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Management, UserFilled } from "@element-plus/icons-vue";
+import {
+    ElMessage,
+    ElMessageBox
+} from 'element-plus';
 import axios from 'axios';
 // import { ElMessage } from 'element-plus';
 
@@ -216,6 +257,7 @@ export default {
     components: { Management, UserFilled },
     setup() {
         const dialogAddCourseVisible = ref(false);
+        const dialogEditCourseVisible = ref(false);
         const courseForm = reactive({
             courseId: '',
             courseName: '',
@@ -310,6 +352,11 @@ export default {
             courseForm.description = '';
             courseForm.courseOrder = '';
             courseForm.author = '';
+        };
+
+        const closeDialog = () => {
+            dialogAddCourseVisible.value = false;
+            dialogEditCourseVisible.value = false;
         };
 
         const formatDateTime = (isoString) => {
@@ -419,7 +466,7 @@ export default {
                     // alert('refresh success');
                     tableData.value = response.data.courses;
                     formatTableData();
-                    
+
                     // updatePagedData(tableData.value); // 更新分页数据的函数，假设已定义
                 })
                 .catch(error => {
@@ -513,30 +560,68 @@ export default {
         };
 
         const handleSelectionChange = (val) => {
-            pickerOptions.value.multipleSelection = val;
+            selectedRows.value = val;
         };
 
         const handleEdit = (index, row) => {
-            console.log(index, row);
+            // console.log(index, row);
+            cancelImageUpload();
+            cancelVideoUpload();
+            courseForm.courseName = '';
+            courseForm.description = '';
+            courseForm.courseOrder = '';
+            courseForm.author = '';
         };
 
-        const handleDelete = (index, row) => {
-            console.log(index, row);
+        const handleDelete = async (index, row) => {
+            const response = await axios.post('http://localhost:8070/course/deleteOne', {
+                courseId: row.courseId,
+            });
+            if (response.data.isOk) {
+                alert('删除成功');
+                searchCourse();
+            } else {
+                alert('删除失败');
+            }
         };
+
+
+
+        const deleteCourse = () => {
+            ElMessageBox.confirm(
+                '此操作将删除所选课程，是否继续？',
+                '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+            ).then(async () => {
+                // 用户点击确定
+                const idsToDelete = selectedRows.value.map(row => row.courseId);
+                const response = await axios.post('http://localhost:8070/course/deleteList', {
+                    ids: idsToDelete
+                });
+                if (response.data.isOk) {
+                    alert('删除成功');
+                } else {
+                    alert('删除失败');
+                }
+                searchCourse();
+            }).catch(() => {
+                // 用户点击取消
+                ElMessage.info('已取消删除');
+            });
+        };
+
+        const exportCourse = () => {
+
+        };
+
 
         const router = useRouter();
 
         const personalCenter = () => {
             router.push('/userCenter');
-        };
-
-
-        const deleteCourse = () => {
-
-        };
-
-        const exportCourse = () => {
-
         };
 
 
@@ -617,8 +702,10 @@ export default {
             deleteCourse,
             exportCourse,
             dialogAddCourseVisible,
+            dialogEditCourseVisible,
             courseForm,
             clearForm,
+            closeDialog,
             rules,
             selectedRows,
             // image

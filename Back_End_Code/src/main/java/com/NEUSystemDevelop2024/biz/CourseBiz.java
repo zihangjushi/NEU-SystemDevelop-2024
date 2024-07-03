@@ -18,5 +18,7 @@ public class CourseBiz {
     public boolean insertCourse(Course course) { return mapper.insertCourse(course) > 0; }
 
     public List<Course> getCourseListBySearch(Course course) { return mapper.listCourseBySearch(course); }
+
+    public boolean deleteCourse(Integer id) { return mapper.deleteCourseById(id) > 0; }
 }
 

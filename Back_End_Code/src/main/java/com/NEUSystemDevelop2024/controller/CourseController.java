@@ -70,7 +70,7 @@ public class CourseController {
             course.setCreateTime(new Timestamp(0));
         }
         if(course.getModifyTime() == null) {
-            long val = course.getCreateTime().getTime();
+            long val = System.currentTimeMillis();
             course.setModifyTime(new Timestamp(val));
         }
         System.out.println(course);
@@ -84,6 +84,32 @@ public class CourseController {
             map.put("courses", courseList);
         }
 
+        return map;
+    }
+
+    @PostMapping("/deleteList")
+    public Map deleteList(@RequestBody Map<String, List<Integer>> requestBody, HttpSession session) {
+        List<Integer> idList = requestBody.get("ids");
+        Map map = new HashMap();
+        boolean ok = true;
+        for(Integer id : idList) {
+            boolean ret = courseBiz.deleteCourse(id);
+            if(!ret) {
+                ok = false;
+            }
+        }
+
+        map.put("isOk", ok);
+        return map;
+    }
+
+    @PostMapping("/deleteOne")
+    public Map deleteOne(@RequestBody Map<String, Integer> requestBody, HttpSession session) {
+        Map map = new HashMap();
+        Integer id = requestBody.get("courseId");
+        boolean ok = courseBiz.deleteCourse(id);
+
+        map.put("isOk", ok);
         return map;
     }
 
