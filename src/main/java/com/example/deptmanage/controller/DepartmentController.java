@@ -1,75 +1,57 @@
 package com.example.deptmanage.controller;
 
-import com.example.deptmanage.biz.*;
-import com.example.deptmanage.entity.*;
+import com.example.deptmanage.biz.DepartmentBiz;
+import com.example.deptmanage.entity.Department;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/dept")
+@RequestMapping("/department")
 //@CrossOrigin(originPatterns = "http://localhost:8081")
 
 public class DepartmentController {
     @Autowired
     private DepartmentBiz departmentBiz;
     @Autowired
-    private CompanyBiz companyBiz;
-    @RequestMapping("/deptlist")
-    public Map listDepartment(){
-        System.out.println("进来了");
-        List<Department> list = departmentBiz.getDepartmentList();
+    private DepartmentBiz DepartmentBiz;
+
+
+    @PostMapping("/add")
+    public Map addDepartment(@RequestBody Department department) {
+        DepartmentBiz.addDepartment(department);
+        int departmentId = department.getDepartmentId();
+        boolean flag = departmentId > 0;
+        String msg = flag ? "添加成功" : "添加失败";
         Map map = new HashMap();
-        map.put("isOk",true);
-        map.put("departments",list);
-        map.put("msg","查询成功");
+        map.put("isOk", flag);
+        map.put("data", departmentId);
+        map.put("msg", msg);
         return map;
     }
 
-    @RequestMapping("/insertDept")
-    public Map insertDept(Department dept){
+    @DeleteMapping("/delete/{departmentId}")
+    public Map deleteDepartment(@PathVariable("departmentId") Integer departmentId) {
+        boolean flag = DepartmentBiz.deleteDepartment(departmentId);
+        String msg = flag ? "删除成功" : "删除失败";
         Map map = new HashMap();
-        map.put("isOk",true);
-        map.put("msg","查询成功");
-        return map;
-    }
-    @RequestMapping("/searchByCompanyId")
-    public Map searchByCompanyId(Integer companyId){
-        System.out.println(companyId);
-        Map map = new HashMap();
-        if(companyId == null){
-            map.put("isOk", false);
-            return map;
-        }
-        List<Department> deptlist = departmentBiz.searchByCompanyId(companyId);
-        if(deptlist.size() == 0){
-            map.put("isOk", false);
-        }
-        else{
-            map.put("isOk",true);
-            map.put("deptlistByCompany",deptlist);
-            map.put("total", deptlist.size());
-            map.put("msg","查询成功");
-        }
+        map.put("isOk", flag);
+        map.put("data", null);
+        map.put("msg", msg);
         return map;
     }
 
-    @RequestMapping("/list")
-    public Map list(){
-        List<Department> deptlist = departmentBiz.getDepartmentList();
-        List<Company> companyList = companyBiz.getCompanyList();
+
+    @PutMapping("/update")
+    public Map updateDepartment(@RequestBody Department department) {
+        boolean flag = DepartmentBiz.updateDepartment(department);
+        String msg = flag ? "修改成功" : "修改失败";
         Map map = new HashMap();
-        map.put("isOk",true);
-        map.put("departments",deptlist);
-        map.put("companies", companyList);
-        map.put("total", deptlist.size() + companyList.size());
-        map.put("msg","查询成功");
+        map.put("isOk", flag);
+        map.put("data", null);
+        map.put("msg", msg);
         return map;
     }
 

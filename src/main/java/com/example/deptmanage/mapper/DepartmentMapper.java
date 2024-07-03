@@ -7,20 +7,34 @@ import java.util.List;
 
 @Mapper
 public interface DepartmentMapper {
-    @Select("select * from t_department")
-    public List<Department> listDepartment();
+    @Insert("insert into t_department(departmentId, serialId, companyId, departmentName, adminName, phoneNumber, state, description) " +
+            "values (#{departmentId}, #{serialId}, #{companyId}, #{departmentName}, #{adminName}, #{phoneNumber}, #{state}, #{description})")
+    @Options(useGeneratedKeys = true, keyProperty = "departmentId", keyColumn = "departmentId")
+    void insertDept(Department department);
 
-    @Insert("insert into t_department(departmentId, serialId, companyId, departmentName, adminName, phoneNumber, state, description, createTime) " +
-            "values (#{departmentId}, #{serialId}, #{companyId}, #{departmentName}, #{adminName}, #{phoneNumber}, #{state}, #{description}, #{createTime})")
-    public void insertDept(Department dept);
-
-    @Update("update t_department set serialId=#{serialId}, companyId=#{companyId}, departmentName=#{departmentName}, adminName=#{adminName}, phoneNumber=#{phoneNumber}, state=#{state}, description=#{description}, createTime=#{createTime} where departmentId=#{id}")
-    public void updateDept(Department dept);
 
     @Delete("delete from t_department where departmentId=#{departmentId}")
-    public void deleteDept(int deptId);
+    boolean deleteDept(int deptId);
 
-    @Select("select * from t_department where companyId=#{companyId}")  //应该是对的
-    public List<Department> searchByCompanyId(Integer companyId);
+    @Update("update t_department set   departmentName=#{department.departmentName}, adminName=#{department.adminName}, " +
+            "phoneNumber=#{department.phoneNumber}, state=#{department.state}, description=#{department.description} where departmentId=#{department.departmentId}")
+    boolean updateDept(@Param("department") Department department);
+
+    @Select("select * from t_department")
+    List<Department> listDepartment();
+
+    @Select("select * from t_department where companyId=#{companyId}")
+        // 应该是对的
+    List<Department> searchByCompanyId(Integer companyId);
+
+    @Select("select * from t_department where   state=#{inputDeptstate} ")
+    List<Department> searchByState(@Param("inputDeptstate") Integer inputDeptstate);
+
+    @Select("select * from t_department where departmentName LIKE CONCAT('%', #{inputDeptname}, '%') ")
+    List<Department> searchByDepName(@Param("inputDeptname") String inputDeptname);
+
+    @Select("select * from t_department where departmentName LIKE CONCAT('%', #{inputDeptname}, '%') and state=#{inputDeptstate} ")
+    List<Department> search(@Param("inputDeptname") String inputDeptname, @Param("inputDeptstate") Integer inputDeptstate);
+
 
 }
