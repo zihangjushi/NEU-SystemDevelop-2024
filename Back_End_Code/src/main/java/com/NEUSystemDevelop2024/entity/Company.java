@@ -1,7 +1,6 @@
 package com.NEUSystemDevelop2024.entity;
 
 import java.sql.Timestamp;
-
 public class Company {
     int companyId;
     String companyName;
@@ -87,5 +86,9 @@ public class Company {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getTime(){
+        return createTime.toString();
     }
 }
