@@ -1,10 +1,8 @@
 package com.NEUSystemDevelop2024.mapper;
 
 import com.NEUSystemDevelop2024.entity.Company;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import com.NEUSystemDevelop2024.entity.News;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -30,4 +28,9 @@ public interface CompanyMapper {
 
     @Delete("delete from t_company where companyId=#{companyId}")
     Integer deleteCompanyById(Integer companyId);
+
+    @Update("UPDATE t_company SET companyName = #{companyName}, image = #{image}, contactName = #{contactName}, phoneNumber = #{phoneNumber}, " +
+            "adminName = #{adminName}, description = #{description} " +
+            "WHERE companyId = #{companyId}")
+    int updateCompany(Company company);
 }

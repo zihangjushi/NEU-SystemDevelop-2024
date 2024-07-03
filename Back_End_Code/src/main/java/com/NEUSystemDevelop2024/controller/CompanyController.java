@@ -2,7 +2,9 @@ package com.NEUSystemDevelop2024.controller;
 
 import com.NEUSystemDevelop2024.entity.Company;
 import com.NEUSystemDevelop2024.biz.CompanyBiz;
+import com.NEUSystemDevelop2024.entity.News;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -63,5 +65,32 @@ public class CompanyController {
             map.put("msg","删除失败");
         }
         return map;
+    }
+
+    @RequestMapping("/edit")
+    public Map editNews(@RequestBody Map request) {
+
+        int companyId = (int)request.get("companyId");
+        int state = (int) request.get("state");
+        String companyName = (String) request.get("companyName");
+        String contactName = (String) request.get("contactName");
+        String phoneNumber = (String) request.get("phoneNumber");
+        String adminName = (String) request.get("adminName");
+        String content = (String) request.get("content");
+        String imageUrl = (String) request.get("imageUrl");
+
+        Company company = new Company(companyId, adminName, state, phoneNumber, contactName,companyName, content, null, imageUrl);
+        Map res = new HashMap();
+        try {
+            boolean result = companyBiz.updateCompany(company);
+            if (result) {
+                res.put("isOk", true);
+            } else {
+                res.put("isOk", false);
+            }
+        } catch (Exception e) {
+            res.put("isOk",false);
+        }
+        return res;
     }
 }

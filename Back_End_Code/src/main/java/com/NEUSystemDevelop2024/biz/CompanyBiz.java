@@ -37,4 +37,8 @@ public class CompanyBiz {
     public List<String> getCompanynameList(){
         return companyMapper.selectAllCompanyname();
     }
+
+    public boolean updateCompany(Company company){
+        return companyMapper.updateCompany(company) > 0;
+    }
 }

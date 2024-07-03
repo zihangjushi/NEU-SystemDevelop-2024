@@ -12,6 +12,8 @@ public class Company {
     String description;
     String createTime;
 
+    String image;
+
     public Company() {
     }
 
@@ -23,6 +25,18 @@ public class Company {
         this.companyName = companyName;
         this.description = description;
         this.createTime = createTime;
+    }
+
+    public Company(int companyId, String adminName, int state, String phoneNumber, String contactName, String companyName, String description, String createTime, String image ) {
+        this.companyId = companyId;
+        this.adminName = adminName;
+        this.state = state;
+        this.phoneNumber = phoneNumber;
+        this.contactName = contactName;
+        this.companyName = companyName;
+        this.description = description;
+        this.createTime = createTime;
+        this.image = image;
     }
 
     public int getCompanyId() {
@@ -87,5 +101,13 @@ public class Company {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
