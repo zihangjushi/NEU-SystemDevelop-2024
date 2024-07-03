@@ -1,5 +1,4 @@
 package com.NEUSystemDevelop2024.entity;
-
 import java.sql.Timestamp;
 
 public class Department {
@@ -75,6 +74,9 @@ public class Department {
     public Timestamp getCreateTime() {
         return createTime;
     }
+    public String getTime(){
+        return createTime.toString();
+    }
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
@@ -85,4 +87,5 @@ public class Department {
     public void setSerialId(int serialId) {
         this.serialId = serialId;
     }
+
 }

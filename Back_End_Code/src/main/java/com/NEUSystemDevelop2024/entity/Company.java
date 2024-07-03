@@ -1,6 +1,7 @@
 package com.NEUSystemDevelop2024.entity;
 
 import java.sql.Timestamp;
+
 public class Company {
     int companyId;
     String companyName;

@@ -86,7 +86,7 @@ public class CompanyBiz {
     }
 
     public List<DataVo> searchByCompanyIdInDept(Integer companyId) {
-        List<Department> departmentList = companyMapper.searchByCompanyId(companyId);
+        List<Department> departmentList = companyMapper.searchDeptByCompanyId(companyId);
         ArrayList<DataVo> dataVos = new ArrayList<>(departmentList.size());
         for (Department department : departmentList) {
             DataVo dataVo = new DataVo();
@@ -104,7 +104,7 @@ public class CompanyBiz {
 
 
     public void addCompany(Company company) {
-        companyMapper.insertCompany(company);
+        companyMapper.insertCompanyInDept(company);
     }
 
     public boolean deleteCompany(Integer companyId) {
