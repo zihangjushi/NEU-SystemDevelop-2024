@@ -175,7 +175,11 @@
               <el-input id="phoneNumber" type="text" v-model="phoneNumber" placeholder="请输入电话号码"
                 style="width: 500px;height: 31px" />
             </el-form-item>
-            <el-form-item label="资讯内容" prop="content">
+            <el-form-item label="管理员" prop="adminName">
+              <el-input id="adminName" type="text" v-model="adminName" placeholder="请输入租户管理员"
+                style="width: 500px;height: 31px" />
+            </el-form-item>
+            <el-form-item label="备注" prop="content">
               <Editor v-model="content" editorStyle="height: 320px; width: 700px" placeholder="请输入资讯内容">
                 <template v-slot:toolbar>
                   <span class="ql-formats">
@@ -215,14 +219,6 @@
 
               </Editor>
             </el-form-item>
-            <el-form-item label="作者" prop="author">
-              <el-input id="author" type="text" v-model="author" placeholder="请输入作者"
-                style="width: 500px;height: 31px" />
-            </el-form-item>
-            <el-form-item label="新闻简介" prop="summary">
-              <el-input id="summary" type="text" v-model="summary" placeholder="请输入新闻简介"
-                style="width: 500px;height: 31px" />
-            </el-form-item>
             <el-form-item label="当前租户" prop="tenant">
               <span>{{ tenant }}</span>
             </el-form-item>
@@ -247,6 +243,7 @@
 </template>
 
 <script>
+import Editor from 'primevue/editor';
 import { onMounted, ref, watch, reactive, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -254,7 +251,7 @@ import { Management, UserFilled } from "@element-plus/icons-vue";
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useStore } from 'vuex';
 export default {
-  components: { Management, UserFilled },
+  components: { Management, UserFilled, Editor },
   setup() {
     // 用来选择日期和勾选框的组件
     const pickerOptions = ref({
@@ -312,6 +309,8 @@ export default {
 
     //对话框相关属性
     const dialogVisible = ref(false);
+    const selectedFile = ref(null);
+    const previewImageUrl = ref('');
     const updateForm = reactive({
       companyId: '',
       userName: '',
@@ -360,7 +359,6 @@ export default {
     const routeToUserCenter = () => {
       router.push("/userCenter")
     }
-
     const addButton = () => {
       if (dialogVisible.value == false) dialogVisible.value = true;
     }
@@ -450,6 +448,18 @@ export default {
       })
     };
 
+    const handleFileChange = (event) => {
+				selectedFile.value = event.target.files[0];
+				if (!selectedFile.value) return;
+
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					previewImageUrl.value = e.target.result; // 将读取的图片数据赋值给预览 URL
+				};
+				reader.readAsDataURL(selectedFile.value);
+		};
+
+    //导航到资讯管理页面 
     const routeToNewsManage = () => {
 					if (loginUser.value.role === 'admin') {
 						router.push('/mynews');
@@ -548,6 +558,9 @@ export default {
       handleEdit,
       handleDelete,
       confirmDelete,
+
+      handleFileChange,
+
       back,
       searchCompany,
 
