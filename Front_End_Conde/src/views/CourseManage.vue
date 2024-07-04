@@ -87,7 +87,7 @@
                                     style="font-size: 20px; margin-right: 10px;position: relative; top: 8px;"></el-avatar>
                                 <el-button type="text"
                                     style="font-size: 15px; color: rgb(0,0,0);position: relative; top: 8px;">{{
-                                    loginUser.userName }}</el-button>
+                                        loginUser.userName }}</el-button>
                             </div>
                             <!-- template是下拉插槽，用来存放dropdown中的内容 -->
                             <template #dropdown>
@@ -480,6 +480,11 @@ export default {
         };
 
         const addCourse = () => {
+            if (loginUser.value.role === 'user') {
+                alert('没有权限');
+                return;
+            }
+
             if (!courseForm.courseName || !courseForm.description || !courseForm.courseOrder || !courseForm.author || !previewImageUrl.value || !previewVideoUrl.value) {
                 alert('请输入完整后参加');
                 return;
@@ -504,7 +509,7 @@ export default {
                 })
                 .catch(error => {
                     // console.error('新增课程失败', error);
-                    alert('网络错误');
+                    // alert('网络错误');
                 });
         };
 
@@ -517,9 +522,10 @@ export default {
                     }
                     tableData.value = response.data.courses;
                     formatTableData();
+                    updatePagedData(tableData.value);
                 })
                 .catch(error => {
-                    alert('网络错误');
+                    // alert('网络错误');
                 });
         };
 
@@ -543,8 +549,8 @@ export default {
                     dialogAddCourseVisible.value = false;
                 })
                 .catch(error => {
-                    alert('网络错误');
-                }); 
+                    // alert('网络错误');
+                });
         }
 
         const loadCoursesList = (response) => {
@@ -584,16 +590,16 @@ export default {
             courseForm.description = res.data.course.description;
             courseForm.courseOrder = res.data.course.courseOrder;
             courseForm.author = res.data.course.author;
+            if (loginUser.value.role === "user" ||
+                (loginUser.value.role === "admin" && !(loginUser.value.companyName === courseForm.companyName))
+            ) {
+                alert('没有权限');
+                return;
+            }
             dialogEditCourseVisible.value = true;
         };
 
         const editCourse = async () => {
-            // if (loginUser.value.role === "user" ||
-            //     (loginUser.value.role === "admin" && loginUser.value.companyName)
-            // )
-
-            alert(loginUserCompanyName.value);
-
             const response = await axios.post('http://localhost:8070/course/edit', {
                 courseId: courseForm.courseId,
                 courseName: courseForm.courseName,
@@ -609,6 +615,12 @@ export default {
         }
 
         const handleDelete = async (index, row) => {
+            if (loginUser.value.role === "user" ||
+                (loginUser.value.role === "admin" && !(loginUser.value.companyName === courseForm.companyName))
+            ) {
+                alert('没有权限');
+                return;
+            }
             const response = await axios.post('http://localhost:8070/course/deleteOne', {
                 courseId: row.courseId,
             });
@@ -621,6 +633,12 @@ export default {
 
 
         const deleteCourse = () => {
+            if (loginUser.value.role === "user" ||
+                (loginUser.value.role === "admin" && !(loginUser.value.companyName === courseForm.companyName))
+            ) {
+                alert('没有权限');
+                return;
+            }
             ElMessageBox.confirm(
                 '此操作将删除所选课程，是否继续？',
                 '提示', {
@@ -720,7 +738,20 @@ export default {
             // videoInput.value = res.data.course.videoUrl;
         };
 
+        const pagedTableData = ref([]);
+        const pageSize = 10;
+        const currentPage = ref(1); // 当前页码
+        const updatePagedData = (data) => {
+            const startIndex = (currentPage.value - 1) * pageSize;
+            pagedTableData.value = data.slice(startIndex, startIndex + pageSize);
+            total.value = data.length;
+        };
+
         return {
+            pagedTableData,
+            pageSize,
+            currentPage,
+            updatePagedData,
             userInfo,
             departmentInfo,
             basicInfoForm,
