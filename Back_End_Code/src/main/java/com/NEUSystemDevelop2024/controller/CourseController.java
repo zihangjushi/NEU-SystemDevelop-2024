@@ -1,5 +1,6 @@
 package com.NEUSystemDevelop2024.controller;
 
+import com.NEUSystemDevelop2024.biz.CompanyBiz;
 import com.NEUSystemDevelop2024.biz.CourseBiz;
 import com.NEUSystemDevelop2024.entity.Course;
 import com.NEUSystemDevelop2024.entity.User;
@@ -21,16 +22,12 @@ public class CourseController {
     @Autowired
     private CourseBiz courseBiz;
 
+    @Autowired
+    private CompanyBiz companyBiz;
+
     @RequestMapping("/list")
     public Map list(HttpSession session)
     {
-        User user = (User) session.getAttribute("user");
-//        List<Course> courseList = null;
-//        if(user.getRole().equals("超级管理员")) {
-//            courseList = courseBiz.getCourseList();
-//        } else {
-//            courseList = courseBiz.getCourseListByCompanyName(user.getCompanyName());
-//        }
         List<Course> courseList = courseBiz.getCourseList();
         Map map = new HashMap();
         map.put("isOk", true);
@@ -41,7 +38,6 @@ public class CourseController {
 
     @PostMapping("/add")
     public Map add(@RequestBody Course course, HttpSession session) {
-        course.setCompanyName(getCourseCompanyName(session));
         boolean ret = courseBiz.insertCourse(course);
         Map map = new HashMap();
         if(ret) {
@@ -58,13 +54,14 @@ public class CourseController {
     public Map searchById(@RequestBody Map<String, Integer> requestBody, HttpSession session) {
         Course course = courseBiz.getCourseById(requestBody.get("Id"));
         Map map = new HashMap();
-        System.out.println(course);
         if(course != null) {
             map.put("isOk", true);
             map.put("course", course);
+            map.put("mgs", "查找成功");
         }else{
             map.put("isOk", false);
             map.put("course", "");
+            map.put("mgs", "查找失败");
         }
         return map;
     }
@@ -75,15 +72,16 @@ public class CourseController {
         Map map = new HashMap();
         if(ret) {
             map.put("isOk", true);
+            map.put("msg", "编辑成功");
         } else {
             map.put("isOk", false);
+            map.put("msg", "编辑失败");
         }
         return map;
     }
 
     @PostMapping("/search")
     public Map search(@RequestBody Course course, HttpSession session) {
-//        User user = (User) session.getAttribute("user");
         if(course.getCourseName() == null || course.getCourseName().equals("null") || course.getCourseName().equals("")) {
             course.setCourseName("");
         }
@@ -100,15 +98,16 @@ public class CourseController {
             long val = System.currentTimeMillis();
             course.setModifyTime(new Timestamp(val));
         }
-        System.out.println(course);
         List<Course> courseList = courseBiz.getCourseListBySearch(course);
         Map map = new HashMap();
         if(courseList == null || courseList.size() == 0) {
             map.put("isOk", false);
             map.put("courses", "");
+            map.put("msg", "查找失败");
         } else {
             map.put("isOk", true);
             map.put("courses", courseList);
+            map.put("msg", "查找成功");
         }
 
         return map;
@@ -125,8 +124,14 @@ public class CourseController {
                 ok = false;
             }
         }
+        if(ok) {
+            map.put("isOk", true);
+            map.put("msg", "删除成功");
+        } else {
+            map.put("isOk", false);
+            map.put("msg", "删除失败");
+        }
 
-        map.put("isOk", ok);
         return map;
     }
 
@@ -135,53 +140,24 @@ public class CourseController {
         Map map = new HashMap();
         Integer id = requestBody.get("courseId");
         boolean ok = courseBiz.deleteCourse(id);
-
-        map.put("isOk", ok);
+        if(ok) {
+            map.put("isOk", true);
+            map.put("msg", "删除成功");
+        } else {
+            map.put("isOk", false);
+            map.put("msg", "删除失败");
+        }
         return map;
     }
 
-    private String getCourseCompanyName(HttpSession session) {
-//        User user = (User) session.getAttribute("user");
-//        if(user.getRole().equals("超级管理员")) {
-//            return "超级管理员所属";
-//        } else {
-//            return
-//        }
-        return "测试用例";
+    @PostMapping("/companyName")
+    public Map getCompanyNameById(@RequestBody Map<String, Integer> request, HttpSession session) {
+        Integer Id = request.get("Id");
+        System.out.println(Id);
+        String companyName = companyBiz.searchByCompanyId(Id).getCompanyName();
+        Map map = new HashMap();
+        map.put("isOk", true);
+        map.put("companyName", companyName);
+        return map;
     }
-
-//    @RequestMapping("/upload")
-//    Map upload(MultipartFile file) {
-//        Map map = new HashMap();
-//        if (file == null ||  file.isEmpty()) {
-//            map.put("isOk", false);
-//            map.put("msg", "图片不能为空");
-//            return map;
-//        }
-//
-//        // file 重命名
-//        String oldName = file.getOriginalFilename();
-//        String ext = oldName.substring(oldName.lastIndexOf("."));
-//        String uuid = UUID.randomUUID().toString().replace("-", "");
-//        String newName = uuid + ext;
-//
-//        // 上传图片
-//        ApplicationHome applicationHome = new ApplicationHome(this.getClass());
-//        String prepath = applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath() +
-//                "\\src\\main\\resources\\static\\images\\";
-//        String path = prepath + newName;
-//
-//        try {
-//            file.transferTo(new File(path));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            map.put("isOk", false);
-//            map.put("msg", e.getMessage());
-//            return map;
-//        }
-//
-//        map.put("isOk", true);
-//        map.put("msg", path);
-//        return map;
-//    }
 }

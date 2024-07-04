@@ -1,6 +1,7 @@
 <template>
     <div class="about">
         <el-container style="height: 100vh; border: 1px solid #eee">
+            <!-- /side容器，用来存放侧边菜单 -->
             <el-aside class="menu-with-shadow" width="240px" style="color: rgb(255,255,255)">
                 <el-menu :default-openeds="['3']">
                     <!-- //序号为1的侧边栏，用来显示测盟汇和图片组件 -->
@@ -320,12 +321,18 @@ export default {
             router.push('/login');
         };
         const store = useStore();
-        const loginUser = ref('')
+        const loginUser = ref('');
+        const loginUserCompanyName = ref('');
         onMounted(async () => {
             await Promise.all([
                 loginUser.value = store.state.user,
-
-            ])
+            ]);
+            const res = await axios.post('http://localhost:8070/course/companyName', {
+                Id: loginUser.value.companyId,
+            });
+            loginUserCompanyName.value = res.data.companyName;
+            // alert(loginUser.value.role);
+            // alert(loginUserCompanyName.value);
         });
 
 
@@ -455,7 +462,6 @@ export default {
             const seconds = String(localDate.getUTCSeconds()).padStart(2, '0');
 
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-            // return isoString;
         };
 
         const formatTableData = () => {
@@ -475,27 +481,9 @@ export default {
 
         const addCourse = () => {
             if (!courseForm.courseName || !courseForm.description || !courseForm.courseOrder || !courseForm.author || !previewImageUrl.value || !previewVideoUrl.value) {
-                // alert(courseForm.courseName);
-                // alert(courseForm.companyName);
-                // alert(courseForm.description);
-                // alert(courseForm.courseOrder);
-                // alert(courseForm.author);
-                // alert(previewImageUrl.value);
-                // alert(previewVideoUrl.value);
-
-                // errorMessage.value = '请输入完整后添加';
-                // errorDialogVisible.value = true;
-                return; // 如果有空字段，直接返回，不执行后续的添加操作
+                alert('请输入完整后参加');
+                return;
             }
-
-            // alert(courseForm.courseId);
-            // alert(courseForm.courseName);
-            // alert(courseForm.companyName);
-            // alert(courseForm.description);
-            // alert(courseForm.courseOrder);
-            // alert(courseForm.author);
-            // alert(previewImageUrl.value);
-            // alert(previewVideoUrl.value);
 
             const requestData = {
                 courseName: courseForm.courseName,
@@ -508,12 +496,15 @@ export default {
 
             axios.post('http://localhost:8070/course/add', requestData)
                 .then(response => {
-                    console.log('新增课程成功', response.data);
+                    if (!response.data.isOk) {
+                        alert(response.data.msg);
+                    }
                     refreshCoursesList();
                     dialogAddCourseVisible.value = false;
                 })
                 .catch(error => {
-                    console.error('新增课程失败', error);
+                    // console.error('新增课程失败', error);
+                    alert('网络错误');
                 });
         };
 
@@ -521,13 +512,14 @@ export default {
         const refreshCoursesList = () => {
             axios.get('http://localhost:8070/course/list')
                 .then(response => {
+                    if (!response.data.isOk) {
+                        alert(response.data.msg);
+                    }
                     tableData.value = response.data.courses;
                     formatTableData();
-
-                    // updatePagedData(tableData.value); // 更新分页数据的函数，假设已定义
                 })
                 .catch(error => {
-                    console.error('获取课程列表失败', error);
+                    alert('网络错误');
                 });
         };
 
@@ -544,13 +536,15 @@ export default {
 
             axios.post('http://localhost:8070/course/search', requestData)
                 .then(response => {
-                    console.log('查询课程成功', response.data);
+                    if (!response.data.isOk) {
+                        alert(response.data.msg);
+                    }
                     loadCoursesList(response);
                     dialogAddCourseVisible.value = false;
                 })
                 .catch(error => {
-                    console.error('新增课程失败', error);
-                });
+                    alert('网络错误');
+                }); 
         }
 
         const loadCoursesList = (response) => {
@@ -580,7 +574,6 @@ export default {
         };
 
         const handleEdit = async (index, row) => {
-            // console.log(index, row);
             const res = await axios.post('http://localhost:8070/course/searchById', {
                 Id: row.courseId,
             });
@@ -595,13 +588,12 @@ export default {
         };
 
         const editCourse = async () => {
-            // courseForm.courseId = res.data.course.courseId;
-            // setImageUpload(res);
-            // setVideoUpload(res);
-            // courseForm.courseName = res.data.course.courseName;
-            // courseForm.description = res.data.course.description;
-            // courseForm.courseOrder = res.data.course.courseOrder;
-            // courseForm.author = res.data.course.author;
+            // if (loginUser.value.role === "user" ||
+            //     (loginUser.value.role === "admin" && loginUser.value.companyName)
+            // )
+
+            alert(loginUserCompanyName.value);
+
             const response = await axios.post('http://localhost:8070/course/edit', {
                 courseId: courseForm.courseId,
                 courseName: courseForm.courseName,
@@ -611,6 +603,7 @@ export default {
                 imageUrl: previewImageUrl.value,
                 videoUrl: previewVideoUrl.value,
             });
+            alert(response.data.msg);
             searchCourse();
             dialogEditCourseVisible.value = false;
         }
@@ -619,12 +612,10 @@ export default {
             const response = await axios.post('http://localhost:8070/course/deleteOne', {
                 courseId: row.courseId,
             });
-            if (response.data.isOk) {
-                alert('删除成功');
-                searchCourse();
-            } else {
-                alert('删除失败');
+            if (!response.data.isOk) {
+                alert(response.data.msg);
             }
+            searchCourse();
         };
 
 
@@ -643,10 +634,8 @@ export default {
                 const response = await axios.post('http://localhost:8070/course/deleteList', {
                     ids: idsToDelete
                 });
-                if (response.data.isOk) {
-                    alert('删除成功');
-                } else {
-                    alert('删除失败');
+                if (!response.data.isOk) {
+                    alert(response.data.msg);
                 }
                 searchCourse();
             }).catch(() => {
@@ -658,9 +647,6 @@ export default {
         const exportCourse = () => {
 
         };
-
-
-
 
 
         // image
@@ -744,6 +730,7 @@ export default {
             back,
             navigateTo,
             loginUser,
+            loginUserCompanyName,
             routeToNewsManage,
             store,
             useStore,
