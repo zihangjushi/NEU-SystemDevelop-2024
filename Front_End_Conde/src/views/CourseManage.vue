@@ -1,9 +1,7 @@
 <template>
     <div class="about">
         <el-container style="height: 100vh; border: 1px solid #eee">
-
-            <!-- /side容器，用来存放侧边菜单 -->
-            <el-aside class="menu-with-shadow" width="200px" style="color: rgb(255,255,255)">
+            <el-aside class="menu-with-shadow" width="240px" style="color: rgb(255,255,255)">
                 <el-menu :default-openeds="['3']">
                     <!-- //序号为1的侧边栏，用来显示测盟汇和图片组件 -->
                     <el-menu-item index="1">
@@ -13,7 +11,7 @@
                         </template>
                     </el-menu-item>
                     <!-- //序号为2的菜单栏，用来显示标题（首页） -->
-                    <el-menu-item index="2">
+                    <el-menu-item index="2" @click="navigateTo('/')">
                         <template #title>
                             <el-icon>
                                 <HomeFilled />
@@ -25,28 +23,50 @@
                         <template #title><el-icon>
                                 <Menu />
                             </el-icon>管理</template>
-                        <el-menu-item-group>
-                            <el-menu-item index="3-1"><el-icon>
+                        <el-menu-item @click="routeToCompanyManage"><el-icon>
+                                <OfficeBuilding />
+                            </el-icon>租户管理</el-menu-item>
+                        <el-sub-menu>
+                            <template #title>
+                                <el-icon>
                                     <UserFilled />
-                                </el-icon>用户管理</el-menu-item>
-                            <el-menu-item index="3-2"><el-icon>
-                                    <Management />
-                                </el-icon>部门管理</el-menu-item>
-                            <el-menu-item index="3-3"><el-icon>
-                                    <Orange />
-                                </el-icon>行业动态管理</el-menu-item>
-                            <el-menu-item index="3-4"><el-icon>
-                                    <List />
-                                </el-icon>课程管理</el-menu-item>
-                            <el-menu-item index="3-5"><el-icon>
-                                    <TrendCharts />
-                                </el-icon>会议管理</el-menu-item>
-                        </el-menu-item-group>
+                                </el-icon>
+                                <span>用户管理</span>
+                            </template>
+
+                            <el-input v-model="searchQuery" style="width: 160px" placeholder="输入以搜索" clearable
+                                @input="searchMenu" />
+                            <el-sub-menu v-for="(company, index) in filteredCompanyList" :key="company.companyId"
+                                class="left-align" :index="'3-1-' + (index + 1)">
+
+                                <template #title>
+                                    {{ company.companyName }}
+                                </template>
+                                <el-menu-item @click="menuControlVisable(company.companyId, department.serialId)"
+                                    v-for="department in getDepartmentsByCompany(company.companyId)"
+                                    :key="department.serialId"
+                                    :index="'3-1-' + (index + 1) + '-' + department.serialId">
+                                    {{ department.departmentName }}
+                                </el-menu-item>
+                            </el-sub-menu>
+
+                        </el-sub-menu>
+                        <el-menu-item index="3-2"><el-icon>
+                                <Management />
+                            </el-icon>部门管理</el-menu-item>
+                        <el-menu-item index="3-3" @click="gotoNewsManage"><el-icon>
+                                <Orange />
+                            </el-icon>行业动态管理</el-menu-item>
+                        <el-menu-item index="3-4"><el-icon>
+                                <List />
+                            </el-icon>课程管理</el-menu-item>
+                        <el-menu-item index="3-5"><el-icon>
+                                <TrendCharts />
+                            </el-icon>用户管理</el-menu-item>
                     </el-sub-menu>
                 </el-menu>
             </el-aside>
 
-            <!-- //head容器，用来存放路径信息 -->
             <el-container>
                 <el-header class="header-with-shadow" style="font-size: 12px">
                     <div style="display: flex; justify-content: space-between; width: 100%;">
@@ -65,7 +85,8 @@
                                 <el-avatar icon="UserFilled"
                                     style="font-size: 20px; margin-right: 10px;position: relative; top: 8px;"></el-avatar>
                                 <el-button type="text"
-                                    style="font-size: 15px; color: rgb(0,0,0);position: relative; top: 8px;">徐洋</el-button>
+                                    style="font-size: 15px; color: rgb(0,0,0);position: relative; top: 8px;">{{
+                                    loginUser.userName }}</el-button>
                             </div>
                             <!-- template是下拉插槽，用来存放dropdown中的内容 -->
                             <template #dropdown>
@@ -79,7 +100,6 @@
                     </div>
                 </el-header>
 
-                <!-- main容器，用来存放页面的主要内容 -->
                 <el-main>
 
                     <div style="text-align: left;">
@@ -230,19 +250,13 @@
                     </div>
                 </el-main>
 
-                <!-- 同样的容器，但是是背景图片 -->
-                <div class="container" style="grid-template-rows: auto 1fr auto;margin-left: 500px">
-                    <el-pagination background layout="prev, pager, next" :total="50" class="pagination"
-                        style="grid-row: 3;margin-bottom: 10px"></el-pagination>
-                </div>
-
             </el-container>
         </el-container>
     </div>
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Management, UserFilled } from "@element-plus/icons-vue";
 import {
@@ -251,11 +265,74 @@ import {
 } from 'element-plus';
 import axios from 'axios';
 // import { ElMessage } from 'element-plus';
-
+import { useStore } from 'vuex';
 
 export default {
     components: { Management, UserFilled },
     setup() {
+        const userInfo = ref({
+            userName: '',
+            phoneNumber: '',
+            email: '',
+            departmentId: '',
+            role: '',
+            createTime: '',
+            password: '',
+        });
+
+        const departmentInfo = ref({
+            departmentName: '',
+        });
+
+        const basicInfoForm = ref({
+            userId: '',
+            realName: '',
+            phoneNumber: '',
+            email: '',
+            gender: '',
+        });
+
+        const routeToNewsManage = () => {
+            if (loginUser.value.role === 'admin') {
+                router.push('/mynews');
+            } else if (loginUser.value.role === 'root') {
+                router.push('/news');
+            } else {
+                alert('无权访问该页面');
+            }
+        };
+
+        const passwordForm = ref({
+            oldPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+        });
+
+        const activeTab = ref('baseInfo');
+
+        const router = useRouter();
+
+        const personalCenter = () => {
+            router.push('/userCenter');
+        };
+
+        const back = () => {
+            router.push('/login');
+        };
+        const store = useStore();
+        const loginUser = ref('')
+        onMounted(async () => {
+            await Promise.all([
+                loginUser.value = store.state.user,
+
+            ])
+        });
+
+
+        const navigateTo = (routeName) => {
+            router.push(routeName);
+        };
+
         const dialogAddCourseVisible = ref(false);
         const dialogEditCourseVisible = ref(false);
         const courseForm = reactive({
@@ -432,47 +509,25 @@ export default {
             axios.post('http://localhost:8070/course/add', requestData)
                 .then(response => {
                     console.log('新增课程成功', response.data);
-                    // alert('新增课程成功');
-
                     refreshCoursesList();
-
-
-                    // 假设后端返回的新闻数据包含在 response.data 中
-                    // 将新闻数据添加到 tableData 中
-                    // tableData.value.push(response.data);
-
-                    // 关闭对话框等其他操作可以在这里处理
                     dialogAddCourseVisible.value = false;
-                    // alert('新增课程成功');
-                    // 显示成功提示框等
-                    // successMessage.value = '新增课程成功';
-                    // successDialogVisible.value = true;
                 })
                 .catch(error => {
                     console.error('新增课程失败', error);
-                    // alert('新增课程失败');
-
-                    // 显示错误提示框等
-                    // errorMessage.value = '新增课程失败，请稍后重试';
-                    // errorDialogVisible.value = true;
                 });
         };
 
         // 课程列表
         const refreshCoursesList = () => {
-            // alert("refresh begin");
             axios.get('http://localhost:8070/course/list')
                 .then(response => {
-                    // alert('refresh success');
                     tableData.value = response.data.courses;
                     formatTableData();
 
                     // updatePagedData(tableData.value); // 更新分页数据的函数，假设已定义
                 })
                 .catch(error => {
-                    // alert('refresh error');
                     console.error('获取课程列表失败', error);
-                    // 可以在这里处理获取新闻列表失败的情况，比如显示错误信息给用户
                 });
         };
 
@@ -490,23 +545,11 @@ export default {
             axios.post('http://localhost:8070/course/search', requestData)
                 .then(response => {
                     console.log('查询课程成功', response.data);
-                    // alert('查询课程成功');
-
                     loadCoursesList(response);
-
-
                     dialogAddCourseVisible.value = false;
-                    // 显示成功提示框等
-                    // successMessage.value = '新增课程成功';
-                    // successDialogVisible.value = true;
                 })
                 .catch(error => {
                     console.error('新增课程失败', error);
-                    // alert('新增课程失败');
-
-                    // 显示错误提示框等
-                    // errorMessage.value = '新增课程失败，请稍后重试';
-                    // errorDialogVisible.value = true;
                 });
         }
 
@@ -514,33 +557,6 @@ export default {
             tableData.value = response.data.courses;
             formatTableData();
         };
-
-        const pickerOptions = ref({
-            disabledDate(time) {
-                return time.getTime() > Date.now();
-            },
-            shortcuts: [{
-                text: '今天',
-                onClick(picker) {
-                    picker.emit('pick', new Date());
-                }
-            }, {
-                text: '昨天',
-                onClick(picker) {
-                    const date = new Date();
-                    date.setTime(date.getTime() - 3600 * 1000 * 24);
-                    picker.emit('pick', date);
-                }
-            }, {
-                text: '一周前',
-                onClick(picker) {
-                    const date = new Date();
-                    date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-                    picker.emit('pick', date);
-                }
-            }],
-            multipleSelection: []
-        });
 
         const searchBeginTime = ref('');
         const searchEndTime = ref('');
@@ -644,11 +660,7 @@ export default {
         };
 
 
-        const router = useRouter();
 
-        const personalCenter = () => {
-            router.push('/userCenter');
-        };
 
 
         // image
@@ -722,12 +734,21 @@ export default {
             // videoInput.value = res.data.course.videoUrl;
         };
 
-        const back = () => {
-            router.push('/login');
-        };
         return {
+            userInfo,
+            departmentInfo,
+            basicInfoForm,
+            passwordForm,
+            activeTab,
+            personalCenter,
+            back,
+            navigateTo,
+            loginUser,
+            routeToNewsManage,
+            store,
+            useStore,
+            loginUser,
             tableData,
-            pickerOptions,
             searchBeginTime,
             searchEndTime,
             searchCourseName,

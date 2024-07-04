@@ -48,7 +48,7 @@
                 </el-icon>
                 行业动态管理
               </el-menu-item>
-              <el-menu-item index="3-5" @click="navigateTo('/')">
+              <el-menu-item index="3-5" @click="navigateTo('/course')">
                 <el-icon>
                   <List/>
                 </el-icon>
@@ -127,7 +127,7 @@
             <el-col :span="11">
               <!-- 课程管理卡片 -->
 
-              <div class="flip-card" @click="navigateTo('/')">
+              <div class="flip-card" @click="navigateTo('/course')">
                 <div class="flip-card-inner">
                   <div class="flip-card-front" style="background-color: #E6A23C; color: white;">
                     <el-icon class="card-icon"><List /></el-icon>
@@ -170,6 +170,7 @@
             </div>
           </div>
         </el-main>
+        
       </el-container>
     </el-container>
   </div>
