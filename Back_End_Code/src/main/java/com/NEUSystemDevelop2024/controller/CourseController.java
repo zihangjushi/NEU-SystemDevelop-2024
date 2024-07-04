@@ -54,6 +54,33 @@ public class CourseController {
         return map;
     }
 
+    @PostMapping("/searchById")
+    public Map searchById(@RequestBody Map<String, Integer> requestBody, HttpSession session) {
+        Course course = courseBiz.getCourseById(requestBody.get("Id"));
+        Map map = new HashMap();
+        System.out.println(course);
+        if(course != null) {
+            map.put("isOk", true);
+            map.put("course", course);
+        }else{
+            map.put("isOk", false);
+            map.put("course", "");
+        }
+        return map;
+    }
+
+    @PostMapping("/edit")
+    public Map edit(@RequestBody Course course, HttpSession session) {
+        boolean ret = courseBiz.updateCourse(course);
+        Map map = new HashMap();
+        if(ret) {
+            map.put("isOk", true);
+        } else {
+            map.put("isOk", false);
+        }
+        return map;
+    }
+
     @PostMapping("/search")
     public Map search(@RequestBody Course course, HttpSession session) {
 //        User user = (User) session.getAttribute("user");

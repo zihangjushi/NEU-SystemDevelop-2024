@@ -563,15 +563,41 @@ export default {
             selectedRows.value = val;
         };
 
-        const handleEdit = (index, row) => {
+        const handleEdit = async (index, row) => {
             // console.log(index, row);
-            cancelImageUpload();
-            cancelVideoUpload();
-            courseForm.courseName = '';
-            courseForm.description = '';
-            courseForm.courseOrder = '';
-            courseForm.author = '';
+            const res = await axios.post('http://localhost:8070/course/searchById', {
+                Id: row.courseId,
+            });
+            courseForm.courseId = res.data.course.courseId;
+            setImageUpload(res);
+            setVideoUpload(res);
+            courseForm.courseName = res.data.course.courseName;
+            courseForm.description = res.data.course.description;
+            courseForm.courseOrder = res.data.course.courseOrder;
+            courseForm.author = res.data.course.author;
+            dialogEditCourseVisible.value = true;
         };
+
+        const editCourse = async () => {
+            // courseForm.courseId = res.data.course.courseId;
+            // setImageUpload(res);
+            // setVideoUpload(res);
+            // courseForm.courseName = res.data.course.courseName;
+            // courseForm.description = res.data.course.description;
+            // courseForm.courseOrder = res.data.course.courseOrder;
+            // courseForm.author = res.data.course.author;
+            const response = await axios.post('http://localhost:8070/course/edit', {
+                courseId: courseForm.courseId,
+                courseName: courseForm.courseName,
+                description: courseForm.description,
+                courseOrder: courseForm.courseOrder,
+                author: courseForm.author,
+                imageUrl: previewImageUrl.value,
+                videoUrl: previewVideoUrl.value,
+            });
+            searchCourse();
+            dialogEditCourseVisible.value = false;
+        }
 
         const handleDelete = async (index, row) => {
             const response = await axios.post('http://localhost:8070/course/deleteOne', {
@@ -653,6 +679,14 @@ export default {
             }
         };
 
+        const setImageUpload = (res) => {
+            selectedImage.value = res.data.course.imageUrl;
+            previewImageUrl.value = res.data.course.imageUrl;
+            imageUrl.value = res.data.course.imageUrl;
+            // const imageInput = document.querySelectorAll('input[type="file"]')[2];
+            // imageInput.value = res.data.course.imageUrl;
+        };
+
         // video
         const selectedVideo = ref(null);
         const previewVideoUrl = ref('');
@@ -680,6 +714,14 @@ export default {
             }
         };
 
+        const setVideoUpload = (res) => {
+            selectedVideo.value = res.data.course.videoUrl;
+            previewVideoUrl.value = res.data.course.videoUrl;
+            videoUrl.value = res.data.course.videoUrl;
+            // const videoInput = document.querySelectorAll('input[type="file"]')[1];
+            // videoInput.value = res.data.course.videoUrl;
+        };
+
         const back = () => {
             router.push('/login');
         };
@@ -695,6 +737,7 @@ export default {
             toggleSelection,
             handleSelectionChange,
             handleEdit,
+            editCourse,
             handleDelete,
             personalCenter,
             back,
@@ -714,12 +757,14 @@ export default {
             imageUrl,
             handleImageChange,
             cancelImageUpload,
+            setImageUpload,
             // video
             selectedVideo,
             previewVideoUrl,
             videoUrl,
             handleVideoChange,
             cancelVideoUpload,
+            setVideoUpload,
             refreshCoursesList,
             loadCoursesList,
             formatDateTime,

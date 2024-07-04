@@ -1,10 +1,7 @@
 package com.NEUSystemDevelop2024.mapper;
 
 import com.NEUSystemDevelop2024.entity.Course;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -21,4 +18,10 @@ public interface CourseMapper {
 
     @Delete("delete from t_course where courseId = #{courseId}")
     int deleteCourseById(Integer courseId);
+
+    @Select("select * from t_course where courseId = #{courseId}")
+    Course getCourseById(Integer courseId);
+
+    @Update("update t_course set courseName = #{courseName}, description = #{description}, courseOrder = #{courseOrder}, author = #{author}, imageUrl = #{imageUrl}, videoUrl = #{videoUrl} where courseId = #{courseId}")
+    int updateCourse(Course course);
 }
