@@ -2,50 +2,50 @@
   <div class="about">
     <el-container style="height: 100vh; border: 1px solid #eee">
 
-        <!-- /side容器，用来存放侧边菜单 -->
-        <el-aside class="menu-with-shadow" width="240px" style="color: rgb(255,255,255)">
-            <el-menu :default-openeds="['3']">
-                <!-- //序号为1的侧边栏，用来显示测盟汇和图片组件 -->
-                <el-menu-item index="1">
-                    <template #title>
-                        <img src="@/assets/logo1.png" style="width: 40px; height: 40px; margin-right: 5px;">
-                        <span style="font-size: 20px;"><strong>测盟汇</strong></span>
-                    </template>
-                </el-menu-item>
-                <!-- //序号为2的菜单栏，用来显示标题（首页） -->
-                <el-menu-item index="2" @click="navigateTo('/')">
-                    <template #title>
-                        <el-icon>
-                            <HomeFilled />
-                        </el-icon>首页
-                    </template>
-                </el-menu-item>
-                <!-- //序号为3的菜单栏，用来显示各个菜单项和图标 -->
-                <el-sub-menu index="3">
-                    <template #title><el-icon>
-                            <Menu />
-                        </el-icon>管理</template>
-                    <el-menu-item index="3-1" @click="routeToCompanyManage"><el-icon>
-                            <OfficeBuilding />
-                        </el-icon>租户管理</el-menu-item>
-                    <el-menu-item index="3-2" @click="routeToUserManage"><el-icon>
-                            <UserFilled />
-                        </el-icon>用户管理</el-menu-item>
-                    <el-menu-item index="3-3" @click="routeToDepartmentManage"><el-icon>
-                            <Management />
-                        </el-icon>部门管理</el-menu-item>
-                    <el-menu-item index="3-4" @click="routeToNewsManage"><el-icon>
-                            <Orange />
-                        </el-icon>行业动态管理</el-menu-item>
-                    <el-menu-item index="3-5" @click="routeToCourseManage" ><el-icon>
-                            <List />
-                        </el-icon>课程管理</el-menu-item>
-                    <el-menu-item index="3-6" @click="routeToMeetingManage"><el-icon>
-                            <TrendCharts />
-                        </el-icon>会议管理</el-menu-item>
-                </el-sub-menu>
-            </el-menu>
-        </el-aside>
+      <!-- /side容器，用来存放侧边菜单 -->
+      <el-aside class="menu-with-shadow" width="240px" style="color: rgb(255,255,255)">
+        <el-menu :default-openeds="['3']">
+          <!-- //序号为1的侧边栏，用来显示测盟汇和图片组件 -->
+          <el-menu-item index="1">
+            <template #title>
+              <img src="@/assets/logo1.png" style="width: 40px; height: 40px; margin-right: 5px;">
+              <span style="font-size: 20px;"><strong>测盟汇</strong></span>
+            </template>
+          </el-menu-item>
+          <!-- //序号为2的菜单栏，用来显示标题（首页） -->
+          <el-menu-item index="2" @click="navigateTo('/')">
+            <template #title>
+              <el-icon>
+                <HomeFilled />
+              </el-icon>首页
+            </template>
+          </el-menu-item>
+          <!-- //序号为3的菜单栏，用来显示各个菜单项和图标 -->
+          <el-sub-menu index="3">
+            <template #title><el-icon>
+                <Menu />
+              </el-icon>管理</template>
+            <el-menu-item index="3-1" @click="routeToCompanyManage"><el-icon>
+                <OfficeBuilding />
+              </el-icon>租户管理</el-menu-item>
+            <el-menu-item index="3-2" @click="routeToUserManage"><el-icon>
+                <UserFilled />
+              </el-icon>用户管理</el-menu-item>
+            <el-menu-item index="3-3" @click="routeToDepartmentManage"><el-icon>
+                <Management />
+              </el-icon>部门管理</el-menu-item>
+            <el-menu-item index="3-4" @click="routeToNewsManage"><el-icon>
+                <Orange />
+              </el-icon>行业动态管理</el-menu-item>
+            <el-menu-item index="3-5" @click="routeToCourseManage"><el-icon>
+                <List />
+              </el-icon>课程管理</el-menu-item>
+            <el-menu-item index="3-6" @click="routeToMeetingManage"><el-icon>
+                <TrendCharts />
+              </el-icon>会议管理</el-menu-item>
+          </el-sub-menu>
+        </el-menu>
+      </el-aside>
 
       <!-- //head容器，用来存放路径信息 -->
       <el-container>
@@ -113,7 +113,8 @@
           <!-- 一行中两个按钮，用来删除修改、导出（暂时没有绑定方法） -->
           <el-row style="text-align: left;">
             <el-button type="danger" @click="confirmDelete()" plain icon="Delete" style="margin-top: 5px">删除</el-button>
-            <el-button type="warning" plain icon="Download" style="margin-top: 5px">导出</el-button>
+            <el-button type="warning" @click="exportCompanies()" plain icon="Download"
+              style="margin-top: 5px">导出</el-button>
           </el-row>
 
           <!-- 用户菜单 -->
@@ -161,7 +162,6 @@
             <!-- 点击按钮上传图片 -->
             <el-form-item label="租户图标" prop="imageUrl">
               <input type="file" @change="handleFileChange" ref="fileInput" />
-              <button type="button" @click="handleSubmit">上传</button>
               <img v-if="previewImageUrl" :src="previewImageUrl" class="avatar"
                 style="width: 100px; height: 100px; margin-top: 10px;">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -180,7 +180,7 @@
                 style="width: 500px;height: 31px" />
             </el-form-item>
             <el-form-item label="备注" prop="content">
-              <Editor v-model="content" editorStyle="height: 320px; width: 700px" placeholder="请输入资讯内容">
+              <Editor v-model="content" editorStyle="height: 320px; width: 700px" placeholder="请输入备注内容">
                 <template v-slot:toolbar>
                   <span class="ql-formats">
                     <select class="ql-size">
@@ -219,10 +219,6 @@
 
               </Editor>
             </el-form-item>
-            <el-form-item label="当前租户" prop="tenant">
-              <span>{{ tenant }}</span>
-            </el-form-item>
-
           </el-form>
 
           <!-- 对话框底部按钮 -->
@@ -230,11 +226,23 @@
             <div class="dialog-footer">
               <el-button @click="clearForm()">清除</el-button>
               <el-button @click="closeDialog()">取消</el-button>
-              <el-button type="primary" v-if="isChange === 0" @click="addNews">确认添加</el-button>
-              <el-button type="primary" v-else @click="editNews">确认修改</el-button>
+              <el-button type="primary" @click="editCompany">确认修改</el-button>
             </div>
           </template>
 
+
+          <el-dialog v-model="successDialogVisible" title="提示" :close-on-click-modal="false">
+            <p>{{ successMessage }}</p>
+            <span slot1="footer" class="dialog-footer">
+              <el-button type="primary" @click="successDialogVisible = false">确定</el-button>
+            </span>
+          </el-dialog>
+        </el-dialog>
+        <el-dialog v-model="errorDialogVisible" title="错误提示" :close-on-click-modal="false">
+          <p>{{ errorMessage }}</p>
+          <span slot2="footer" class="dialog-footer">
+            <el-button type="primary" @click="errorDialogVisible = false">确定</el-button>
+          </span>
         </el-dialog>
 
       </el-container>
@@ -244,12 +252,16 @@
 
 <script>
 import Editor from 'primevue/editor';
-import { onMounted, ref, watch, reactive, computed } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { Management, UserFilled } from "@element-plus/icons-vue";
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useStore } from 'vuex';
+import {
+	saveAs
+} from 'file-saver';
+import * as XLSX from 'xlsx';
 export default {
   components: { Management, UserFilled, Editor },
   setup() {
@@ -311,20 +323,21 @@ export default {
     const dialogVisible = ref(false);
     const selectedFile = ref(null);
     const previewImageUrl = ref('');
-    const updateForm = reactive({
-      companyId: '',
-      userName: '',
-      department: '',
-      phoneNumber: '',
-      email: '',
-      realName: '',
-      password: '',
-      gender: '',
-      enabled: '1',
-      career: '',
-      role: '',
-      description: ''
-    })
+
+    // 修改表单相关属性
+    const editId = ref('')
+    const state = ref('')
+    const companyName = ref('');
+		const imageUrl = ref('');
+		const contactName = ref('');
+		const phoneNumber = ref('');
+		const adminName = ref('');
+    const content = ref('');
+
+    const errorMessage = ref('')
+    const successMessage = ref('')
+    const errorDialogVisible = ref(false)
+    const successDialogVisible = ref(false)
 
     // const addRules = reactive({
     //   name: [{ required: true, message: 'Please input name', trigger: 'blur' }],
@@ -363,29 +376,52 @@ export default {
       if (dialogVisible.value == false) dialogVisible.value = true;
     }
 
-    const clearForm = () => {
-
-    }
-
-    // const addUser = () => {
-    //   if (loginUser.data.role == root) {
-
-    //   } else if (loginUser.data.role == admin) {
-    //     let fd = new FormData()
-    //     fd.append("addForm", addForm)
-    //     fd.append("companyId")
-    //     axios()
-    //   }
-
-    // }
-
     //重置按钮
     const handle = () => {
-      console.log(currentPage.value)
+      console.log(pickerOptions.value.multipleSelection)
     }
 
+    const exportCompanies = () => {
+
+      const exportData = companyTable.value.map(row => ({
+        ID: row.companyId,
+        联系人: row.contactName,
+        公司名称: row.companyName,
+        电话号码: row.phoneNumber,
+        管理员姓名: row.adminName,
+        状态: row.state,
+        创建时间: row.createTime,
+        简介: row.description
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+      const wbout = XLSX.write(wb, {
+        bookType: 'xlsx',
+        type: 'array'
+      });
+      saveAs(new Blob([wbout], {
+        type: 'application/octet-stream'
+      }), 'exported_data.xlsx');
+    };
+
     // 修改按钮
-    const handleEdit = () => {
+    const handleEdit = (index, row) => {
+      editId.value = row.companyId;
+      state.value = row.state
+			companyName.value = row.companyName;
+			contactName.value = row.contactName;
+			phoneNumber.value = row.phoneNumber;
+      adminName.value = row.adminName;
+      content.value = row.description
+
+			if (row.image && row.image !== '') {
+				previewImageUrl.value = row.image;
+				imageUrl.value = row.image;
+			}
+
       if (dialogVisible.value == false) dialogVisible.value = true;
     };
 
@@ -448,6 +484,52 @@ export default {
       })
     };
 
+    const clearForm = () => {
+      console.log(previewImageUrl.value)
+    };
+
+    const closeDialog = () => {
+      dialogVisible.value = false
+    }
+
+    const editCompany = () => {
+			if (!companyName.value || !contactName.value || !phoneNumber.value || !adminName.value || !content.value) {
+				errorMessage.value = '请输入完整后修改';
+				errorDialogVisible.value = true;
+				return; // 如果有空字段，直接返回，不执行后续的添加操作
+      }
+      
+				const fd = new FormData();
+				fd.append('file', selectedFile.value);
+
+				imageUrl.value = previewImageUrl.value;
+        const requestData = {
+          companyId: editId.value,
+          state: state.value,
+          companyName: companyName.value,
+          imageUrl: imageUrl.value,
+          contactName: contactName.value,
+          phoneNumber: phoneNumber.value,
+          adminName: adminName.value,
+          content: content.value,
+				};
+				axios.post('http://localhost:8070/company/edit', requestData)
+					.then(response => {
+						console.log('修改新闻成功', response.data);
+
+						initCompanyTable()
+            dialogVisible.value = false;
+            console.log("新闻修改成功")
+						successMessage.value = '修改新闻成功';
+						successDialogVisible.value = true;
+					})
+          .catch(error => {
+            console.log(error)
+						errorMessage.value = '修改新闻失败，请重试';
+						errorDialogVisible.value = true;
+					});
+		};
+
     const handleFileChange = (event) => {
 				selectedFile.value = event.target.files[0];
 				if (!selectedFile.value) return;
@@ -457,6 +539,16 @@ export default {
 					previewImageUrl.value = e.target.result; // 将读取的图片数据赋值给预览 URL
 				};
 				reader.readAsDataURL(selectedFile.value);
+    };
+
+    const cancelUpload = () => {
+			selectedFile.value = null; // 清空已选择的文件
+			previewImageUrl.value = ''; // 清空预览图片 URL
+			imageUrl.value = '';
+			const fileInput = document.querySelector('input[type="file"]');
+			if (fileInput) {
+				fileInput.value = '';
+			}
 		};
 
     //导航到资讯管理页面 
@@ -544,6 +636,18 @@ export default {
       inputPhoneNumber,
       inputCompanyName,
 
+      dialogVisible,
+      editId,
+      companyName,
+      imageUrl,
+      contactName,
+      phoneNumber,
+      adminName,
+      content,
+
+      errorMessage,
+      errorDialogVisible,
+
       companyTable,
       filteredCompanyTable,
       pagedCompanyTable,
@@ -551,22 +655,23 @@ export default {
       currentPage,
       totalPages,
 
-      dialogVisible,
-      updateForm,
-
       handle,
+      exportCompanies,
       handleEdit,
       handleDelete,
+      closeDialog,
+      editCompany,
       confirmDelete,
 
       handleFileChange,
+      cancelUpload,
 
       back,
       searchCompany,
 
       toggleSelection,
       handleSelectionChange,
-      
+      previewImageUrl,
 
       // 路由控制相关方法
       routeToUserManage,

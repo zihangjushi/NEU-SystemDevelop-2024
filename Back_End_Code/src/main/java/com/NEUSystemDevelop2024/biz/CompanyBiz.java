@@ -112,7 +112,7 @@ public class CompanyBiz {
     }
 
     public boolean updateCompany(Company company) {
-        return companyMapper.updateCompany(company);
+        return companyMapper.updateCompanyInDept(company);
     }
 
     public int getCompanyListTotal() {
@@ -124,5 +124,9 @@ public class CompanyBiz {
     }
     public List<String> getCompanynameList(){
         return companyMapper.selectAllCompanyname();
+    }
+
+    public boolean updateCompany(Company company){
+        return companyMapper.updateCompanyInDept(company) > 0;
     }
 }

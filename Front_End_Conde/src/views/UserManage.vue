@@ -130,7 +130,7 @@
           <el-row style="text-align: left;">
             <el-button type="primary" @click="addButton" plain icon="Plus" style="margin-top: 5px">新增</el-button>
             <el-button type="danger" @click="confirmDelete" plain icon="Delete" style="margin-top: 5px">删除</el-button>
-            <el-button type="warning" plain icon="Download" style="margin-top: 5px">导出</el-button>
+            <el-button type="warning" @click="exportUsers" plain icon="Download" style="margin-top: 5px">导出</el-button>
           </el-row>
 
           <!-- 用户菜单 -->
@@ -363,6 +363,10 @@ import { Management, UserFilled } from "@element-plus/icons-vue";
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useStore } from 'vuex';
 import dayjs from 'dayjs';
+import {
+	saveAs
+} from 'file-saver';
+import * as XLSX from 'xlsx';
 export default {
   components: { Management, UserFilled },
   setup() {
@@ -689,6 +693,36 @@ export default {
       enabled.value = ''
       initUserTable()
     }
+
+    const exportUsers = () => {
+
+      const exportData = userTable.value.map(row => ({
+        ID: row.userId,
+        所属公司: row.companyId,
+        所属部门: row.departmentId,
+        用户昵称: row.userName,
+        用户姓名: row.realName,
+        用户性别: row.gender,
+        电话号码: row.phoneNumber,
+        邮箱: row.email,
+        状态: row.enabled,
+        创建时间: row.createTime,
+        简介: row.description
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+      const wbout = XLSX.write(wb, {
+        bookType: 'xlsx',
+        type: 'array'
+      });
+      saveAs(new Blob([wbout], {
+        type: 'application/octet-stream'
+      }), 'exported_data.xlsx');
+
+    };
 
     // 修改按钮
     const handleEdit = (index, row) => {
@@ -1028,6 +1062,7 @@ export default {
       
 
       handle,
+      exportUsers,
       menuControlVisable,
       toggleSelection,
       handleSelectionChange,
@@ -1045,7 +1080,7 @@ export default {
       personalCenter,
       back,
       routeToCompanyManage,
-	gotoNewsManage,
+      gotoNewsManage,
       searchUser,
       isDepartmentMatch,
       getDepartmentsByCompany,

@@ -3,10 +3,8 @@ package com.NEUSystemDevelop2024.mapper;
 import com.NEUSystemDevelop2024.entity.Department;
 import com.NEUSystemDevelop2024.entity.Company;
 import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import com.NEUSystemDevelop2024.entity.News;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -22,7 +20,7 @@ public interface CompanyMapper {
 
 
     @Update("update t_company set contactName=#{company.contactName}, companyName=#{company.companyName}, phoneNumber=#{company.phoneNumber}, adminName=#{company.adminName}, state=#{company.state}, description=#{company.description} where companyId=#{company.companyId}")
-    boolean updateCompany(@Param("company") Company company);
+    boolean updateCompanyInDept(@Param("company") Company company);
 
 
     @Select("select * from t_company")
@@ -45,6 +43,11 @@ public interface CompanyMapper {
 
     @Delete("delete from t_company where companyId=#{companyId}")
     Integer deleteCompanyById(Integer companyId);
+
+    @Update("UPDATE t_company SET companyName = #{companyName}, image = #{image}, contactName = #{contactName}, phoneNumber = #{phoneNumber}, " +
+            "adminName = #{adminName}, description = #{description} " +
+            "WHERE companyId = #{companyId}")
+    int updateCompany(Company company);
 
     @Select("select * from t_department where companyId=#{companyId}")
     List<Department> searchDeptByCompanyId(Integer companyId);

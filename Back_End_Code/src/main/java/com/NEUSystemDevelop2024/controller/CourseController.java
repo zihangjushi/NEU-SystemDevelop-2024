@@ -3,7 +3,6 @@ package com.NEUSystemDevelop2024.controller;
 import com.NEUSystemDevelop2024.biz.CourseBiz;
 import com.NEUSystemDevelop2024.entity.Course;
 import com.NEUSystemDevelop2024.entity.User;
-import javafx.application.Application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.web.bind.annotation.*;
