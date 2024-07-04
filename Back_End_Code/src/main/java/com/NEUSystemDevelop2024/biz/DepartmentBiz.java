@@ -23,7 +23,7 @@ public class DepartmentBiz {
 
     public void addDepartment(Department department) {
         int companyId = department.getCompanyId();
-        List<Department> departmentList = companyMapper.searchByCompanyId(companyId);
+        List<Department> departmentList = companyMapper.searchDeptByCompanyId(companyId);
         department.setSerialId(departmentList.size() + 1);
         mapper.insertDept(department);
     }

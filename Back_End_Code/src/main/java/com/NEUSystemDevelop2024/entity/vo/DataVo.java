@@ -1,4 +1,4 @@
-package com.example.deptmanage.entity.vo;
+package com.NEUSystemDevelop2024.entity.vo;
 
 import lombok.Data;
 
@@ -17,7 +17,7 @@ public class DataVo {
     private String phoneNumber;
     private String adminName;
 
-    private Timestamp createTime;
+    private String createTime;
 
     private List<DataVo> children;
 }
