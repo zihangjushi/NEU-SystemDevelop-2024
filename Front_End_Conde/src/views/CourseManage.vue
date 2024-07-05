@@ -663,7 +663,33 @@ export default {
         };
 
         const exportCourse = () => {
+            axios.get('http://localhost:8070/course/export')
+                .then(response => {
+                    if (!response.data.isOk) {
+                        alert(response.data.msg);
+                    }
+                    const base64String = response.data.courses;
 
+                    // 将Base64字符串转换为二进制数据
+                    const byteCharacters = atob(base64String);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+                    // 创建一个下载链接并点击它
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'courses.xlsx';
+                    link.click();
+                })
+                .catch(error => {
+                    // alert('网络错误');
+                });
+
+            
         };
 
 
@@ -744,7 +770,7 @@ export default {
         const updatePagedData = (data) => {
             const startIndex = (currentPage.value - 1) * pageSize;
             pagedTableData.value = data.slice(startIndex, startIndex + pageSize);
-            total.value = data.length;
+            // total.value = data.length;
         };
 
         return {
@@ -765,7 +791,6 @@ export default {
             routeToNewsManage,
             store,
             useStore,
-            loginUser,
             tableData,
             searchBeginTime,
             searchEndTime,
@@ -778,8 +803,6 @@ export default {
             handleEdit,
             editCourse,
             handleDelete,
-            personalCenter,
-            back,
             addCourse,
             deleteCourse,
             exportCourse,
