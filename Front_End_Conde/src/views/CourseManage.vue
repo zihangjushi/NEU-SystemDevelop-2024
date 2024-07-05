@@ -590,8 +590,9 @@ export default {
             courseForm.description = res.data.course.description;
             courseForm.courseOrder = res.data.course.courseOrder;
             courseForm.author = res.data.course.author;
+            courseForm.companyName = res.data.course.companyName;
             if (loginUser.value.role === "user" ||
-                (loginUser.value.role === "admin" && !(loginUser.value.companyName === courseForm.companyName))
+                (loginUser.value.role === "admin" && !(loginUserCompanyName.value === courseForm.companyName))
             ) {
                 alert('没有权限');
                 return;
@@ -616,7 +617,7 @@ export default {
 
         const handleDelete = async (index, row) => {
             if (loginUser.value.role === "user" ||
-                (loginUser.value.role === "admin" && !(loginUser.value.companyName === courseForm.companyName))
+                (loginUser.value.role === "admin" && !(loginUserCompanyName.value === row.companyName))
             ) {
                 alert('没有权限');
                 return;
@@ -633,9 +634,8 @@ export default {
 
 
         const deleteCourse = () => {
-            if (loginUser.value.role === "user" ||
-                (loginUser.value.role === "admin" && !(loginUser.value.companyName === courseForm.companyName))
-            ) {
+            if (loginUser.value.role === "user" || loginUser.value.role === "admin")
+            {
                 alert('没有权限');
                 return;
             }
