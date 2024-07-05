@@ -78,9 +78,9 @@
             <div style="text-align: left;position: relative; top: 20px;">
               <el-breadcrumb separator="/">
                 <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                <el-breadcrumb-item><a href="/">部门管理</a></el-breadcrumb-item>
+                <el-breadcrumb-item><a href="http://localhost:8080/dept">部门管理</a></el-breadcrumb-item>
                 <el-breadcrumb-item>部门列表</el-breadcrumb-item>
-                <el-breadcrumb-item>部门详情</el-breadcrumb-item>
+                <!-- <el-breadcrumb-item>部门详情</el-breadcrumb-item> -->
               </el-breadcrumb>
             </div>
             <el-dropdown :hide-on-click="false">
@@ -291,7 +291,7 @@ export default {
     const loadData = async () => {
       loading.value = true;
       try {
-        const res = await axios.get("http://localhost:8081/company/list", {
+        const res = await axios.get("http://localhost:8070/company/lists", {
           params: {
             inputDeptname: inputDeptname.value,
             inputDeptstate: inputDeptstate.value,
@@ -391,7 +391,7 @@ export default {
       if (requestModel.value.includes('company')) {
         console.log('formData', companyForm);
         if (!companyForm) return;
-        const res = requestModel.value === 'companyAdd' ? await axios.post('http://localhost:8081/company/add', {...companyForm}) : await axios.put('http://localhost:8081/company/update', {...companyForm});
+        const res = requestModel.value === 'companyAdd' ? await axios.post('http://localhost:8070/company/add', {...companyForm}) : await axios.put('http://localhost:8070/company/update', {...companyForm});
         const {isOk, data, msg} = res
         console.log(msg, data)
         // if (isOk) {
@@ -403,7 +403,7 @@ export default {
       } else {
         console.log('formData', departmentForm);
         if (!departmentForm) return;
-        const res = requestModel.value === 'departmentAdd' ? await axios.post('http://localhost:8081/department/add', {...departmentForm}) : await axios.put('http://localhost:8081/department/update', {...departmentForm});
+        const res = requestModel.value === 'departmentAdd' ? await axios.post('http://localhost:8070/department/add', {...departmentForm}) : await axios.put('http://localhost:8070/department/update', {...departmentForm});
         const {isOk, data, msg} = res
         console.log(msg, data)
         // if (isOk) {
@@ -458,7 +458,7 @@ export default {
           .then(() => {
             // 实现删除逻辑
             if (row.children !== null) {
-              axios.delete('http://localhost:8081/company/delete/' + row.id,).then(res => {
+              axios.delete('http://localhost:8070/company/delete/' + row.id,).then(res => {
                 const {isOk, msg} = res.data
                 if (isOk) {
                   ElMessage.success(msg)
@@ -468,7 +468,7 @@ export default {
               })
 
             } else {
-              axios.delete('http://localhost:8081/department/delete/' + row.id,).then(res => {
+              axios.delete('http://localhost:8070/department/delete/' + row.id,).then(res => {
                 const {isOk, msg} = res.data
                 if (isOk) {
                   ElMessage.success(msg)

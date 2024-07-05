@@ -126,7 +126,7 @@ public class CompanyBiz {
         return companyMapper.selectAllCompanyname();
     }
 
-    public boolean updateCompany(Company company){
-        return companyMapper.updateCompanyInDept(company) > 0;
-    }
+//    public boolean updateCompany(Company company){
+//        return companyMapper.updateCompanyInDept(company) > 0;
+//    }
 }

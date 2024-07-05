@@ -10,7 +10,7 @@ public class Department {
     String phoneNumber;
     int state;
     String description;
-    Timestamp createTime;
+    String createTime;
 
     public Department() {
     }
@@ -71,14 +71,14 @@ public class Department {
         this.description = description;
     }
 
-    public Timestamp getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
     public String getTime(){
         return createTime.toString();
     }
 
-    public void setCreateTime(Timestamp createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
     public int getSerialId() {

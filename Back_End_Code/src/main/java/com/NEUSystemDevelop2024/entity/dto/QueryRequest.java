@@ -1,4 +1,4 @@
-package com.example.deptmanage.entity.dto;
+package com.NEUSystemDevelop2024.entity.dto;
 
 import lombok.Data;
 @Data
