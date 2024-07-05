@@ -51,13 +51,13 @@
               </el-sub-menu>
 
             </el-sub-menu>
-            <el-menu-item index="3-2"><el-icon>
+            <el-menu-item index="3-2" @click="navigateTo('/deptManage')"><el-icon>
                 <Management />
               </el-icon>部门管理</el-menu-item>
             <el-menu-item index="3-3" @click="gotoNewsManage"><el-icon>
                 <Orange />
               </el-icon>行业动态管理</el-menu-item>
-            <el-menu-item index="3-4" ><el-icon>
+            <el-menu-item index="3-4" @click="navigateTo('/course')"><el-icon>
                 <List />
               </el-icon>课程管理</el-menu-item>
             <el-menu-item index="3-5"><el-icon>

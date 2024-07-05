@@ -30,7 +30,7 @@
               管理
             </template>
             <el-menu-item-group>
-				<el-menu-item index="3-1" @click="routeToCompanyManage"><el-icon>
+				<el-menu-item index="3-1" @click="navigateTo('/companyManage')"><el-icon>
 				<OfficeBuilding />
 				</el-icon>租户管理</el-menu-item>
               <el-menu-item index="3-2" @click="navigateTo('/userManage')">
@@ -39,7 +39,7 @@
                 </el-icon>
                 用户管理
               </el-menu-item>
-              <el-menu-item index="3-3" @click="navigateTo('/')">
+              <el-menu-item index="3-3" @click="navigateTo('/deptManage')">
                 <el-icon>
                   <Management/>
                 </el-icon>
@@ -51,7 +51,7 @@
                 </el-icon>
                 行业动态管理
               </el-menu-item>
-              <el-menu-item index="3-5" @click="navigateTo('/')">
+              <el-menu-item index="3-5" @click="navigateTo('/course')">
                 <el-icon>
                   <List/>
                 </el-icon>
