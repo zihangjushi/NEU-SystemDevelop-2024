@@ -3,7 +3,8 @@ const webpack = require('webpack'); // 引入 webpack
 
 module.exports = defineConfig({
   transpileDependencies: true,
-  lintOnSave: true,
+  lintOnSave: false,
+  
   configureWebpack: {
 
     resolve: {

@@ -13,18 +13,15 @@
             <!-- logo和测盟汇 -->
           </el-menu-item>
 
-          <el-menu-item index="2">
-            <!-- 首页 -->
+          <el-menu-item index="2" >
             <template #title>
               <el-icon>
                 <HomeFilled/>
               </el-icon>
               首页
             </template>
-            <!-- 首页 -->
           </el-menu-item>
 
-          <!-- 管理目录 -->
           <el-sub-menu index="3">
             <template #title>
               <el-icon>
@@ -33,31 +30,34 @@
               管理
             </template>
             <el-menu-item-group>
-              <el-menu-item index="3-1">
+				<el-menu-item index="3-1" @click="routeToCompanyManage"><el-icon>
+				<OfficeBuilding />
+				</el-icon>租户管理</el-menu-item>
+              <el-menu-item index="3-2" @click="navigateTo('/userManage')">
                 <el-icon>
                   <UserFilled/>
                 </el-icon>
                 用户管理
               </el-menu-item>
-              <el-menu-item index="3-2">
+              <el-menu-item index="3-3" @click="navigateTo('/')">
                 <el-icon>
                   <Management/>
                 </el-icon>
                 部门管理
               </el-menu-item>
-              <el-menu-item index="3-3">
+              <el-menu-item index="3-4" @click="routeToNewsManage">
                 <el-icon>
                   <Orange/>
                 </el-icon>
                 行业动态管理
               </el-menu-item>
-              <el-menu-item index="3-4">
+              <el-menu-item index="3-5" @click="navigateTo('/')">
                 <el-icon>
                   <List/>
                 </el-icon>
                 课程管理
               </el-menu-item>
-              <el-menu-item index="3-5">
+              <el-menu-item index="3-6" @click="navigateTo('/meeting')">
                 <el-icon>
                   <TrendCharts/>
                 </el-icon>
@@ -86,7 +86,9 @@
             <el-dropdown :hide-on-click="false">
               <div style="display: flex; align-items: center;">
                 <el-avatar icon="UserFilled" style="font-size: 20px; margin-right: 10px;position: relative; top: 8px;"></el-avatar>
-                <el-button type="text" style="font-size: 15px; color: rgb(0,0,0);position: relative; top: 8px;">徐洋
+                <el-button type="text" style="font-size: 15px; color: rgb(0,0,0);position: relative; top: 8px;">{{
+                    loginUser.userName
+                  }}
                 </el-button>
               </div>
               <template #dropdown>
@@ -242,17 +244,21 @@
 
 
 <script>
-import {reactive, ref} from 'vue';
+import {reactive, ref, onMounted, getCurrentInstance} from 'vue';
 import {HomeFilled, List, Management, Menu, Orange, TrendCharts, UserFilled} from "@element-plus/icons-vue";
 import axios from 'axios';
+import {useStore} from "vuex";
 import {ElMessage, ElMessageBox} from "element-plus";
+import {useRouter} from 'vue-router';
 
 export default {
   components: {Management, UserFilled, HomeFilled, Menu, Orange, List, TrendCharts},
   setup() {
     const tableData = ref([]);
     const loading = ref(false);
+    const {proxy} = getCurrentInstance();
 
+    const router = useRouter();
     const total = ref(0);
     const pageNum = ref(1);
     const pageSize = ref(10);
@@ -275,6 +281,14 @@ export default {
       state: 1,
       description: '',
     })
+
+    const store = useStore();
+    const loginUser = ref('')
+    onMounted(async () => {
+      await Promise.all([
+        loginUser.value = store.state.user,
+      ])
+    });
 
     const departmentForm = reactive({
       departmentId: 0,
@@ -336,6 +350,10 @@ export default {
 //添加公司的方法
     const openCompanyAddDialog = () => {
       console.log('添加公司')
+      if (loginUser.value.role === 'user' || loginUser.value.role === 'admin') {
+        proxy.$message.warning('很遗憾!您没有权限添加部门信息!');
+        return;
+      }
       dialogCompanyFormVisible.value = true; // 打开弹窗
       requestModel.value = 'companyAdd'
       // 清空表单数据
@@ -349,6 +367,10 @@ export default {
 //添加部门方法
     const openDepartmentAddDialog = (index, row) => {
       console.log('添加部门', index, row)
+      if (loginUser.value.role === 'user') {
+        proxy.$message.warning('很遗憾!您没有权限添加部门信息!');
+        return;
+      }
       dialogDepartmentFormVisible.value = true; // 打开弹窗
       requestModel.value = 'departmentAdd'
       // 清空表单数据
@@ -363,8 +385,16 @@ export default {
 
     const openEditDialog = (index, row) => {
       console.log('编辑', index, row)
+      if (loginUser.value.role === 'user') {
+        proxy.$message.warning('很遗憾!您没有权限修改部门信息!');
+        return;
+      }
       //公司修改
       if (row.children !== null) {
+        if (loginUser.value.role === 'admin') {
+        proxy.$message.warning('很遗憾!您没有权限修改该子部门信息!');
+        return;
+      }
         dialogCompanyFormVisible.value = true;
         requestModel.value = 'companyUpdate'
         // 将已有信息填入表单
@@ -375,6 +405,7 @@ export default {
         companyForm.adminName = row.adminName;
         companyForm.state = row.status;
       } else { // 部门修改
+        //部门权限未做
         dialogDepartmentFormVisible.value = true;
         requestModel.value = 'departmentUpdate'
         departmentForm.departmentId = row.id;
@@ -438,10 +469,12 @@ export default {
 
     const personalCenter = () => {
       // 实现个人中心逻辑
+      router.push('/userCenter');
     };
 
     const back = () => {
       // 实现退出登录逻辑
+      router.push('/login');
     };
 
 
@@ -457,7 +490,15 @@ export default {
       )
           .then(() => {
             // 实现删除逻辑
+            if (loginUser.value.role === 'user') {
+              proxy.$message.warning('很遗憾!您没有权限添加部门信息!');
+              return;
+            }
             if (row.children !== null) {
+              if (loginUser.value.role === 'admin') {
+                proxy.$message.warning('很遗憾!您没有权限添加部门信息!');
+                return;
+              }
               axios.delete('http://localhost:8070/company/delete/' + row.id,).then(res => {
                 const {isOk, msg} = res.data
                 if (isOk) {
@@ -484,6 +525,10 @@ export default {
 
     loadData();
 
+    const navigateTo = (routeName) => {
+      router.push( routeName );
+    };
+    
     return {
       dialogDepartmentFormVisible,
       dialogCompanyFormVisible,
@@ -507,6 +552,8 @@ export default {
       resetForm,
       personalCenter,
       back,
+      store,
+      navigateTo,
       handleDelete
     };
   }

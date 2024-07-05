@@ -21,7 +21,7 @@ const routes = [
     component: () => import('../views/UserManage.vue')
   },
   {
-    path: '/CompanyManage',
+    path: '/companyManage',
     name: 'companyManage',
     component: () => import('../views/CompanyManage.vue')
   },
@@ -73,6 +73,11 @@ const routes = [
     name: 'mynews',
     component: () => import('../views/AdminNewsManage.vue')
   },
+  {
+    path: '/deptManage',
+    name: 'deptManage',
+    component: () => import('../views/DeptManage.vue')
+  }
 ]
 
 const router = createRouter({

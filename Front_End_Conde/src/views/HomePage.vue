@@ -27,16 +27,16 @@
               管理
             </template>
             <el-menu-item-group>
-				<el-menu-item index="3-1" @click="routeToCompanyManage"><el-icon>
+				<el-menu-item index="3-1" @click="navigateTo('/companyManage')"><el-icon>
 				<OfficeBuilding />
 				</el-icon>租户管理</el-menu-item>
-              <el-menu-item index="3-2" @click="navigateTo('/userManage')">
+              <el-menu-item index="3-2" @click="navigateTo('/companyManage')">
                 <el-icon>
                   <UserFilled/>
                 </el-icon>
                 用户管理
               </el-menu-item>
-              <el-menu-item index="3-3" @click="navigateTo('/')">
+              <el-menu-item index="3-3" @click="navigateTo('/deptManage')">
                 <el-icon>
                   <Management/>
                 </el-icon>
@@ -48,7 +48,7 @@
                 </el-icon>
                 行业动态管理
               </el-menu-item>
-              <el-menu-item index="3-5" @click="navigateTo('/')">
+              <el-menu-item index="3-5" @click="navigateTo('/course')">
                 <el-icon>
                   <List/>
                 </el-icon>
@@ -110,7 +110,7 @@
               </div>
 
               <!-- 部门管理卡片 -->
-              <div class="flip-card" @click="navigateTo('/')">
+              <div class="flip-card" @click="navigateTo('/deptManage')">
                 <div class="flip-card-inner">
                   <div class="flip-card-front" style="background-color: #67C23A; color: white;">
                     <el-icon class="card-icon"><Management /></el-icon>
@@ -127,7 +127,7 @@
             <el-col :span="11">
               <!-- 课程管理卡片 -->
 
-              <div class="flip-card" @click="navigateTo('/')">
+              <div class="flip-card" @click="navigateTo('/course')">
                 <div class="flip-card-inner">
                   <div class="flip-card-front" style="background-color: #E6A23C; color: white;">
                     <el-icon class="card-icon"><List /></el-icon>
@@ -157,7 +157,7 @@
           </el-row>
 
           <!-- 行业动态管理卡片 -->
-          <div class="flip-card" @click="navigateTo('/')">
+          <div class="flip-card" @click="navigateTo('/news')">
             <div class="flip-card-inner" style="width:1075px">
               <div class="flip-card-front" style="background-color: #909399; color: white;">
                 <el-icon class="card-icon"><Orange /></el-icon>
@@ -258,7 +258,7 @@ export default {
       back,
       navigateTo,
       loginUser,
-	routeToNewsManage,
+	    routeToNewsManage,
     };
   }
 };
