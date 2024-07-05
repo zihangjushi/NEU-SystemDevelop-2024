@@ -2,14 +2,20 @@ package com.NEUSystemDevelop2024.controller;
 
 import com.NEUSystemDevelop2024.biz.CompanyBiz;
 import com.NEUSystemDevelop2024.biz.CourseBiz;
+import com.NEUSystemDevelop2024.controller.explorer.ExcelExporter;
 import com.NEUSystemDevelop2024.entity.Course;
 import com.NEUSystemDevelop2024.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.system.ApplicationHome;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -23,6 +29,9 @@ public class CourseController {
 
     @Autowired
     private CompanyBiz companyBiz;
+
+    @Autowired
+    private ExcelExporter excelExporter;
 
     @RequestMapping("/list")
     public Map list(HttpSession session)
@@ -159,4 +168,26 @@ public class CourseController {
         map.put("companyName", companyName);
         return map;
     }
+
+    @RequestMapping("/export")
+    public Map export(HttpSession session) {
+        List<Course> courseList = courseBiz.getCourseList();
+        String base64String = exportCourses(courseList);
+        Map map = new HashMap();
+        map.put("isOk", true);
+        map.put("courses", base64String);
+        map.put("msg", "导出成功");
+        return map;
+    }
+
+
+    public String exportCourses(List<Course> courseList) {
+        ByteArrayOutputStream outputStream = excelExporter.exportToExcel(courseList);
+        byte[] bytes = outputStream.toByteArray();
+
+        // 将字节数组转换为Base64编码的字符串
+        String base64EncodedString = Base64Utils.encodeToString(bytes);
+        return base64EncodedString;
+    }
+
 }
