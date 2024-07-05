@@ -1,9 +1,8 @@
 <template>
     <div class="about">
         <el-container style="height: 100vh; border: 1px solid #eee">
-
             <!-- /side容器，用来存放侧边菜单 -->
-            <el-aside class="menu-with-shadow" width="200px" style="color: rgb(255,255,255)">
+            <el-aside class="menu-with-shadow" width="240px" style="color: rgb(255,255,255)">
                 <el-menu :default-openeds="['3']">
                     <!-- //序号为1的侧边栏，用来显示测盟汇和图片组件 -->
                     <el-menu-item index="1">
@@ -13,7 +12,7 @@
                         </template>
                     </el-menu-item>
                     <!-- //序号为2的菜单栏，用来显示标题（首页） -->
-                    <el-menu-item index="2">
+                    <el-menu-item index="2" @click="navigateTo('/')">
                         <template #title>
                             <el-icon>
                                 <HomeFilled />
@@ -25,28 +24,50 @@
                         <template #title><el-icon>
                                 <Menu />
                             </el-icon>管理</template>
-                        <el-menu-item-group>
-                            <el-menu-item index="3-1"><el-icon>
+                        <el-menu-item @click="routeToCompanyManage"><el-icon>
+                                <OfficeBuilding />
+                            </el-icon>租户管理</el-menu-item>
+                        <el-sub-menu>
+                            <template #title>
+                                <el-icon>
                                     <UserFilled />
-                                </el-icon>用户管理</el-menu-item>
-                            <el-menu-item index="3-2"><el-icon>
-                                    <Management />
-                                </el-icon>部门管理</el-menu-item>
-                            <el-menu-item index="3-3"><el-icon>
-                                    <Orange />
-                                </el-icon>行业动态管理</el-menu-item>
-                            <el-menu-item index="3-4"><el-icon>
-                                    <List />
-                                </el-icon>课程管理</el-menu-item>
-                            <el-menu-item index="3-5"><el-icon>
-                                    <TrendCharts />
-                                </el-icon>会议管理</el-menu-item>
-                        </el-menu-item-group>
+                                </el-icon>
+                                <span>用户管理</span>
+                            </template>
+
+                            <el-input v-model="searchQuery" style="width: 160px" placeholder="输入以搜索" clearable
+                                @input="searchMenu" />
+                            <el-sub-menu v-for="(company, index) in filteredCompanyList" :key="company.companyId"
+                                class="left-align" :index="'3-1-' + (index + 1)">
+
+                                <template #title>
+                                    {{ company.companyName }}
+                                </template>
+                                <el-menu-item @click="menuControlVisable(company.companyId, department.serialId)"
+                                    v-for="department in getDepartmentsByCompany(company.companyId)"
+                                    :key="department.serialId"
+                                    :index="'3-1-' + (index + 1) + '-' + department.serialId">
+                                    {{ department.departmentName }}
+                                </el-menu-item>
+                            </el-sub-menu>
+
+                        </el-sub-menu>
+                        <el-menu-item index="3-2"><el-icon>
+                                <Management />
+                            </el-icon>部门管理</el-menu-item>
+                        <el-menu-item index="3-3" @click="gotoNewsManage"><el-icon>
+                                <Orange />
+                            </el-icon>行业动态管理</el-menu-item>
+                        <el-menu-item index="3-4"><el-icon>
+                                <List />
+                            </el-icon>课程管理</el-menu-item>
+                        <el-menu-item index="3-5"><el-icon>
+                                <TrendCharts />
+                            </el-icon>用户管理</el-menu-item>
                     </el-sub-menu>
                 </el-menu>
             </el-aside>
 
-            <!-- //head容器，用来存放路径信息 -->
             <el-container>
                 <el-header class="header-with-shadow" style="font-size: 12px">
                     <div style="display: flex; justify-content: space-between; width: 100%;">
@@ -65,7 +86,8 @@
                                 <el-avatar icon="UserFilled"
                                     style="font-size: 20px; margin-right: 10px;position: relative; top: 8px;"></el-avatar>
                                 <el-button type="text"
-                                    style="font-size: 15px; color: rgb(0,0,0);position: relative; top: 8px;">徐洋</el-button>
+                                    style="font-size: 15px; color: rgb(0,0,0);position: relative; top: 8px;">{{
+                                        loginUser.userName }}</el-button>
                             </div>
                             <!-- template是下拉插槽，用来存放dropdown中的内容 -->
                             <template #dropdown>
@@ -79,7 +101,6 @@
                     </div>
                 </el-header>
 
-                <!-- main容器，用来存放页面的主要内容 -->
                 <el-main>
 
                     <div style="text-align: left;">
@@ -154,8 +175,45 @@
                                 <el-button @click="clearForm()">清除</el-button>
                                 <el-button @click="closeDialog()">取消</el-button>
                                 <el-button type="primary" @click="addCourse">确认添加</el-button>
-                                <!-- <el-button type="primary" v-if="isChange === 0" @click="addCourse">确认添加</el-button> -->
-                                <!-- <el-button type="primary" v-else @click="editCourse">确认修改</el-button> -->
+                            </div>
+                        </template>
+                    </el-dialog>
+
+                    <!-- 修改dialog -->
+                    <el-dialog v-model="dialogEditCourseVisible" title="修改课程" width="700">
+                        <el-form :ref="form" :model="form" :rules="rules">
+                            <el-form-item label="课程名称" prop="courseName" :label-width="formLabelWidth">
+                                <el-input v-model="courseForm.courseName" autocomplete="off" />
+                            </el-form-item>
+                            <el-form-item label="课程封面" prop="imageUrl">
+                                <input type="file" @change="handleImageChange" ref="imageInput" />
+                                <img v-if="previewImageUrl" :src="previewImageUrl" class="avatar"
+                                    style="width: 100px; height: 100px; margin-top: 10px;">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                <button type="button" @click="cancelImageUpload">取消上传</button>
+                            </el-form-item>
+                            <el-form-item label="课程简介" prop="description" :label-width="formLabelWidth">
+                                <el-input v-model="courseForm.description" autocomplete="off" type="textarea" />
+                            </el-form-item>
+                            <el-form-item label="课程排序" prop="courseOrder" :label-width="formLabelWidth">
+                                <el-input v-model="courseForm.courseOrder" autocomplete="off" type="textarea" />
+                            </el-form-item>
+                            <el-form-item label="课程视频" prop="videoUrl">
+                                <input type="file" @change="handleVideoChange" ref="videoInput" />
+                                <img v-if="previewVideoUrl" :src="previewVideoUrl" class="avatar"
+                                    style="width: 100px; height: 100px; margin-top: 10px;">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                <button type="button" @click="cancelVideoUpload">取消上传</button>
+                            </el-form-item>
+                            <el-form-item label="课程作者" prop="author" :label-width="formLabelWidth">
+                                <el-input v-model="courseForm.author" autocomplete="off" />
+                            </el-form-item>
+                        </el-form>
+                        <template #footer>
+                            <div class="dialog-footer">
+                                <el-button @click="clearForm()">清除</el-button>
+                                <el-button @click="closeDialog()">取消</el-button>
+                                <el-button type="primary" @click="editCourse">确认修改</el-button>
                             </div>
                         </template>
                     </el-dialog>
@@ -193,29 +251,97 @@
                     </div>
                 </el-main>
 
-                <!-- 同样的容器，但是是背景图片 -->
-                <div class="container" style="grid-template-rows: auto 1fr auto;margin-left: 500px">
-                    <el-pagination background layout="prev, pager, next" :total="50" class="pagination"
-                        style="grid-row: 3;margin-bottom: 10px"></el-pagination>
-                </div>
-
             </el-container>
         </el-container>
     </div>
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Management, UserFilled } from "@element-plus/icons-vue";
+import {
+    ElMessage,
+    ElMessageBox
+} from 'element-plus';
 import axios from 'axios';
 // import { ElMessage } from 'element-plus';
-
+import { useStore } from 'vuex';
 
 export default {
     components: { Management, UserFilled },
     setup() {
+        const userInfo = ref({
+            userName: '',
+            phoneNumber: '',
+            email: '',
+            departmentId: '',
+            role: '',
+            createTime: '',
+            password: '',
+        });
+
+        const departmentInfo = ref({
+            departmentName: '',
+        });
+
+        const basicInfoForm = ref({
+            userId: '',
+            realName: '',
+            phoneNumber: '',
+            email: '',
+            gender: '',
+        });
+
+        const routeToNewsManage = () => {
+            if (loginUser.value.role === 'admin') {
+                router.push('/mynews');
+            } else if (loginUser.value.role === 'root') {
+                router.push('/news');
+            } else {
+                alert('无权访问该页面');
+            }
+        };
+
+        const passwordForm = ref({
+            oldPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+        });
+
+        const activeTab = ref('baseInfo');
+
+        const router = useRouter();
+
+        const personalCenter = () => {
+            router.push('/userCenter');
+        };
+
+        const back = () => {
+            router.push('/login');
+        };
+        const store = useStore();
+        const loginUser = ref('');
+        const loginUserCompanyName = ref('');
+        onMounted(async () => {
+            await Promise.all([
+                loginUser.value = store.state.user,
+            ]);
+            const res = await axios.post('http://localhost:8070/course/companyName', {
+                Id: loginUser.value.companyId,
+            });
+            loginUserCompanyName.value = res.data.companyName;
+            // alert(loginUser.value.role);
+            // alert(loginUserCompanyName.value);
+        });
+
+
+        const navigateTo = (routeName) => {
+            router.push(routeName);
+        };
+
         const dialogAddCourseVisible = ref(false);
+        const dialogEditCourseVisible = ref(false);
         const courseForm = reactive({
             courseId: '',
             courseName: '',
@@ -312,6 +438,11 @@ export default {
             courseForm.author = '';
         };
 
+        const closeDialog = () => {
+            dialogAddCourseVisible.value = false;
+            dialogEditCourseVisible.value = false;
+        };
+
         const formatDateTime = (isoString) => {
             const date = new Date(isoString);
 
@@ -331,7 +462,6 @@ export default {
             const seconds = String(localDate.getUTCSeconds()).padStart(2, '0');
 
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-            // return isoString;
         };
 
         const formatTableData = () => {
@@ -350,28 +480,15 @@ export default {
         };
 
         const addCourse = () => {
-            if (!courseForm.courseName || !courseForm.description || !courseForm.courseOrder || !courseForm.author || !previewImageUrl.value || !previewVideoUrl.value) {
-                // alert(courseForm.courseName);
-                // alert(courseForm.companyName);
-                // alert(courseForm.description);
-                // alert(courseForm.courseOrder);
-                // alert(courseForm.author);
-                // alert(previewImageUrl.value);
-                // alert(previewVideoUrl.value);
-
-                // errorMessage.value = '请输入完整后添加';
-                // errorDialogVisible.value = true;
-                return; // 如果有空字段，直接返回，不执行后续的添加操作
+            if (loginUser.value.role === 'user') {
+                alert('没有权限');
+                return;
             }
 
-            // alert(courseForm.courseId);
-            // alert(courseForm.courseName);
-            // alert(courseForm.companyName);
-            // alert(courseForm.description);
-            // alert(courseForm.courseOrder);
-            // alert(courseForm.author);
-            // alert(previewImageUrl.value);
-            // alert(previewVideoUrl.value);
+            if (!courseForm.courseName || !courseForm.description || !courseForm.courseOrder || !courseForm.author || !previewImageUrl.value || !previewVideoUrl.value) {
+                alert('请输入完整后参加');
+                return;
+            }
 
             const requestData = {
                 courseName: courseForm.courseName,
@@ -384,48 +501,31 @@ export default {
 
             axios.post('http://localhost:8070/course/add', requestData)
                 .then(response => {
-                    console.log('新增课程成功', response.data);
-                    // alert('新增课程成功');
-
+                    if (!response.data.isOk) {
+                        alert(response.data.msg);
+                    }
                     refreshCoursesList();
-
-
-                    // 假设后端返回的新闻数据包含在 response.data 中
-                    // 将新闻数据添加到 tableData 中
-                    // tableData.value.push(response.data);
-
-                    // 关闭对话框等其他操作可以在这里处理
                     dialogAddCourseVisible.value = false;
-                    // alert('新增课程成功');
-                    // 显示成功提示框等
-                    // successMessage.value = '新增课程成功';
-                    // successDialogVisible.value = true;
                 })
                 .catch(error => {
-                    console.error('新增课程失败', error);
-                    // alert('新增课程失败');
-
-                    // 显示错误提示框等
-                    // errorMessage.value = '新增课程失败，请稍后重试';
-                    // errorDialogVisible.value = true;
+                    // console.error('新增课程失败', error);
+                    // alert('网络错误');
                 });
         };
 
         // 课程列表
         const refreshCoursesList = () => {
-            // alert("refresh begin");
             axios.get('http://localhost:8070/course/list')
                 .then(response => {
-                    // alert('refresh success');
+                    if (!response.data.isOk) {
+                        alert(response.data.msg);
+                    }
                     tableData.value = response.data.courses;
                     formatTableData();
-                    
-                    // updatePagedData(tableData.value); // 更新分页数据的函数，假设已定义
+                    updatePagedData(tableData.value);
                 })
                 .catch(error => {
-                    // alert('refresh error');
-                    console.error('获取课程列表失败', error);
-                    // 可以在这里处理获取新闻列表失败的情况，比如显示错误信息给用户
+                    // alert('网络错误');
                 });
         };
 
@@ -442,24 +542,14 @@ export default {
 
             axios.post('http://localhost:8070/course/search', requestData)
                 .then(response => {
-                    console.log('查询课程成功', response.data);
-                    // alert('查询课程成功');
-
+                    if (!response.data.isOk) {
+                        alert(response.data.msg);
+                    }
                     loadCoursesList(response);
-
-
                     dialogAddCourseVisible.value = false;
-                    // 显示成功提示框等
-                    // successMessage.value = '新增课程成功';
-                    // successDialogVisible.value = true;
                 })
                 .catch(error => {
-                    console.error('新增课程失败', error);
-                    // alert('新增课程失败');
-
-                    // 显示错误提示框等
-                    // errorMessage.value = '新增课程失败，请稍后重试';
-                    // errorDialogVisible.value = true;
+                    // alert('网络错误');
                 });
         }
 
@@ -467,33 +557,6 @@ export default {
             tableData.value = response.data.courses;
             formatTableData();
         };
-
-        const pickerOptions = ref({
-            disabledDate(time) {
-                return time.getTime() > Date.now();
-            },
-            shortcuts: [{
-                text: '今天',
-                onClick(picker) {
-                    picker.emit('pick', new Date());
-                }
-            }, {
-                text: '昨天',
-                onClick(picker) {
-                    const date = new Date();
-                    date.setTime(date.getTime() - 3600 * 1000 * 24);
-                    picker.emit('pick', date);
-                }
-            }, {
-                text: '一周前',
-                onClick(picker) {
-                    const date = new Date();
-                    date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-                    picker.emit('pick', date);
-                }
-            }],
-            multipleSelection: []
-        });
 
         const searchBeginTime = ref('');
         const searchEndTime = ref('');
@@ -513,30 +576,120 @@ export default {
         };
 
         const handleSelectionChange = (val) => {
-            pickerOptions.value.multipleSelection = val;
+            selectedRows.value = val;
         };
 
-        const handleEdit = (index, row) => {
-            console.log(index, row);
+        const handleEdit = async (index, row) => {
+            const res = await axios.post('http://localhost:8070/course/searchById', {
+                Id: row.courseId,
+            });
+            courseForm.courseId = res.data.course.courseId;
+            setImageUpload(res);
+            setVideoUpload(res);
+            courseForm.courseName = res.data.course.courseName;
+            courseForm.description = res.data.course.description;
+            courseForm.courseOrder = res.data.course.courseOrder;
+            courseForm.author = res.data.course.author;
+            courseForm.companyName = res.data.course.companyName;
+            if (loginUser.value.role === "user" ||
+                (loginUser.value.role === "admin" && !(loginUserCompanyName.value === courseForm.companyName))
+            ) {
+                alert('没有权限');
+                return;
+            }
+            dialogEditCourseVisible.value = true;
         };
 
-        const handleDelete = (index, row) => {
-            console.log(index, row);
+        const editCourse = async () => {
+            const response = await axios.post('http://localhost:8070/course/edit', {
+                courseId: courseForm.courseId,
+                courseName: courseForm.courseName,
+                description: courseForm.description,
+                courseOrder: courseForm.courseOrder,
+                author: courseForm.author,
+                imageUrl: previewImageUrl.value,
+                videoUrl: previewVideoUrl.value,
+            });
+            alert(response.data.msg);
+            searchCourse();
+            dialogEditCourseVisible.value = false;
+        }
+
+        const handleDelete = async (index, row) => {
+            if (loginUser.value.role === "user" ||
+                (loginUser.value.role === "admin" && !(loginUserCompanyName.value === row.companyName))
+            ) {
+                alert('没有权限');
+                return;
+            }
+            const response = await axios.post('http://localhost:8070/course/deleteOne', {
+                courseId: row.courseId,
+            });
+            if (!response.data.isOk) {
+                alert(response.data.msg);
+            }
+            searchCourse();
         };
 
-        const router = useRouter();
-
-        const personalCenter = () => {
-            router.push('/userCenter');
-        };
 
 
         const deleteCourse = () => {
-
+            if (loginUser.value.role === "user" || loginUser.value.role === "admin")
+            {
+                alert('没有权限');
+                return;
+            }
+            ElMessageBox.confirm(
+                '此操作将删除所选课程，是否继续？',
+                '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+            ).then(async () => {
+                // 用户点击确定
+                const idsToDelete = selectedRows.value.map(row => row.courseId);
+                const response = await axios.post('http://localhost:8070/course/deleteList', {
+                    ids: idsToDelete
+                });
+                if (!response.data.isOk) {
+                    alert(response.data.msg);
+                }
+                searchCourse();
+            }).catch(() => {
+                // 用户点击取消
+                ElMessage.info('已取消删除');
+            });
         };
 
         const exportCourse = () => {
+            axios.get('http://localhost:8070/course/export')
+                .then(response => {
+                    if (!response.data.isOk) {
+                        alert(response.data.msg);
+                    }
+                    const base64String = response.data.courses;
 
+                    // 将Base64字符串转换为二进制数据
+                    const byteCharacters = atob(base64String);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+                    // 创建一个下载链接并点击它
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'courses.xlsx';
+                    link.click();
+                })
+                .catch(error => {
+                    // alert('网络错误');
+                });
+
+            
         };
 
 
@@ -568,6 +721,14 @@ export default {
             }
         };
 
+        const setImageUpload = (res) => {
+            selectedImage.value = res.data.course.imageUrl;
+            previewImageUrl.value = res.data.course.imageUrl;
+            imageUrl.value = res.data.course.imageUrl;
+            // const imageInput = document.querySelectorAll('input[type="file"]')[2];
+            // imageInput.value = res.data.course.imageUrl;
+        };
+
         // video
         const selectedVideo = ref(null);
         const previewVideoUrl = ref('');
@@ -595,12 +756,42 @@ export default {
             }
         };
 
-        const back = () => {
-            router.push('/login');
+        const setVideoUpload = (res) => {
+            selectedVideo.value = res.data.course.videoUrl;
+            previewVideoUrl.value = res.data.course.videoUrl;
+            videoUrl.value = res.data.course.videoUrl;
+            // const videoInput = document.querySelectorAll('input[type="file"]')[1];
+            // videoInput.value = res.data.course.videoUrl;
         };
+
+        const pagedTableData = ref([]);
+        const pageSize = 10;
+        const currentPage = ref(1); // 当前页码
+        const updatePagedData = (data) => {
+            const startIndex = (currentPage.value - 1) * pageSize;
+            pagedTableData.value = data.slice(startIndex, startIndex + pageSize);
+            // total.value = data.length;
+        };
+
         return {
+            pagedTableData,
+            pageSize,
+            currentPage,
+            updatePagedData,
+            userInfo,
+            departmentInfo,
+            basicInfoForm,
+            passwordForm,
+            activeTab,
+            personalCenter,
+            back,
+            navigateTo,
+            loginUser,
+            loginUserCompanyName,
+            routeToNewsManage,
+            store,
+            useStore,
             tableData,
-            pickerOptions,
             searchBeginTime,
             searchEndTime,
             searchCourseName,
@@ -610,15 +801,16 @@ export default {
             toggleSelection,
             handleSelectionChange,
             handleEdit,
+            editCourse,
             handleDelete,
-            personalCenter,
-            back,
             addCourse,
             deleteCourse,
             exportCourse,
             dialogAddCourseVisible,
+            dialogEditCourseVisible,
             courseForm,
             clearForm,
+            closeDialog,
             rules,
             selectedRows,
             // image
@@ -627,12 +819,14 @@ export default {
             imageUrl,
             handleImageChange,
             cancelImageUpload,
+            setImageUpload,
             // video
             selectedVideo,
             previewVideoUrl,
             videoUrl,
             handleVideoChange,
             cancelVideoUpload,
+            setVideoUpload,
             refreshCoursesList,
             loadCoursesList,
             formatDateTime,
