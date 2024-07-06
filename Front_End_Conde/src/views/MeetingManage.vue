@@ -10,7 +10,7 @@
             </template>
           </el-menu-item>
 
-          <el-menu-item index="2" @click="navigateTo('/')">
+          <el-menu-item index="2" @click="navigateTo('/homepage')">
             <template #title>
               <el-icon>
                 <HomeFilled/>
@@ -62,7 +62,7 @@
         </el-menu>
       </el-aside>
 
-      <el-container>
+<el-container>
         <el-header class="header-with-shadow" style="font-size: 12px">
           <div style="display: flex; justify-content: space-between; width: 100%;">
             <div style="text-align: left;position: relative; top: 20px;">
@@ -106,10 +106,10 @@
             <el-button plain style="margin-left: 15px;" icon="Refresh" @click="handleReset">重置</el-button>
           </div>
           <el-row style="text-align: left;">
-            <el-button type="primary" plain icon="Plus" style="margin-top: 5px" @click="meetingAdd">新增</el-button>
-            <el-button type="success" plain icon="Edit" style="margin-top: 5px" @click="handleBatchEdit">修改
+            <el-button type="primary" plain icon="Plus" style="margin-top: 5px" @click="meetingAdd" :disabled="loginUser.role === 'user'">新增</el-button>
+            <el-button type="success" plain icon="Edit" style="margin-top: 5px" @click="handleBatchEdit" :disabled="loginUser.role === 'user'">修改
             </el-button>
-            <el-button type="danger" plain icon="Delete" style="margin-top: 5px" @click="handleBatchDelete">删除
+            <el-button type="danger" plain icon="Delete" style="margin-top: 5px" @click="handleBatchDelete" :disabled="loginUser.role === 'user'">删除
             </el-button>
             <el-button type="warning" plain icon="Download" style="margin-top: 5px" @click="exportMeetings">导出
             </el-button>
@@ -150,9 +150,9 @@
                 <template #default="scope">
                   <el-button size="mini" type="primary" icon="View" @click="handleView(scope.$index, scope.row);">查看
                   </el-button>
-                  <el-button size="mini" type="success" icon="Edit" @click="handleEdit(scope.$index, scope.row)">修改
+                  <el-button size="mini" type="success" icon="Edit" @click="handleEdit(scope.$index, scope.row)" :disabled="loginUser.role === 'user'&&loginUser.realName!==scope.row.organizer">修改
                   </el-button>
-                  <el-button size="mini" type="danger" icon="Delete" @click="handleDelete(scope.$index, scope.row)">
+                  <el-button size="mini" type="danger" icon="Delete" @click="handleDelete(scope.$index, scope.row)" :disabled="loginUser.role === 'user'&&loginUser.realName!==scope.row.organizer">
                     删除
                   </el-button>
                 </template>
@@ -166,6 +166,7 @@
                 <el-image
                     style="width: 100px; height: 100px;"
                     :src="getMeetingCoverUrl(selectedMeeting.meetingTitle)"
+                    :preview-src-list="[getMeetingCoverUrl(selectedMeeting.meetingTitle)]"
                     fit="cover"
                     alt="会议封面"
                 ></el-image>
@@ -190,9 +191,8 @@
         <div class="container" style="grid-template-rows: auto 1fr auto;">
           <el-config-provider :locale="zhCn">
             <el-pagination
-                @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
-                :current-page="currentPage4"
+                :page-size="pageSize"
                 layout="total, prev, pager, next, jumper"
                 :total=totalMeetings
                 background
@@ -331,7 +331,7 @@ export default {
     };
 
     const handleEdit = (index, row) => {
-      if (loginUser.value.role === 'user') {
+      if (loginUser.value.role === 'user'&&loginUser.value.realName!==row.organizer) {
         proxy.$message.warning('很遗憾!您没有权限编辑会议!');
         return;
       }
@@ -341,7 +341,7 @@ export default {
     };
 
     const handleDelete = (index, row) => {
-      if (loginUser.value.role === 'user') {
+      if (loginUser.value.role === 'user'&&loginUser.value.realName!==row.organizer) {
         proxy.$message.warning('很遗憾!您没有权限删除会议!');
         return;
       }
@@ -515,16 +515,6 @@ export default {
       return `default.jpg`; // 默认图片路径
     };
 
-    const routeToNewsManage = () => {
-					if (loginUser.value.role === 'admin') {
-						router.push('/mynews');
-					} else if (loginUser.value.role === 'root') {
-						router.push('/news');
-					} else {
-						alert('无权访问该页面');
-					}
-    };
-
     const exportMeetings = () => {
       // 获取要导出的数据
       const exportData = tableData.value.map(meeting => ({
@@ -656,6 +646,18 @@ export default {
       ])
     });
 
+    const navigateTo = (routeName) => {
+      router.push( routeName );
+    };
+    const routeToNewsManage = () => {
+      if (loginUser.value.role === 'admin') {
+        router.push('/mynews');
+      } else if (loginUser.value.role === 'root') {
+        router.push('/news');
+      } else {
+        alert('无权访问该页面');
+      }
+    };
     return {
       tableData,
       pickerOptions,
@@ -695,7 +697,8 @@ export default {
       userInfo,
       store,
       loginUser,
-	routeToNewsManage,
+      navigateTo,
+      routeToNewsManage
     };
   },
 };
@@ -719,4 +722,3 @@ about {
 }
 
 </style>
-

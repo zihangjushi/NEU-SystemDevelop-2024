@@ -13,7 +13,7 @@
             <!-- logo和测盟汇 -->
           </el-menu-item>
 
-          <el-menu-item index="2" >
+          <el-menu-item index="2" @click="navigateTo('/homepage')">
             <template #title>
               <el-icon>
                 <HomeFilled/>
@@ -445,7 +445,7 @@ export default {
         dialogDepartmentFormVisible.value = false; // 关闭弹窗
       }
       await loadData()
-      window.location.reload()
+      // window.location.reload()
     }
 
 
@@ -518,9 +518,10 @@ export default {
                 }
               })
             }
-            loadData()
-            window.location.reload()
+            //loadData()
+            // window.location.reload()
           })
+		  loadData()
     };
 
     loadData();
@@ -528,7 +529,16 @@ export default {
     const navigateTo = (routeName) => {
       router.push( routeName );
     };
-    
+    const routeToNewsManage = () => {
+    				if (loginUser.value.role === 'admin') {
+    					router.push('/mynews');
+    				} else if (loginUser.value.role === 'root') {
+    					router.push('/news');
+    				} else {
+    					alert('无权访问该页面');
+    				}
+    };
+	
     return {
       dialogDepartmentFormVisible,
       dialogCompanyFormVisible,
@@ -554,7 +564,9 @@ export default {
       back,
       store,
       navigateTo,
-      handleDelete
+      handleDelete,
+	  loginUser,
+	  routeToNewsManage,
     };
   }
 };

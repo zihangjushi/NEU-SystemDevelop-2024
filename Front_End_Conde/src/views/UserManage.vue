@@ -13,7 +13,7 @@
             </template>
           </el-menu-item>
           <!-- //序号为2的菜单栏，用来显示标题（首页） -->
-          <el-menu-item index="2" @click="navigateTo('/')">
+          <el-menu-item index="2" @click="navigateTo('/homepage')">
             <template #title>
               <el-icon>
                 <HomeFilled />
@@ -60,9 +60,9 @@
             <el-menu-item index="3-4" @click="navigateTo('/course')"><el-icon>
                 <List />
               </el-icon>课程管理</el-menu-item>
-            <el-menu-item index="3-5"><el-icon>
+            <el-menu-item index="3-5" @click="navigateTo('/meeting')"><el-icon>
                 <TrendCharts />
-              </el-icon>用户管理</el-menu-item>
+              </el-icon>会议管理</el-menu-item>
           </el-sub-menu>
         </el-menu>
       </el-aside>
@@ -529,6 +529,9 @@ export default {
     // });
 
     
+        const navigateTo = (routeName) => {
+            router.push(routeName);
+        };
 
     //勾选框相关方法
     const toggleSelection = (rows) => {
@@ -591,7 +594,7 @@ export default {
     }
 
     const updateUser = () => {
-      if (loginUser.value.role == "admin") {
+      if (loginUser.value.role == "admin" || loginUser.value.role == "root") {
         ElMessageBox.confirm(
           '是否确定修改用户',
           '提示',
@@ -1085,6 +1088,7 @@ export default {
       isDepartmentMatch,
       getDepartmentsByCompany,
       searchMenu,
+	  navigateTo,
     }
   }
 };

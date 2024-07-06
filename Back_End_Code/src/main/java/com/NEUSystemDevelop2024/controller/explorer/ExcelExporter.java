@@ -25,8 +25,7 @@ public class ExcelExporter {
         headerRow.createCell(5).setCellValue("Author");
         headerRow.createCell(6).setCellValue("Create Time");
         headerRow.createCell(7).setCellValue("Modify Time");
-        headerRow.createCell(8).setCellValue("Image URL (base64)");
-        headerRow.createCell(9).setCellValue("Video URL (base64)");
+
 
         // Populate data rows
         int rowNum = 1;
@@ -40,8 +39,7 @@ public class ExcelExporter {
             row.createCell(5).setCellValue(course.getAuthor());
             row.createCell(6).setCellValue(course.getCreateTime().toString());
             row.createCell(7).setCellValue(course.getModifyTime().toString());
-            row.createCell(8).setCellValue(course.getImageUrl());
-            row.createCell(9).setCellValue(course.getVideoUrl());
+
         }
 
         // Resize columns to fit the content

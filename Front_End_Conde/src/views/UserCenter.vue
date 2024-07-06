@@ -10,7 +10,7 @@
             </template>
           </el-menu-item>
 
-          <el-menu-item index="2" @click="navigateTo('/')">
+          <el-menu-item index="2" @click="navigateTo('/homepage')">
             <template #title>
               <el-icon><HomeFilled /></el-icon>首页
             </template>
@@ -256,6 +256,9 @@ export default {
       // 提交密码修改逻辑
       console.log('密码修改表单提交', passwordForm.value);
     };
+        const navigateTo = (routeName) => {
+            router.push(routeName);
+        };
 
     return {
       userInfo,
@@ -267,6 +270,7 @@ export default {
       submitBasicInfo,
 submitPasswordChange,
 	routeToNewsManage,
+	navigateTo,
     };
   }
 };

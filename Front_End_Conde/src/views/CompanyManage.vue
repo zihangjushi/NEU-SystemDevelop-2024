@@ -13,7 +13,7 @@
             </template>
           </el-menu-item>
           <!-- //序号为2的菜单栏，用来显示标题（首页） -->
-          <el-menu-item index="2" @click="navigateTo('/')">
+          <el-menu-item index="2" @click="navigateTo('/homepage')">
             <template #title>
               <el-icon>
                 <HomeFilled />
@@ -367,7 +367,7 @@ export default {
       router.push('/userManage')
     }
     const routeToMeetingManage = () => {
-      router.push("/userManage")
+      router.push("/meeting")
     }
     const routeToUserCenter = () => {
       router.push("/userCenter")
@@ -378,7 +378,7 @@ export default {
 
     //重置按钮
     const handle = () => {
-      console.log(pickerOptions.value.multipleSelection)
+      initCompanyTable()
     }
 
     const exportCompanies = () => {
@@ -611,6 +611,10 @@ export default {
         })
     }
 
+        const navigateTo = (routeName) => {
+            router.push(routeName);
+        };
+
     //监测当前页变化，并进行分页内容显示
     watch(currentPage, (newPage) => {
       searchUserDataByPage(newPage)
@@ -678,7 +682,7 @@ export default {
       routeToMeetingManage,
       routeToUserCenter,
       routeToNewsManage,
-
+navigateTo,
       // 表单相关方法
       addButton,
       clearForm,

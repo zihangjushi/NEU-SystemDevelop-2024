@@ -30,7 +30,7 @@
 				<el-menu-item index="3-1" @click="navigateTo('/companyManage')"><el-icon>
 				<OfficeBuilding />
 				</el-icon>租户管理</el-menu-item>
-              <el-menu-item index="3-2" @click="navigateTo('/companyManage')">
+              <el-menu-item index="3-2" @click="navigateTo('/userManage')">
                 <el-icon>
                   <UserFilled/>
                 </el-icon>
@@ -104,7 +104,21 @@
                   </div>
                   <div class="flip-card-back" style="background-color: #409EFF; color: white;">
                     <el-icon class="card-icon"><UserFilled /></el-icon>
-                    <span >用户管理子系统是软件的核心模块之一，支持全面的用户信息管理，涵盖企业租户与个人用户的注册、登录、信息修改及删除。系统提供便捷的界面操作，可维护用户账号安全，管理企业租户资料，实现用户与企业组织架构的有效整合与高效管控。</span>
+                    <span >用户管理子系统是软件的核心模块之一，支持全面的用户信息管理，涵盖个人用户的注册、登录、相关信息修改及删除。系统提供便捷的界面操作，可维护用户账号安全，实现用户信息的高效监控。</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 租户管理卡片 -->
+              <div class="flip-card" @click="navigateTo('/companyManage')">
+                <div class="flip-card-inner" >
+                  <div class="flip-card-front" style="background-color: #ac74ff; color: white;">
+                    <el-icon class="card-icon"><OfficeBuilding /></el-icon>
+                    <span class="card-title">租户管理</span>
+                  </div>
+                  <div class="flip-card-back" style="background-color: #ac74ff; color: white;">
+                    <el-icon class="card-icon"><OfficeBuilding /></el-icon>
+                    <span >租户管理子系统也是软件的核心模块，该系统提供完善的租户信息管理，涵盖租户的增删改查等常规操作。系统提供便捷的界面操作，管理员可维护管理企业租户资料，实现用户与企业组织架构的有效整合。</span>
                   </div>
                 </div>
               </div>
@@ -122,9 +136,23 @@
                   </div>
                 </div>
               </div>
+
             </el-col>
 
             <el-col :span="11">
+              <!-- 行业动态管理卡片 -->
+              <div class="flip-card" @click="routeToNewsManage">
+                <div class="flip-card-inner" >
+                  <div class="flip-card-front" style="background-color: #909399; color: white;">
+                    <el-icon class="card-icon"><Orange /></el-icon>
+                    <span class="card-title">行业动态管理</span>
+                  </div>
+                  <div class="flip-card-back" style="background-color: #909399; color: white;">
+                    <el-icon class="card-icon"><Orange /></el-icon>
+                    <span >行业动态管理子系统是一个集信息展示与交互于一体的平台，专注于行业新闻与活动的发布、浏览与搜索。用户可享受个性化动态推送，利用智能筛选浏览最新资讯，支持关键词搜索与分类查看。系统提供动态详情页，融合图文富媒体内容，及下拉刷新、上拉加载等动态数据浏览特性，优化用户体验，促进信息时效性与传播效率。</span>
+                  </div>
+                </div>
+              </div>
               <!-- 课程管理卡片 -->
 
               <div class="flip-card" @click="navigateTo('/course')">
@@ -156,19 +184,7 @@
             </el-col>
           </el-row>
 
-          <!-- 行业动态管理卡片 -->
-          <div class="flip-card" @click="navigateTo('/news')">
-            <div class="flip-card-inner" style="width:1075px">
-              <div class="flip-card-front" style="background-color: #909399; color: white;">
-                <el-icon class="card-icon"><Orange /></el-icon>
-                <span class="card-title">行业动态管理</span>
-              </div>
-              <div class="flip-card-back" style="background-color: #909399; color: white;">
-                <el-icon class="card-icon"><Orange /></el-icon>
-                <span >行业动态管理子系统是一个集信息展示与交互于一体的平台，专注于行业新闻与活动的发布、浏览与搜索。用户可享受个性化动态推送，利用智能筛选浏览最新资讯，支持关键词搜索与分类查看。系统提供动态详情页，融合图文富媒体内容，及下拉刷新、上拉加载等动态数据浏览特性，优化用户体验，促进信息时效性与传播效率。</span>
-              </div>
-            </div>
-          </div>
+
         </el-main>
         
       </el-container>
@@ -259,6 +275,7 @@ export default {
       back,
       navigateTo,
       loginUser,
+      // eslint-disable-next-line no-mixed-spaces-and-tabs
 	    routeToNewsManage,
     };
   }

@@ -162,7 +162,13 @@ public class CourseController {
     public Map getCompanyNameById(@RequestBody Map<String, Integer> request, HttpSession session) {
         Integer Id = request.get("Id");
         System.out.println(Id);
-        String companyName = companyBiz.searchByCompanyId(Id).getCompanyName();
+        String companyName;
+        if (companyBiz.searchByCompanyId(Id)!=null){
+            companyName = companyBiz.searchByCompanyId(Id).getCompanyName();
+        }else{
+            companyName = null;
+        }
+
         Map map = new HashMap();
         map.put("isOk", true);
         map.put("companyName", companyName);

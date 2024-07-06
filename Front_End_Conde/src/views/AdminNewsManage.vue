@@ -108,7 +108,7 @@
 						</template>
 					</el-menu-item>
 
-					<el-menu-item index="2" @click="navigateTo('/')">
+					<el-menu-item index="2" @click="navigateTo('/homepage')">
 						<template #title>
 							<el-icon>
 								<HomeFilled />
