@@ -33,8 +33,8 @@ public interface CompanyMapper {
     Company searchByCompanyName(String companyName);
 
 
-    @Insert("INSERT INTO t_company (contactName, companyName, phoneNumber, adminName, state, createTime, description) " +
-            "VALUES (#{contactName}, #{companyName}, #{phoneNumber}, #{adminName}, #{state}, #{createTime}, #{description})")
+    @Insert("INSERT INTO t_company (contactName, companyName, phoneNumber, adminName, state, createTime, description,image) " +
+            "VALUES (#{contactName}, #{companyName}, #{phoneNumber}, #{adminName}, #{state}, #{createTime}, #{description},#{image})")
     void insertCompany(Company company);
 
 

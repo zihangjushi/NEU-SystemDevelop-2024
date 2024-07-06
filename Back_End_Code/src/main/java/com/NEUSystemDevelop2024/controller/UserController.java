@@ -70,7 +70,7 @@ public class UserController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String createTime = now.format(formatter);
 
-                Company company = new Company(name,1,phoneNumber,contactName,companyName,description,createTime);
+                Company company = new Company(name,1,phoneNumber,contactName,companyName,description,createTime,"");
 
                 companyBiz.addCompany(company);
 
