@@ -425,20 +425,20 @@ export default {
 
 				if (loginUser.value.role === 'admin') {
 
-					const response = await axios.get('http://localhost:8070/searchByCompanyId', {
-						params: {
-							companyId: loginUser.value.companyId
-						}
-					});
-					const companyList = response.data.company;
-					tenant.value = companyList[0].companyName;
+					// const response = await axios.get('http://localhost:8070/searchByCompanyId', {
+					// 	params: {
+					// 		companyId: loginUser.value.companyId
+					// 	}
+					// });
+					// const companyList = response.data.company;
+					// tenant.value = companyList[0].companyName;
 					isLoggedIn.value = true;
 
 					try {
 						const response = await axios.get('http://localhost:8070/news/mynews', {
 							withCredentials: true,
 							params: {
-								companyName: tenant.value
+								companyId: loginUser.value.companyId
 							}
 						});
 
@@ -459,9 +459,9 @@ export default {
 					alert('用户未登录');
 				}
 			} catch (error) {
-				console.error('获取用户信息失败', error);
+				console.error('获取信息失败', error);
 				isLoggedIn.value = false;
-				alert('用户未登录');
+				alert('获取信息失败');
 			}
 
 
@@ -899,6 +899,9 @@ export default {
 			router.push('/meeting');
 		};
 
+			const navigateTo = (routeName) => {
+				router.push(routeName);
+			};
 		const cancelUpload = () => {
 			selectedFile.value = null; // 清空已选择的文件
 			previewImageUrl.value = ''; // 清空预览图片 URL
@@ -964,6 +967,7 @@ export default {
 			gotoUserManage,
 			gotoMeeting,
 			store,
+			navigateTo,
 		};
 	},
 

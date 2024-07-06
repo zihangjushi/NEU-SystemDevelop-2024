@@ -67,11 +67,13 @@ public class NewsController {
 
 
     @RequestMapping("/mynews")
-    public Map getMyNews(@RequestParam String companyName) {
+    public Map getMyNews(@RequestParam int companyId) {
 
 
-//        String companyName = (String)res.get("companyName");
-        List<News> news = biz.findNewsBycompanyName(companyName);
+        //String companyName = (String)res.get("companyName");
+
+
+        List<News> news = biz.findNewsBycompanyName(biz.getCompanynameByid(companyId));
 
         Map map = new HashMap();
         map.put("isOk",true);
