@@ -665,7 +665,6 @@ export default {
 			imageUrl.value = '';
 			author.value = '';
 			summary.value = '';
-			tenant.value = '';
 
 
 

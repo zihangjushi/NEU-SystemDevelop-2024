@@ -504,7 +504,7 @@ export default {
       value: 0,
       label: "男"
     }, {
-      vluse: 1,
+      value: 1,
       label: "女"
     }]
     const careerOptions = [{
@@ -626,7 +626,7 @@ export default {
     }
 
     const addUser = () => {
-      if (loginUser.value.role == "root") {
+      if (loginUser.value.role == "root"||loginUser.value.role == "admin") {
         ElMessageBox.confirm(
           '是否确定添加用户',
           '提示',

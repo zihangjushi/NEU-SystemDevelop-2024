@@ -18,6 +18,8 @@ public interface UserMapper {
             "VALUES (#{companyId},#{userName}, #{realName}, #{gender}, #{password}, #{enabled}, #{career}, #{role}, #{phoneNumber}, #{email}, #{createTime}, #{description})")
     Integer insertUser(User user);
 
+
+
     @Insert("INSERT INTO t_user (companyId,departmentId, userName, realName, gender, password, enabled, career, role, phoneNumber, email, createTime, description) " +
             "VALUES (#{companyId},#{departmentId},#{userName}, #{realName}, #{gender}, #{password}, #{enabled}, #{career}, #{role}, #{phoneNumber}, #{email}, #{createTime}, #{description})")
     Integer insertUserByPage(User user);

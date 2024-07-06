@@ -186,7 +186,7 @@ public class UserController {
             map.put("msg", "添加成功");
         }catch (Exception e) {
             map.put("isOk", false);
-            map.put("msg", "注册失败：" + e.getMessage());
+            map.put("msg", "添加失败：" + e.getMessage());
         }
         return map;
     }
@@ -212,6 +212,8 @@ public class UserController {
 
             List<Integer> departmentList = (List<Integer>) request.get("departmentId");
             int departmentId = departmentList.get(0);
+//            int departmentId = (int) request.get("departmentId");
+
 
             String role = (String) request.get("role");
 
